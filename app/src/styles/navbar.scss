@@ -1,0 +1,50 @@
+.navbar {
+  @include flex-box(space-between);
+
+  height: 5rem;
+  width: 100%;
+  position: fixed;
+
+  .identifier {
+    @include flex-box;
+
+    height: 100%;
+    margin-left: 1rem;
+  }
+
+  .routes {
+    @include flex-box(space-evenly);
+
+    height: 100%;
+    margin-right: 1.3rem;
+  }
+
+  .logo {
+    max-height: 60%;
+  }
+
+  .link {
+    font-size: 1.2rem;
+    margin: 1rem;
+    text-decoration: none;
+  }
+
+  .active:after {
+    animation: expand-bottom 500ms ease;
+    content: "";
+    display: block;
+    margin: auto;
+    height: 3px;
+    // width: 100%;
+    background: $highlight;
+  }
+}
+
+@keyframes expand-bottom {
+  from {
+    width: 0px;
+  }
+  to {
+    width: 100%;
+  }
+}

@@ -1,0 +1,37 @@
+@import url("https://fonts.googleapis.com/css?family=Raleway:200,300,400&display=swap");
+@import "./vars";
+@import "./navbar";
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  color: white;
+  font-family: Raleway;
+}
+
+html,
+body,
+#root {
+  min-height: 100vh;
+  background-color: $bg;
+}
+
+main {
+  position: relative;
+  top: 6rem;
+}
+
+img {
+  max-height: 90%;
+  max-width: 90%;
+}
+
+a,
+a:hover,
+a::-moz-focus-inner,
+a::-moz-focus-outer {
+  text-decoration: none;
+  outline: none;
+  border: none;
+}

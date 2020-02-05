@@ -1,0 +1,17 @@
+{
+  "name": "electron_test",
+  "type": "module",
+  "version": "1.0.0",
+  "main": "main.js",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "electron": "^7.1.11",
+    "youtube-mp3-downloader": "^0.6.5"
+  },
+  "scripts": {
+    "start": "electron .",
+    "build-react": "cd app && yarn build",
+    "build-start": "yarn build-react && yarn start"
+  }
+}

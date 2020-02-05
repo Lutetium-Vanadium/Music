@@ -1,0 +1,9 @@
+$bg: rgb(27, 27, 27);
+$highlight: rgb(23, 99, 212);
+
+@mixin flex-box($justify: center, $align: center, $direction: row) {
+  display: flex;
+  justify-content: $justify;
+  align-items: $align;
+  flex-direction: $direction;
+}
