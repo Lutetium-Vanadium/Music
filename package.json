@@ -5,13 +5,19 @@
   "main": "main.js",
   "license": "MIT",
   "dependencies": {
+    "cheerio": "^1.0.0-rc.3",
     "dotenv": "^8.2.0",
     "electron": "^7.1.11",
+    "node-fetch": "^2.6.0",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.5",
+    "sqlite3": "^4.1.1",
     "youtube-mp3-downloader": "^0.6.5"
   },
   "scripts": {
     "start": "electron .",
     "build-react": "cd app && yarn build",
-    "build-start": "yarn build-react && yarn start"
+    "build-start": "yarn build-react && yarn start",
+    "test-api": "electron test_api.js"
   }
 }
