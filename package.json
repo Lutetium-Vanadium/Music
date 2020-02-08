@@ -17,7 +17,6 @@
   "scripts": {
     "start": "electron .",
     "build-react": "cd app && yarn build",
-    "build-start": "yarn build-react && yarn start",
-    "test-api": "electron test_api.js"
+    "build-start": "yarn build-react && yarn start"
   }
 }

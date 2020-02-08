@@ -4,21 +4,28 @@
   @include flex-box;
 
   width: 90%;
-  margin-right: auto;
-  padding: 1rem 3rem;
+  margin: 1.5rem 0;
+  padding: 1.5rem 3rem;
   cursor: pointer;
+  transition: background-color linear 140ms;
+  border-radius: 0.5rem;
 
   .thumbnail {
     flex: 1;
+    border-radius: 0.8rem;
   }
 
   .details {
     flex: 9;
-    padding: 0 3rem;
+    padding-left: 3rem;
 
     p {
       margin-left: 1rem;
       margin-top: 0.3rem;
     }
+  }
+
+  &:hover {
+    background-color: $bgl;
   }
 }

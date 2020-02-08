@@ -2,6 +2,8 @@
 @import "./vars";
 @import "./navbar";
 @import "./song";
+@import "./music";
+@import "./settings";
 
 * {
   margin: 0;
@@ -15,7 +17,13 @@ html,
 body,
 #root {
   min-height: 100vh;
-  background-color: $bg;
+  background: $bg;
+}
+
+.header {
+  font-size: 3.2rem;
+  margin-left: 11%;
+  margin-bottom: 2rem;
 }
 
 main {
@@ -39,7 +47,33 @@ a::-moz-focus-outer {
 
 hr {
   height: 2px;
-  width: 80%;
+  width: 90%;
   color: #dfdfdf85;
-  margin-right: auto;
+  margin: 2rem auto;
+}
+
+button {
+  background: none;
+  border: none;
+  width: auto;
+  overflow: visible;
+
+  color: inherit;
+  font: inherit;
+
+  line-height: normal;
+
+  -webkit-font-smoothing: inherit;
+  -moz-osx-font-smoothing: inherit;
+
+  -webkit-appearance: none;
+
+  &::-moz-focus-inner {
+    border: 0;
+    padding: 0;
+  }
+
+  &:hover {
+    cursor: pointer;
+  }
 }

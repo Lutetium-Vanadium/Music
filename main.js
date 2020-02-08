@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require("electron");
+const { app, BrowserWindow, ipcMain, dialog } = require("electron");
 const path = require("path");
 const fs = require("fs");
 const Store = require("./functions/store");
@@ -19,6 +19,7 @@ const {
   songDownloader: downloader,
   downloadImage
 } = require("./functions/downloader");
+const getYoutubeId = require("./functions/getYoutubeId");
 const db = require("./functions/db_handler");
 
 // Downloader settings
@@ -33,7 +34,6 @@ downloader.on("progress", ({ progress }) => {
 });
 
 downloader.on("finished", async (err, data) => {
-  await db.addSong(data);
   console.log("Finished ", data);
   db.print();
   win.webContents.send("finished:download-query", "Done");
@@ -59,7 +59,8 @@ app.on("ready", () => {
     width: 1000,
     height: 800,
     webPreferences: {
-      nodeIntegration: true
+      nodeIntegration: true,
+      webSecurity: false
     }
   });
 
@@ -89,7 +90,7 @@ ipcMain.handle("get:music-names", (evt, val) => db.all());
 // search methods
 
 // Gets all the songs stored in the db whose name contains the given string
-ipcMain.handle("ssearch:local", async (evt, val) => {
+ipcMain.handle("search:local", async (evt, val) => {
   const results = db.search(val);
   return results;
 });
@@ -102,8 +103,31 @@ ipcMain.handle("search:global", async (evt, val) => {
   return result.songs;
 });
 
-// The download song port- Given a string, downloads the first result of the youtube API result
-ipcMain.on("download-song", async (evt, val) => {
-  const id = google(val);
-  downloader.download(id);
+// Setters
+
+ipcMain.handle("set:music-dir", async (evt, val) => {
+  console.log("Changing Directories...");
+  const { cancelled, filePaths } = await dialog.showOpenDialog(win, {
+    properties: ["openDirectory"],
+    title: "Choose Music Directory",
+    defaultPath: store.get("folderStored")
+  });
+
+  if (!cancelled) {
+    store.set("folderStored", filePaths[0]);
+  }
+
+  return store.get("folderStored");
+});
+
+// The download song port- Given an id, downloads the song
+ipcMain.on("download-song", async (evt, songData) => {
+  const youtubeId = getYoutubeId(songData.title);
+  downloader.download(youtubeId);
+  downloadImage(songData.thumbnail);
+  const albumId = songData.thumbnail.split("/")[6];
+  songData.thumbnail =
+    "file//" +
+    path.join(app.getPath("userData"), "album_images", `${albumId}.jpg`);
+  await db.addSong(songData);
 });

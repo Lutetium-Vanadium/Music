@@ -1,5 +1,9 @@
+const { app } = require("electron");
 const axios = require("axios");
+const path = require("path");
 require("dotenv").config();
+
+const { downloadImage } = require("./downloader");
 
 /**
  * All Functions follow the same basic pattern:
@@ -22,7 +26,8 @@ require("dotenv").config();
  *   Song: {
  *     artist: {string},   -> name of the artist
  *     title: {string},    -> title of the song
- *     thumbnail: {string} -> url to the album cover
+ *     thumbnail: {string} -> url to the album cover,
+ *     length: {int}       -> length of the track in seconds
  *   }
  */
 
@@ -53,9 +58,11 @@ const getSongInfo = async query => {
     if (response.status !== 200) throw response.headers.status;
     console.log("\n\n\nDATA: ", response.data);
 
+    downloadImage(response.data.tracks[0].albumId);
+
     return {
       status: 1,
-      song: formatTrackData(response.data.tracks[0])
+      song: formatTrackData(response.data.tracks[0], true)
     };
   } catch (error) {
     console.error(error);
@@ -77,7 +84,7 @@ const getSongInfo = async query => {
  */
 const search = async query => {
   try {
-    const response = axios.get("http://api.napster.com/v2.2/search", {
+    const response = await axios.get("http://api.napster.com/v2.2/search", {
       params: {
         apikey: process.env.NAPSTER_API_KEY,
         type: "track",
@@ -114,13 +121,23 @@ module.exports = {
  *
  * @param {Object} track The track object given by the napster api
  *
+ * @param {Boolean} isDownloaded Changes the thumbnail to local vs napster url
+ *
  * Returns a `Song` Object
  */
 
-const formatTrackData = track => {
+const formatTrackData = (track, isDownloaded = false) => {
   return {
     artist: track.artistName,
     title: track.name,
-    thumbnail: `https://api.napster.com/imageserver/v2/albums/${track.albumId}/images/200x200.jpg`
+    length: track.playbackSeconds,
+    thumbnail: isDownloaded
+      ? "file//" +
+        path.join(
+          app.getPath("userData"),
+          "album_images",
+          `${track.albumId}.jpg`
+        )
+      : `https://api.napster.com/imageserver/v2/albums/${track.albumId}/images/200x200.jpg`
   };
 };

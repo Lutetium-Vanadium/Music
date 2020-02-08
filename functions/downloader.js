@@ -6,6 +6,7 @@ const path = require("path");
 const fs = require("fs");
 
 // This file has the specified configurations for the youtuber downloader
+// and a function to download images
 
 // NOTE ffmpegPath must be fixed as it only supports linux as of now (die plebs)
 
@@ -28,7 +29,7 @@ const downloadImage = async id => {
 
   if (fs.existsSync(download_path)) return;
 
-  const url = `https://api.napster.com/imageserver/v2/albums/${id}/images/200x200.jpg`;
+  const url = `https://api.napster.com/imageserver/v2/albums/${id}/images/500x500.jpg`;
   const writer = fs.createWriteStream(download_path);
 
   const response = await axios.get(url, { responseType: "stream" });

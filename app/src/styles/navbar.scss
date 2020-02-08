@@ -1,9 +1,13 @@
+@import "./vars";
+
 .navbar {
   @include flex-box(space-between);
 
   height: 5rem;
   width: 100%;
   position: fixed;
+  z-index: 1;
+  background-color: $bg;
 
   .identifier {
     @include flex-box;
@@ -27,6 +31,11 @@
     font-size: 1.2rem;
     margin: 1rem;
     text-decoration: none;
+    transition: color 100ms linear;
+
+    &:hover {
+      color: $highlightl;
+    }
   }
 
   .active:after {
