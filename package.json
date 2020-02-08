@@ -5,10 +5,10 @@
   "main": "main.js",
   "license": "MIT",
   "dependencies": {
-    "cheerio": "^1.0.0-rc.3",
+    "axios": "^0.19.2",
     "dotenv": "^8.2.0",
     "electron": "^7.1.11",
-    "node-fetch": "^2.6.0",
+    "electron-rebuild": "^1.10.0",
     "request": "^2.88.0",
     "request-promise": "^4.2.5",
     "sqlite3": "^4.1.1",

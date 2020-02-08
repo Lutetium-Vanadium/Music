@@ -1,9 +1,12 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
 
+import { song } from "#root/types";
+import Song from "#shared/Song";
+
 const { ipcRenderer } = window.require("electron");
 
-const initial: string[] = [];
+const initial: song[] = [];
 
 function Music() {
   const [songs, setSongs] = useState(initial);
@@ -11,18 +14,16 @@ function Music() {
   useEffect(() => {
     ipcRenderer
       .invoke("get:music-names")
-      .then((songs: string[]) => setSongs(songs));
+      .then((songs: song[]) => setSongs(songs));
   }, []);
+
+  const len = songs.length;  
 
   return (
     <div className="my-music">
       <ul className="music-names">
         {songs.length
-          ? songs.map((song, i) => (
-              <li key={`song-${i}`} className="song-name">
-                {song.slice(0, -3)}
-              </li>
-            ))
+          ? songs.map((song, i) => <Song key={`song-${i}`} song={song} />)
           : "No Songs"}
       </ul>
     </div>

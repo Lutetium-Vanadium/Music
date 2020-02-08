@@ -1,6 +1,7 @@
 const { app, BrowserWindow, ipcMain } = require("electron");
-const Store = require("./functions/store");
+const path = require("path");
 const fs = require("fs");
+const Store = require("./functions/store");
 const store = new Store({
   name: "config",
   defaults: {
@@ -13,13 +14,42 @@ module.exports = {
   store
 };
 
-const google = require("./functions/google");
-const downloader = require("./functions/downloader");
+const { getSongInfo, search } = require("./functions/napster");
+const {
+  songDownloader: downloader,
+  downloadImage
+} = require("./functions/downloader");
 const db = require("./functions/db_handler");
 
-// Initialises the song-data database
+// Downloader settings
+downloader.on("error", err => {
+  console.error(err);
+  win.webContents.send("error:download-query", err);
+});
+
+downloader.on("progress", ({ progress }) => {
+  console.log(progress.percentage.toFixed(2) + "%");
+  win.webContents.send("update:download-query", progress);
+});
+
+downloader.on("finished", async (err, data) => {
+  await db.addSong(data);
+  console.log("Finished ", data);
+  db.print();
+  win.webContents.send("finished:download-query", "Done");
+});
+
+// Initialising
+
+// check if image directory exists
+const album_images_path = path.join(app.getPath("userData"), "album_images");
+
+if (!fs.existsSync(album_images_path)) fs.mkdir(album_images_path);
+
+// creating db
 db.init();
 
+// needed variables
 let win = null;
 const dev = true;
 
@@ -39,6 +69,11 @@ app.on("ready", () => {
     : win.loadFile("./public/index.html");
 });
 
+app.on("quit", () => {
+  db.close();
+  app.quit();
+});
+
 // Get methods
 
 // gets the configured music directory
@@ -49,61 +84,26 @@ ipcMain.handle("get:music-dir", (evt, val) => {
 });
 
 // Gets all music files stored in the configured directory
-ipcMain.handle("get:music-names", async (evt, val) => {
-  const files = await fs.promises.readdir(store.get("folderStored"));
+ipcMain.handle("get:music-names", (evt, val) => db.all());
 
-  // Only files with an mp3 or wav extension want to be taken into account
-  const re = /\.(mp3|wav)/giu;
-
-  files.filter(name => Boolean(name.match(re)));
-
-  console.log("Files: ", files);
-
-  return files;
-});
+// search methods
 
 // Gets all the songs stored in the db whose name contains the given string
-ipcMain.handle("get:search-query", async (evt, val) => {
+ipcMain.handle("ssearch:local", async (evt, val) => {
   const results = db.search(val);
   return results;
 });
 
-// The download song port- Given a string, downloads the first result of the youtube API result
-ipcMain.on("get:download-query", async (evt, val) => {
-  const id = google(val);
-  downloader.download(id);
+// Handles general search query for new songs
+ipcMain.handle("search:global", async (evt, val) => {
+  const result = await search(val);
+  if (!result.success) return result.error;
 
-  downloader.on("error", err => {
-    console.error(err);
-    // Todo report download failed
-    win.webContents.send("error:download-query", err);
-  });
-
-  downloader.on("progress", ({ progress }) =>
-    win.webContents.send("update:download-query", progress)
-  );
-
-  downloader.on("finished", async (err, data) => {
-    await db.addSong(data);
-    //Todo report complete
-    win.webContents.send("finished:download-query", "Done");
-  });
+  return result.songs;
 });
 
-// A basic function to test if a the basic download and search APIs work
-const run_test = async () => {
-  const test_query = "Khashoggis Ship";
-
-  const id = await google(test_query);
-  const id = vid.id.videoId;
-
-  console.log({ id });
-
+// The download song port- Given a string, downloads the first result of the youtube API result
+ipcMain.on("download-song", async (evt, val) => {
+  const id = google(val);
   downloader.download(id);
-
-  downloader.on("error", console.error);
-  downloader.on("finished", console.log);
-  downloader.on("progress", console.log);
-
-  console.log("Done.");
-};
+});

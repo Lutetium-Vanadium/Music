@@ -1,5 +1,9 @@
 const Downloader = require("youtube-mp3-downloader");
 const { store } = require("../main");
+const { app } = require("electron");
+const axios = require("axios");
+const path = require("path");
+const fs = require("fs");
 
 // This file has the specified configurations for the youtuber downloader
 
@@ -9,10 +13,35 @@ const options = {
   ffmpegPath: "/usr/bin/ffmpeg",
   outputPath: store.get("folderStored"),
   youtubeVideoQuality: "highest",
-  progressTimeout: 500,
+  progressTimeout: 1000,
   queueParallelism: 2
 };
 
-const downloader = new Downloader(options);
+const songDownloader = new Downloader(options);
 
-module.exports = downloader;
+const downloadImage = async id => {
+  const download_path = path.join(
+    app.getPath("userData"),
+    "album_images",
+    id + ".jpg"
+  );
+
+  if (fs.existsSync(download_path)) return;
+
+  const url = `https://api.napster.com/imageserver/v2/albums/${id}/images/200x200.jpg`;
+  const writer = fs.createWriteStream(download_path);
+
+  const response = await axios.get(url, { responseType: "stream" });
+
+  response.data.pipe(writer);
+
+  return new Promise((res, rej) => {
+    writer.on("finish", res);
+    writer.on("error", rej);
+  });
+};
+
+module.exports = {
+  songDownloader,
+  downloadImage
+};

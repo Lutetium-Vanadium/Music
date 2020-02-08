@@ -7,7 +7,9 @@
     "rootDir": "src",
     "paths": {
       "~*": ["./src/*"],
-      "styles": ["./src/styles"]
+      "#root/*": ["./src/*"],
+      "#logos/*": ["./src/logos/*"],
+      "#shared/*": ["./src/shared/*"]
     }
   },
   "include": ["global.d.ts", "declarations.d.ts"],

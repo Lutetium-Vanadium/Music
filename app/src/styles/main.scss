@@ -1,6 +1,7 @@
 @import url("https://fonts.googleapis.com/css?family=Raleway:200,300,400&display=swap");
 @import "./vars";
 @import "./navbar";
+@import "./song";
 
 * {
   margin: 0;
@@ -34,4 +35,11 @@ a::-moz-focus-outer {
   text-decoration: none;
   outline: none;
   border: none;
+}
+
+hr {
+  height: 2px;
+  width: 80%;
+  color: #dfdfdf85;
+  margin-right: auto;
 }

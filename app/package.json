@@ -29,6 +29,8 @@
   },
   "homepage": "./",
   "alias": {
-    "#logos": "./src/logos"
+    "#root": "./src/",
+    "#logos": "./src/logos",
+    "#shared": "./src/shared"
   }
 }

@@ -1,0 +1,24 @@
+@import "./vars";
+
+.song {
+  @include flex-box;
+
+  width: 90%;
+  margin-right: auto;
+  padding: 1rem 3rem;
+  cursor: pointer;
+
+  .thumbnail {
+    flex: 1;
+  }
+
+  .details {
+    flex: 9;
+    padding: 0 3rem;
+
+    p {
+      margin-left: 1rem;
+      margin-top: 0.3rem;
+    }
+  }
+}
