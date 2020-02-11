@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "baseUrl": "./src",
+    "rootDir": "src"
+  },
+  "include": ["global.d.ts"],
+  "exclude": ["node_modules"]
+}

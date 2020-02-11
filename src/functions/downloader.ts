@@ -1,9 +1,9 @@
-const Downloader = require("youtube-mp3-downloader");
-const { store } = require("../main");
-const { app } = require("electron");
-const axios = require("axios");
-const path = require("path");
-const fs = require("fs");
+import Downloader from "youtube-mp3-downloader";
+import { store } from "../main";
+import { app } from "electron";
+import axios from "axios";
+import * as path from "path";
+import * as fs from "fs";
 
 // This file has the specified configurations for the youtuber downloader
 // and a function to download images
@@ -20,7 +20,14 @@ const options = {
 
 const songDownloader = new Downloader(options);
 
-const downloadImage = async id => {
+/**
+ * downloadImage()
+ *
+ * @param id Album Id of the image to download
+ *
+ * Downloads the Album cover from the id as per the napster API
+ */
+const downloadImage = async (id: string) => {
   const download_path = path.join(
     app.getPath("userData"),
     "album_images",
@@ -42,7 +49,4 @@ const downloadImage = async id => {
   });
 };
 
-module.exports = {
-  songDownloader,
-  downloadImage
-};
+export { songDownloader, downloadImage };

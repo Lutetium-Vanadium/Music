@@ -1,7 +1,14 @@
-const axios = require("axios");
+import axios from "axios";
 
-const getYoutubeId = async query => {
-  // Makes sure to get the write video
+/**
+ * getYoutubeId()
+ *
+ * @param {string} query The title of the video to search on youtube's API
+ *
+ * Returns the first result's youtube id from a search query
+ */
+const getYoutubeId = async (query: string) => {
+  // Makes sure to get the right video
   query += " official music video";
 
   query = query.replace(" ", "+");
@@ -17,4 +24,4 @@ const getYoutubeId = async query => {
   return result.data.items[0].id.videoId;
 };
 
-module.exports = getYoutubeId;
+export default getYoutubeId;

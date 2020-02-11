@@ -1,9 +1,11 @@
-const { app } = require("electron");
-const axios = require("axios");
-const path = require("path");
-require("dotenv").config();
+import { app } from "electron";
+import axios from "axios";
+import * as path from "path";
+import * as dotenv from "dotenv";
 
-const { downloadImage } = require("./downloader");
+import { downloadImage } from "./downloader";
+
+dotenv.config();
 
 /**
  * All Functions follow the same basic pattern:
@@ -34,18 +36,18 @@ const { downloadImage } = require("./downloader");
 // -------- Functions --------
 
 /**
- * getSongInfo()
+ * getInfo()
  *
  * @param {string} query The search term
  *
- * Gets the info for only one particular song
+ * Gets the info for only one particular song, and downloads the thumbnail for it
  *
  * succes return schema {
  *   success: 1,
  *   song: Song
  * }
  */
-const getSongInfo = async query => {
+const getInfo = async (query: string) => {
   try {
     const response = await axios.get("http://api.napster.com/v2.2/search", {
       params: {
@@ -83,7 +85,7 @@ const getSongInfo = async query => {
  *   songs: {Song[]} -> 5 songs
  * }
  */
-const search = async query => {
+const search = async (query: string) => {
   try {
     const response = await axios.get("http://api.napster.com/v2.2/search", {
       params: {
@@ -112,10 +114,7 @@ const search = async query => {
   }
 };
 
-module.exports = {
-  getInfo: getSongInfo,
-  search
-};
+export { getInfo, search };
 
 /**
  * formatTrackData()

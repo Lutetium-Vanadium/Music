@@ -1,7 +1,7 @@
-const { app, BrowserWindow, ipcMain, dialog } = require("electron");
-const path = require("path");
-const fs = require("fs");
-const Store = require("./functions/store");
+import { app, BrowserWindow, ipcMain, dialog } from "electron";
+import * as path from "path";
+import * as fs from "fs";
+import Store from "./functions/store";
 const store = new Store({
   name: "config",
   defaults: {
@@ -10,17 +10,15 @@ const store = new Store({
 });
 
 // store instance is required by 'downloader.js'
-module.exports = {
-  store
-};
+export { store };
 
-const { getSongInfo, search } = require("./functions/napster");
-const {
-  songDownloader: downloader,
+import { getInfo, search } from "./functions/napster";
+import {
+  songDownloader as downloader,
   downloadImage
-} = require("./functions/downloader");
-const getYoutubeId = require("./functions/getYoutubeId");
-const db = require("./functions/db_handler");
+} from "./functions/downloader";
+import getYoutubeId from "./functions/getYoutubeId";
+import db from "./functions/db_handler";
 
 // Downloader settings
 downloader.on("error", err => {
@@ -41,14 +39,14 @@ downloader.on("finished", async (err, data) => {
 // check if image directory exists
 const album_images_path = path.join(app.getPath("userData"), "album_images");
 
-if (!fs.existsSync(album_images_path)) fs.mkdir(album_images_path);
+if (!fs.existsSync(album_images_path)) fs.mkdir(album_images_path, console.log);
 
 // creating db
 db.init();
 
 // needed variables
 let win = null;
-const dev = true;
+const dev = false;
 
 // Main window creation
 app.on("ready", () => {
@@ -121,7 +119,7 @@ ipcMain.handle("set:music-dir", async (evt, val) => {
 ipcMain.on("download-song", async (evt, songData) => {
   const youtubeId = await getYoutubeId(songData.title);
 
-  fileName = songData.title + ".mp3";
+  const fileName = songData.title + ".mp3";
   downloader.download(youtubeId, fileName);
   const albumId = songData.thumbnail.split("/")[6];
   downloadImage(albumId);
