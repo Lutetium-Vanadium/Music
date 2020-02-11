@@ -1,14 +1,24 @@
 import * as React from "react";
 import { NavLink } from "react-router-dom";
 
-import logo from "#logos/logo.png";
+import Search from "./Search";
 
-function Navbar() {
+import logo from "#logos/logo.png";
+import ProgressBar, { ProgressBarProps } from "../../shared/ProgressBar";
+
+interface NavbarParams {
+  downloading: boolean;
+  progressbarProps: ProgressBarProps;
+  search: (query: string) => void;
+}
+
+function Navbar({ downloading, progressbarProps, search }: NavbarParams) {
   return (
     <div className="navbar">
       <div className="identifier">
         <img className="logo" src={logo} alt="logo" />
         <h2>Music</h2>
+        {downloading && <ProgressBar {...progressbarProps} />}
       </div>
       <div className="routes">
         <NavLink to="/" exact className="link" activeClassName="active">
@@ -20,6 +30,7 @@ function Navbar() {
         <NavLink to="/music" className="link" activeClassName="active">
           My Music
         </NavLink>
+        <Search search={search} />
       </div>
     </div>
   );

@@ -16,21 +16,19 @@ function Music() {
   const [songs, setSongs] = useState(initial);
 
   useEffect(() => {
-    // if (ipcRenderer) {
-    //   ipcRenderer
-    //     .invoke("get:music-names")
-    //     .then((songs: song[]) => setSongs(songs));
-    // }
+    if (ipcRenderer) {
+      ipcRenderer
+        .invoke("get:music-names")
+        .then((songs: song[]) => setSongs(songs));
+    }
   }, []);
 
   return (
-    <div className="my-music">
+    <div className="music">
       <h1 className="header">My Music</h1>
       <ul className="music-names">
         {songs.length
-          ? songs.map((song, i) => (
-              <Song key={`song-${i}`} first={!i} song={song} />
-            ))
+          ? songs.map((song, i) => <Song key={`song-${i}`} song={song} />)
           : "No Songs"}
       </ul>
     </div>

@@ -1,0 +1,82 @@
+@import "./vars";
+
+.player-wrapper {
+  @include flex-box(flex-start, flex-start, column);
+
+  position: absolute;
+  bottom: 0.4rem;
+  border-radius: 0.2rem;
+  height: 4.5rem;
+  width: 70vw;
+  left: 15vw;
+  background-color: $bgm;
+}
+
+.player {
+  @include flex-box(space-between);
+
+  height: 4.2rem;
+  width: 100%;
+  padding: 0.7rem 1rem;
+
+  .details {
+    @include flex-box(flex-start);
+
+    height: 100%;
+    flex: 1;
+
+    .thumbnail {
+      max-height: 100%;
+      border-radius: 0.3rem;
+      margin-right: 0.7rem;
+    }
+
+    .title {
+      font-weight: 500;
+    }
+
+    .artist {
+      margin-left: 0.8rem;
+      font-weight: 300;
+    }
+  }
+
+  .controls {
+    @include flex-box;
+
+    flex: 1;
+    button {
+      max-height: 100%;
+
+      svg {
+        max-height: 1.3rem;
+        margin: 0.7rem;
+      }
+    }
+  }
+
+  .end {
+    @include flex-box(flex-start, $direction: row-reverse);
+
+    flex: 1;
+
+    .time {
+      @include flex-box(flex-start, $direction: row-reverse);
+    }
+
+    .loop {
+      height: 1.6rem;
+      margin: 0.4rem;
+      cursor: pointer;
+      path {
+        transition: stroke 200ms linear;
+      }
+    }
+  }
+}
+
+.timeline {
+  display: inline-block;
+  background-color: $highlight;
+  height: 0.3rem;
+}

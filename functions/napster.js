@@ -56,13 +56,14 @@ const getSongInfo = async query => {
       }
     });
     if (response.status !== 200) throw response.headers.status;
-    console.log("\n\n\nDATA: ", response.data);
 
-    downloadImage(response.data.tracks[0].albumId);
+    const track = response.data.search.data.track[0];
+
+    downloadImage(track.albumId);
 
     return {
       status: 1,
-      song: formatTrackData(response.data.tracks[0], true)
+      song: formatTrackData(track, true)
     };
   } catch (error) {
     console.error(error);
@@ -92,12 +93,12 @@ const search = async query => {
         query
       }
     });
+
     if (response.status !== 200) throw response.headers.status;
-    console.log("DATA: ", response.data);
 
     let songs = [];
 
-    for (let track of response.data.tracks) {
+    for (let track of response.data.search.data.tracks) {
       songs.push(formatTrackData(track));
     }
 
@@ -106,7 +107,7 @@ const search = async query => {
       songs
     };
   } catch (error) {
-    console.error(error);
+    // console.error(error);
     return { status: 0, error };
   }
 };

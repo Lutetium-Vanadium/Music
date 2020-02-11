@@ -3,7 +3,9 @@
 @import "./navbar";
 @import "./song";
 @import "./music";
+@import "./progressbar";
 @import "./settings";
+@import "./player";
 
 * {
   margin: 0;
@@ -13,11 +15,25 @@
   font-family: Raleway;
 }
 
+::-webkit-scrollbar {
+  width: 0.7rem;
+  position: fixed;
+}
+
+::-webkit-scrollbar-track {
+  background-color: $bg;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: $bgl;
+}
+
 html,
 body,
 #root {
   min-height: 100vh;
   background: $bg;
+  overflow: hidden;
 }
 
 .header {
@@ -29,6 +45,8 @@ body,
 main {
   position: relative;
   top: 6rem;
+  height: calc(100vh - 5rem);
+  overflow: auto;
 }
 
 img {
@@ -76,4 +94,13 @@ button {
   &:hover {
     cursor: pointer;
   }
+}
+
+input {
+  border: none;
+  background: none;
+}
+
+li {
+  list-style: none;
 }

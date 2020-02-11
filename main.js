@@ -29,13 +29,10 @@ downloader.on("error", err => {
 });
 
 downloader.on("progress", ({ progress }) => {
-  console.log(progress.percentage.toFixed(2) + "%");
-  win.webContents.send("update:download-query", progress);
+  win.webContents.send("update:download-query", progress.percentage);
 });
 
 downloader.on("finished", async (err, data) => {
-  console.log("Finished ", data);
-  db.print();
   win.webContents.send("finished:download-query", "Done");
 });
 
@@ -85,7 +82,7 @@ ipcMain.handle("get:music-dir", (evt, val) => {
 });
 
 // Gets all music files stored in the configured directory
-ipcMain.handle("get:music-names", (evt, val) => db.all());
+ipcMain.handle("get:music-names", async (evt, val) => await db.all());
 
 // search methods
 
@@ -98,22 +95,22 @@ ipcMain.handle("search:local", async (evt, val) => {
 // Handles general search query for new songs
 ipcMain.handle("search:global", async (evt, val) => {
   const result = await search(val);
-  if (!result.success) return result.error;
 
-  return result.songs;
+  if (!result.status) console.error(`\x1b[31m${result.error}\x1b[0m`);
+
+  return result;
 });
 
 // Setters
 
 ipcMain.handle("set:music-dir", async (evt, val) => {
-  console.log("Changing Directories...");
-  const { cancelled, filePaths } = await dialog.showOpenDialog(win, {
+  const { canceled, filePaths } = await dialog.showOpenDialog(win, {
     properties: ["openDirectory"],
     title: "Choose Music Directory",
     defaultPath: store.get("folderStored")
   });
 
-  if (!cancelled) {
+  if (!canceled) {
     store.set("folderStored", filePaths[0]);
   }
 
@@ -122,12 +119,18 @@ ipcMain.handle("set:music-dir", async (evt, val) => {
 
 // The download song port- Given an id, downloads the song
 ipcMain.on("download-song", async (evt, songData) => {
-  const youtubeId = getYoutubeId(songData.title);
-  downloader.download(youtubeId);
-  downloadImage(songData.thumbnail);
+  const youtubeId = await getYoutubeId(songData.title);
+
+  fileName = songData.title + ".mp3";
+  downloader.download(youtubeId, fileName);
   const albumId = songData.thumbnail.split("/")[6];
+  downloadImage(albumId);
+
   songData.thumbnail =
-    "file//" +
+    "file://" +
     path.join(app.getPath("userData"), "album_images", `${albumId}.jpg`);
+  songData.filePath = path.join(store.get("folderStored"), fileName);
   await db.addSong(songData);
 });
+
+console.debug("test");

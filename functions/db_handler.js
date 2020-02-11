@@ -10,15 +10,15 @@ const db = new sqlite3.Database(db_path);
 // Initialises the songdata table
 const init = () =>
   db.run(`CREATE TABLE IF NOT EXISTS songdata (
-    fileName TEXT, title TEXT, thumbnail TEXT, artist TEXT, length INT
+    filePath TEXT, title TEXT, thumbnail TEXT, artist TEXT, length INT
   )`);
 
 // Songs which are downloaded are added to the db for additional information
-const addSong = async ({ title, thumbnail, artist, length }) =>
+const addSong = async ({ filePath, title, thumbnail, artist, length }) =>
   db.run(
     `INSERT INTO songdata
-    (title, thumbnail, artist, length) VALUES
-    ('${title}', '${thumbnail}', '${artist}', ${length})
+    (filePath, title, thumbnail, artist, length) VALUES
+    ('${filePath}', '${title}', '${thumbnail}', '${artist}', ${length})
   `,
     [],
     (err, val) => console.error(err)

@@ -14,7 +14,7 @@ const options = {
   ffmpegPath: "/usr/bin/ffmpeg",
   outputPath: store.get("folderStored"),
   youtubeVideoQuality: "highest",
-  progressTimeout: 1000,
+  progressTimeout: 100,
   queueParallelism: 2
 };
 

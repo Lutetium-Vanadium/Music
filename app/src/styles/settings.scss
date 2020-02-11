@@ -13,6 +13,15 @@
 
     .song-dir {
       font-size: 1.3rem;
+
+      span {
+        background-color: $bgm;
+        padding: 0.4rem 0.7rem;
+        border-radius: 0.4rem;
+        font-family: monospace;
+        font-size: 0.8em;
+        margin-left: 1rem;
+      }
     }
 
     .change-dir {

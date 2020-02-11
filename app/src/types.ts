@@ -1,6 +1,13 @@
 export interface song {
-  fileName: string;
-  title: string;
-  thumbnail: string;
   artist: string;
+  fileName: string;
+  thumbnail: string;
+  title: string;
+  length: number;
+}
+
+export interface searchResult {
+  status: boolean;
+  songs?: song[];
+  error?: string;
 }

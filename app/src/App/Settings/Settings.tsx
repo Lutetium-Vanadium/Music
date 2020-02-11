@@ -26,7 +26,10 @@ function Settings() {
     <div className="settings">
       <h1 className="header">Settings</h1>
       <div className="dir">
-        <p className="song-dir">Directory from which songs are taken: {dir}</p>
+        <p className="song-dir">
+          Directory from which songs are taken:
+          {dir.length ? <span>{dir}</span> : "  Unset"}
+        </p>
         <button className="change-dir" onClick={changeDirectory}>
           Change Directory
         </button>
