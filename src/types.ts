@@ -4,4 +4,5 @@ export interface song {
   thumbnail: string;
   artist: string;
   length: number;
+  numListens: number;
 }

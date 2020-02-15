@@ -1,12 +1,14 @@
 {
-  "name": "electron_test",
+  "name": "Music",
   "type": "module",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
     "@types/electron": "^1.6.10",
+    "@types/react-redux": "^7.1.7",
     "axios": "^0.19.2",
+    "dataurl": "^0.1.0",
     "dotenv": "^8.2.0",
     "electron": "^7.1.11",
     "electron-rebuild": "^1.10.0",

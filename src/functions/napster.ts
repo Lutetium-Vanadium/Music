@@ -1,9 +1,5 @@
-import { app } from "electron";
 import axios from "axios";
-import * as path from "path";
 import * as dotenv from "dotenv";
-
-import { downloadImage } from "./downloader";
 
 dotenv.config();
 
@@ -59,16 +55,17 @@ const getInfo = async (query: string) => {
     });
     if (response.status !== 200) throw response.headers.status;
 
-    const track = response.data.search.data.track[0];
+    // console.log("STATUS: ", response.status);
+    // console.log(response.data.search.data);
 
-    downloadImage(track.albumId);
+    const track = response.data.search.data.tracks[0];
 
     return {
       status: 1,
-      song: formatTrackData(track, true)
+      song: formatTrackData(track)
     };
   } catch (error) {
-    console.error(error);
+    console.error({ error });
     return { status: 0, error };
   }
 };
@@ -121,23 +118,14 @@ export { getInfo, search };
  *
  * @param {Object} track The track object given by the napster api
  *
- * @param {Boolean} isDownloaded Changes the thumbnail to local vs napster url
- *
  * Returns a `Song` Object
  */
 
-const formatTrackData = (track, isDownloaded = false) => {
+const formatTrackData = track => {
   return {
     artist: track.artistName,
     title: track.name,
     length: track.playbackSeconds,
-    thumbnail: isDownloaded
-      ? "file//" +
-        path.join(
-          app.getPath("userData"),
-          "album_images",
-          `${track.albumId}.jpg`
-        )
-      : `https://api.napster.com/imageserver/v2/albums/${track.albumId}/images/200x200.jpg`
+    thumbnail: `https://api.napster.com/imageserver/v2/albums/${track.albumId}/images/200x200.jpg`
   };
 };

@@ -1,9 +1,10 @@
 export interface song {
   artist: string;
-  fileName: string;
+  filePath: string;
   thumbnail: string;
   title: string;
   length: number;
+  numListens: number;
 }
 
 export interface searchResult {
