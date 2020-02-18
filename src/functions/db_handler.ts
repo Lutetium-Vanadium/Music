@@ -23,6 +23,7 @@ class Database {
   constructor() {
     const db_path = path.join(app.getPath("userData"), "song_info.db");
     this._db = new sqlite3.Database(db_path);
+    this._init();
   }
 
   /**
@@ -30,7 +31,7 @@ class Database {
    *
    * Initiializes the database if it doesn't already exist
    */
-  init = () => {
+  private _init = () => {
     this._db.run(`CREATE TABLE IF NOT EXISTS songdata (
       filePath TEXT, title TEXT, thumbnail TEXT, artist TEXT, length INT, numListens INT
     )`);
@@ -44,15 +45,35 @@ class Database {
    * Songs which are downloaded are added to the db for additional information
    */
 
-  addSong = async ({ filePath, title, thumbnail, artist, length }: song) => {
-    this._db.run(
-      `INSERT INTO songdata
-      (filePath, title, thumbnail, artist, length, numListens) VALUES
-      ("${filePath}", "${title}", "${thumbnail}", "${artist}", ${length}, 0)
-    `,
-      [],
-      err => console.error(err)
-    );
+  addSong = ({
+    filePath,
+    title,
+    thumbnail,
+    artist,
+    length
+  }: song): Promise<void> => {
+    return new Promise((res, rej) => {
+      this._db.run(
+        `INSERT INTO songdata
+        (filePath, title, thumbnail, artist, length, numListens) VALUES
+        ("${filePath}", "${title}", "${thumbnail}", "${artist}", ${length}, 0)
+      `,
+        [],
+        err => {
+          if (err) console.error(err);
+          res();
+        }
+      );
+    });
+  };
+
+  delete = (title: string): Promise<void> => {
+    return new Promise((res, rej) => {
+      this._db.run(`DELETE FROM songdata WHERE title LIKE "${title}"`, err => {
+        if (err) console.error(err);
+        res();
+      });
+    });
   };
 
   /**

@@ -1,5 +1,6 @@
 import * as React from "react";
-import { song } from "#types";
+import { song } from "../../types";
+import formatLength from "../formatLength";
 
 interface SongProps {
   song: song;
@@ -9,7 +10,7 @@ interface SongProps {
 }
 
 function Song({
-  song: { title, thumbnail, artist },
+  song: { title, thumbnail, artist, length },
   After,
   onClick,
   afterProps = {}
@@ -21,6 +22,7 @@ function Song({
         <h3>{title}</h3>
         <p>{artist}</p>
       </div>
+      <p>{formatLength(length)}</p>
       {After && <After {...afterProps} />}
     </div>
   );

@@ -1,4 +1,5 @@
 import axios from "axios";
+import { song } from "../types";
 
 /**
  * getYoutubeId()
@@ -7,9 +8,9 @@ import axios from "axios";
  *
  * Returns the first result's youtube id from a search query
  */
-const getYoutubeId = async (query: string) => {
+const getYoutubeId = async (song: song): Promise<string> => {
   // Makes sure to get the right video
-  query += " official music video";
+  let query = `${song.title} ${song.artist} official music video`;
 
   query = query.replace(" ", "+");
   const url = "https://www.googleapis.com/youtube/v3/search";

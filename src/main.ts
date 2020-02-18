@@ -24,17 +24,24 @@ import { song } from "./types";
 
 // Downloader settings
 downloader.on("error", err => {
-  console.error(err);
+  console.error({ err });
   win.webContents.send("error:download-query", err);
 });
 
-downloader.on("progress", ({ progress }) => {
-  win.webContents.send("update:download-query", progress.percentage);
+downloader.on("progress", ({ progress, videoId }) => {
+  win.webContents.send("update:download-query", {
+    progress: progress.percentage,
+    id: videoId
+  });
 });
 
 downloader.on("finished", async (err, data) => {
-  win.webContents.send("finished:download-query", "Done");
+  console.log({ data });
   console.log(`Finished Downloading:  ${data.title} by ${data.artist}`);
+  win.webContents.send("finished:download-query", {
+    id: data.videoId,
+    filePath: data.file
+  });
 });
 
 // Initialising
@@ -43,9 +50,6 @@ downloader.on("finished", async (err, data) => {
 const album_images_path = path.join(app.getPath("userData"), "album_images");
 
 if (!fs.existsSync(album_images_path)) fs.mkdir(album_images_path, console.log);
-
-// creating db
-db.init();
 
 // needed variables
 let win = null;
@@ -148,10 +152,11 @@ ipcMain.handle("set:music-dir", async (evt, val) => {
 });
 
 // The download song port- Given an id, downloads the song
-ipcMain.on("download-song", async (evt, songData) => {
-  const youtubeId = await getYoutubeId(songData.title);
+ipcMain.handle("download-song", async (evt, songData: song) => {
+  const youtubeId = await getYoutubeId(songData);
 
   const fileName = songData.title + ".mp3";
+  console.log("Downloading ", songData.title);
   downloader.download(youtubeId, fileName);
   const albumId = songData.thumbnail.split("/")[6];
   downloadImage(albumId);
@@ -160,7 +165,9 @@ ipcMain.on("download-song", async (evt, songData) => {
     "file://" +
     path.join(app.getPath("userData"), "album_images", `${albumId}.jpg`);
   songData.filePath = path.join(store.get("folderStored"), fileName);
-  await db.addSong(songData);
+  db.addSong(songData);
+
+  return youtubeId;
 });
 
 // Given a range of song names, this adds them to the database
@@ -175,11 +182,10 @@ const addRange = async (lst: string[]) => {
       continue;
     }
 
-    const fileName = song.title + ".mp3";
+    const fileName = lst[i] + ".mp3";
     const albumId = song.thumbnail.split("/")[6];
     downloadImage(albumId);
-
-    // console.log({ albumId });
+    console.log({ albumId });
 
     const songData = {
       thumbnail:
@@ -188,12 +194,19 @@ const addRange = async (lst: string[]) => {
       filePath: path.join(store.get("folderStored"), fileName),
       artist: song.artist,
       length: song.length,
-      title: song.title,
+      title: lst[i],
       numListens: 0
     };
     await db.addSong(songData);
 
     console.log(`${i}: ${lst[i]} finished succesfully`);
+  }
+};
+
+const deleteRange = async (lst: string[]) => {
+  for (let i = 0; i < lst.length; i++) {
+    await db.delete(lst[i]);
+    console.log("Deleted " + lst[i]);
   }
 };
 
@@ -211,7 +224,7 @@ const checkSongs = async () => {
 
   const dir = await ls(store.get("folderStored"));
 
-  const notAdded: string[] = [];
+  let notAdded: string[] = [];
 
   for (let i = 0; i < dir.length; i++) {
     if (!formattedAllSongs.includes(dir[i])) {
@@ -219,14 +232,27 @@ const checkSongs = async () => {
     }
   }
 
-  console.log({ formattedAllSongs, dir, notAdded });
-
   console.log(notAdded.length + " unknown songs detected.");
   if (notAdded.length) {
     console.log("Updating database...");
     await addRange(notAdded);
-    console.log("Complete database update");
   }
+
+  let deleted: string[] = [];
+
+  for (let i = 0; i < formattedAllSongs.length; i++) {
+    if (!dir.includes(formattedAllSongs[i])) {
+      deleted.push(formattedAllSongs[i].slice(0, -4));
+    }
+  }
+
+  console.log(deleted.length + " extra songs detected.");
+  if (deleted.length) {
+    console.log("Updating database...");
+    await deleteRange(deleted);
+  }
+
+  console.log("Complete database update");
 };
 
 // Helper function that provides a promise based fs.readdir
@@ -240,18 +266,9 @@ const ls = (path: fs.PathLike): Promise<string[]> => {
 };
 
 // const d = {
-//   Queen: [
-//     "Cool Cat-Remastered 2011",
-//   ],
 //   "Billie Eilish": [
-//     "8",
-//     "xanny",
 //     "come out and play",
-//     "COPYCAT",
-//     "hostage",
 //     "i love you",
-//     "idontwannabeyouanymore",
-//     "ilomilo"
 //   ]
 // };
 

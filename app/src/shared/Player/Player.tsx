@@ -4,14 +4,8 @@ import { song } from "../../types";
 import { connect } from "react-redux";
 import { reduxState, create } from "../../reduxHandler";
 import { Dispatch } from "redux";
-import {
-  DoubleArrow,
-  Loop,
-  PlayPause,
-  Shuffle,
-  formatLength,
-  randOrder
-} from "./helpers";
+import { DoubleArrow, Loop, PlayPause, Shuffle, randOrder } from "./helpers";
+import formatLength from "../formatLength";
 
 let ipcRenderer;
 if (window.require) {
@@ -136,6 +130,7 @@ function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
           onTimeUpdate={updateTimeStamp}
           onError={console.log}
           src={songData}
+          autoPlay
         ></audio>
       </div>
       <span
@@ -147,7 +142,6 @@ function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
 }
 
 const mapStateToProps = (state: reduxState) => {
-  console.log(state);
   return { ...state };
 };
 

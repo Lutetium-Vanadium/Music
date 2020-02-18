@@ -1,23 +1,24 @@
 import * as React from "react";
 import { useState } from "react";
-import { withRouter } from "react-router-dom";
 
 import search_icon from "./search_icon.jpg";
 
-function Search({ search, history }) {
+interface SearchProps {
+  handleChange?: (value: string) => void;
+  handleSubmit?: (value: string) => void;
+}
+
+function Search({ handleChange, handleSubmit }: SearchProps) {
   const [value, setValue] = useState("");
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setValue(e.target.value);
-    if ((e.target.value.length + 1) % 4 == 0) {
-      history.push("/search");
-      search(e.target.value);
-    }
+    if (handleChange) handleChange(e.target.value);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && value.length) {
-      search(value);
+      if (handleSubmit) handleSubmit(value);
       setValue("");
     }
   };
@@ -26,13 +27,13 @@ function Search({ search, history }) {
     <div className="search">
       <img
         style={{ cursor: value.length ? "pointer" : "auto" }}
-        onClick={value.length ? search : null}
+        onClick={value.length ? () => handleSubmit(value) : null}
         className="icon"
         src={search_icon}
         alt="search_icon"
       />
       <input
-        onChange={handleChange}
+        onChange={onChange}
         onKeyDown={handleKeyDown}
         className="search-box"
         type="text"
@@ -42,4 +43,4 @@ function Search({ search, history }) {
   );
 }
 
-export default withRouter(Search);
+export default Search;

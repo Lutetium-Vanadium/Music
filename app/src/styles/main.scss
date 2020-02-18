@@ -6,6 +6,7 @@
 @import "./progressbar";
 @import "./settings";
 @import "./player";
+@import "./home";
 
 * {
   margin: 0;
@@ -38,7 +39,7 @@ body,
 
 .header {
   font-size: 3.2rem;
-  margin-left: 11%;
+  margin-left: 15%;
   margin-bottom: 2rem;
 }
 

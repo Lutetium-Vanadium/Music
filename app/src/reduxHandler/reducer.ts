@@ -1,5 +1,12 @@
 import { song } from "../types";
 
+/**
+ * interface reduxState
+ *
+ * queue: the current playing queue;
+ * songs: the list of all songs in the queue; (it exists because of shuffle)
+ * cur: the index of the song playing in the queue;
+ */
 export interface reduxState {
   queue: song[];
   songs: song[];
@@ -22,20 +29,20 @@ const temp_song: song = {
 };
 
 const initial: song[] = [
-  temp_song,
-  temp_song,
-  temp_song,
-  temp_song,
-  temp_song,
-  temp_song,
-  temp_song,
-  temp_song,
-  temp_song,
-  temp_song,
-  temp_song,
-  temp_song,
-  temp_song,
-  temp_song
+  // temp_song,
+  // temp_song,
+  // temp_song,
+  // temp_song,
+  // temp_song,
+  // temp_song,
+  // temp_song,
+  // temp_song,
+  // temp_song,
+  // temp_song,
+  // temp_song,
+  // temp_song,
+  // temp_song,
+  // temp_song
 ];
 
 const initialState: reduxState = {

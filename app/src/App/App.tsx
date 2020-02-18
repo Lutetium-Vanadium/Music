@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useReducer } from "react";
 import { Switch, Route } from "react-router-dom";
 import { useSelector } from "react-redux";
 
@@ -7,24 +7,24 @@ import Navbar from "./Navbar";
 import Settings from "./Settings";
 import Music from "./Music";
 import SearchPage from "./SearchPage";
+import Home from "./Home";
 import { song, searchResult } from "../types";
 import Player from "../shared/Player";
 import { reduxState } from "../reduxHandler";
 
+import logo from "#logos/logo.png";
+
 let ipcRenderer;
 if (window.require) ipcRenderer = window.require("electron").ipcRenderer;
-
-const Null = () => <div></div>;
 
 function App() {
   const [searchResults, setSearchResults] = useState(initialSearchParams);
   const [searchSuccess, setSearchSuccess] = useState(true);
-  const [progress, setProgress] = useState(0);
-  const [downloading, setDownloading] = useState(false);
+  // const [progress, setProgress] = useState(0);
+  // const [downloading, setDownloading] = useState(false);
   const [downloadError, setDownloadError] = useState(false);
-  // const [songs, setSongs] = useState(initialSearchParams);
-  // const [queue, setQueue] = useState(initialSearchParams);
-  // const [cur, setCur] = useState(0);
+  // const [downloading, setDownloading] = useState({});
+  const [downloading, dispatch] = useReducer(reducer, {});
   const queue = useSelector((state: reduxState) => state.queue);
 
   const search = async (query: string) => {
@@ -41,36 +41,42 @@ function App() {
     }
   };
 
-  // const playSong = (songs: song[], index: number) => {
-  //   console.log("Playing songs");
-
-  //   console.log({ songs });
-
-  //   setQueue(songs);
-  //   setSongs(songs);
-  //   setCur(index);
-  // };
-
-  // const pushShuffle = () => {
-  //   if (shuffle) {
-  //     setQueue(songs);
-  //     setCur(songs.findIndex(song => song === songs[cur]));
-  //   } else {
-  //     // Since arrays are passed in by reference, a shallow copy is passed down
-  //     setQueue(shuffleSongs([...songs], cur));
-  //     setCur(0);
-  //   }
-  //   setShuffle(!shuffle);
-  // };
+  const download = async (song: song) => {
+    if (ipcRenderer) {
+      const id = await ipcRenderer.invoke("download-song", song);
+      setDownloadError(false);
+      dispatch({
+        type: "start:download",
+        id,
+        payload: song
+      });
+      new Notification(`Downloading ${song.title}`, {
+        body: `Downloading ${song.title} by ${song.artist}.`,
+        badge: logo,
+        icon: song.thumbnail
+      });
+    }
+  };
 
   useEffect(() => {
     if (ipcRenderer) {
       // Handles progress updates sent by electron for when a song is being downloaded
-      ipcRenderer.on("update:download-query", (evt, progress: number) => {
-        if (!downloading) setDownloading(true);
-        setProgress(progress);
+      ipcRenderer.on("update:download-query", (evt, { progress, id }) => {
+        dispatch({
+          type: "update:download",
+          id,
+          payload: progress
+        });
       });
-      ipcRenderer.on("finished:download-query", () => setDownloading(false));
+      ipcRenderer.on("finished:download-query", (evt, a) => {
+        console.log({ a });
+        const { id, filePath } = a;
+        dispatch({
+          type: "finish:download",
+          id,
+          payload: filePath
+        });
+      });
       ipcRenderer.on("error:download-query", () => setDownloadError(true));
     }
   }, []);
@@ -78,19 +84,21 @@ function App() {
   return (
     <div>
       <Navbar
-        progressbarProps={{ progress, errored: downloadError }}
         search={search}
         downloading={downloading}
+        errored={downloadError}
       />
       <main>
         <Switch>
           <Route path="/settings" component={Settings} />
           <Route
             path="/search"
-            render={() => <SearchPage results={searchResults} />}
+            render={() => (
+              <SearchPage download={download} results={searchResults} />
+            )}
           />
           <Route path="/music" component={Music} />
-          <Route path="/" component={Null} />
+          <Route path="/" component={Home} />
         </Switch>
       </main>
       {queue.length ? <Player /> : null}
@@ -99,6 +107,52 @@ function App() {
 }
 
 export default App;
+
+const formatFilePath = (filePath: string) => {
+  let fileArray = filePath.split("/");
+  fileArray.pop();
+  return fileArray.join("/");
+};
+
+interface action {
+  type: string;
+  id: string;
+  payload?: any;
+}
+
+const reducer = (state: object, action: action) => {
+  let newState = { ...state };
+
+  switch (action.type) {
+    case "start:download":
+      newState[action.id] = {
+        progress: 0,
+        song: action.payload
+      };
+      break;
+    case "update:download":
+      newState[action.id].progress = action.payload;
+      break;
+    case "finish:download":
+      // While this may not be the best place to put a notification, it is required since updated
+      // `state` is not available in the useEffect
+      console.log({ newState, action });
+      const song: song = newState[action.id].song;
+      new Notification(`Downloaded ${song.title}`, {
+        body: `Finished Downloading ${song.title} by ${
+          song.artist
+        }.\n It is stored in ${formatFilePath(action.payload)}`,
+        badge: logo,
+        icon: song.thumbnail
+      });
+      delete newState[action.id];
+      break;
+    default:
+      break;
+  }
+
+  return newState;
+};
 
 const temp_song: song = {
   artist: "Artist",

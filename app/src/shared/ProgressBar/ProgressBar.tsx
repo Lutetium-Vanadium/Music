@@ -1,13 +1,15 @@
 import * as React from "react";
+import { song } from "../../types";
 
 export interface ProgressBarProps {
+  song: song;
   progress: number;
   errored: boolean;
 }
 
 const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
 
-function ProgressBar({ progress, errored }: ProgressBarProps) {
+function ProgressBar({ progress, song, errored }: ProgressBarProps) {
   const radius = 1.7 * rem;
   const stroke = 5;
 
@@ -17,7 +19,10 @@ function ProgressBar({ progress, errored }: ProgressBarProps) {
   const strokeDashoffset = circumference - (progress / 100) * circumference;
 
   return (
-    <div className="progressbar-wrapper">
+    <div
+      className="progressbar-wrapper"
+      title={`${song.title} by ${song.artist}`}
+    >
       <svg height={radius * 2} width={radius * 2}>
         <circle
           fill="transparent"

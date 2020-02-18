@@ -1,0 +1,43 @@
+@import "./vars";
+
+.home {
+  max-width: 1000px;
+  // margin-left: auto;
+}
+
+.top-list {
+  @include flex-box(space-evenly);
+
+  width: 100%;
+  margin-bottom: 10%;
+}
+
+.last {
+  margin-bottom: 0;
+}
+
+$size: 14vh;
+$max: 120px;
+
+.top {
+  height: $size;
+  width: $size;
+  max-height: $max;
+  max-width: $max;
+  border-radius: 0.6rem;
+  cursor: pointer;
+}
+
+.top-title {
+  margin-top: 0.6rem;
+  width: $size + 2vh;
+  height: $size + 2vh;
+  max-width: $max + 20px;
+  max-height: $max + 20px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.top-song {
+  @include flex-box($direction: column);
+}
