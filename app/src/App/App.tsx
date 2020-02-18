@@ -50,7 +50,7 @@ function App() {
         id,
         payload: song
       });
-      new Notification(`Downloading ${song.title}`, {
+      new Notification(song.title, {
         body: `Downloading ${song.title} by ${song.artist}.`,
         badge: logo,
         icon: song.thumbnail
@@ -68,9 +68,7 @@ function App() {
           payload: progress
         });
       });
-      ipcRenderer.on("finished:download-query", (evt, a) => {
-        console.log({ a });
-        const { id, filePath } = a;
+      ipcRenderer.on("finished:download-query", (evt, { id, filePath }) => {
         dispatch({
           type: "finish:download",
           id,
@@ -138,7 +136,7 @@ const reducer = (state: object, action: action) => {
       // `state` is not available in the useEffect
       console.log({ newState, action });
       const song: song = newState[action.id].song;
-      new Notification(`Downloaded ${song.title}`, {
+      new Notification(song.title, {
         body: `Finished Downloading ${song.title} by ${
           song.artist
         }.\n It is stored in ${formatFilePath(action.payload)}`,

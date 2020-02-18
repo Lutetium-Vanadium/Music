@@ -27,7 +27,7 @@ class Database {
   }
 
   /**
-   * init()
+   * _init()
    *
    * Initiializes the database if it doesn't already exist
    */
@@ -44,7 +44,6 @@ class Database {
    *
    * Songs which are downloaded are added to the db for additional information
    */
-
   addSong = ({
     filePath,
     title,
@@ -67,6 +66,13 @@ class Database {
     });
   };
 
+  /**
+   * delete()
+   *
+   * @param {string} title Song to delete
+   *
+   * Delete all instances of songs with title=`title`
+   */
   delete = (title: string): Promise<void> => {
     return new Promise((res, rej) => {
       this._db.run(`DELETE FROM songdata WHERE title LIKE "${title}"`, err => {
@@ -79,8 +85,9 @@ class Database {
   /**
    *
    * @param {string} songTitle The title to look up
+   *
+   * the search queries the database for all songs whose titles contains the search query
    */
-  // the search queries the database for all songs whose titles contains the search query
   search = (songTitle: string): Promise<song[]> =>
     new Promise((res, rej) =>
       this._db.all(
@@ -90,10 +97,17 @@ class Database {
       )
     );
 
-  albums = (filePath: string): Promise<song[]> =>
+  /**
+   * albums()
+   *
+   * @param thumbnail The thumbnail link for the album
+   *
+   * Returns all songs which have the same this album thumbnail
+   */
+  albums = (thumbnail: string): Promise<song[]> =>
     new Promise((res, rej) =>
       this._db.all(
-        `SELECT * FROM songdata WHERE filePath LIKE '${filePath}'`,
+        `SELECT * FROM songdata WHERE thumbnail LIKE '${thumbnail}'`,
         [],
         (err, songs: song[]) => {
           if (err) console.error(err);

@@ -36,7 +36,6 @@ downloader.on("progress", ({ progress, videoId }) => {
 });
 
 downloader.on("finished", async (err, data) => {
-  console.log({ data });
   console.log(`Finished Downloading:  ${data.title} by ${data.artist}`);
   win.webContents.send("finished:download-query", {
     id: data.videoId,
@@ -52,7 +51,7 @@ const album_images_path = path.join(app.getPath("userData"), "album_images");
 if (!fs.existsSync(album_images_path)) fs.mkdir(album_images_path, console.log);
 
 // needed variables
-let win = null;
+let win: BrowserWindow;
 const dev = true;
 
 // Main window creation
@@ -170,6 +169,10 @@ ipcMain.handle("download-song", async (evt, songData: song) => {
   return youtubeId;
 });
 
+ipcMain.on("reset-global-search", () => {
+  win.webContents.send("reset-search-box");
+});
+
 // Given a range of song names, this adds them to the database
 // Note, it is not in the database as this function handles the data formatting and only directly database
 // related line is `await db.addSong(songData)`
@@ -281,4 +284,4 @@ const ls = (path: fs.PathLike): Promise<string[]> => {
 //     console.log("Finished: " + artist);
 //   }
 // };
-// temp();
+// temp(); come out and play

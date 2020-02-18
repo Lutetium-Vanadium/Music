@@ -1,4 +1,6 @@
 import * as React from "react";
+import { useEffect } from "react";
+
 import { song } from "../../types";
 import Song from "../../shared/Song";
 
@@ -19,6 +21,14 @@ function SearchPage({ results, download }: SearchPageParams) {
     const song = results[+e.target.dataset.index];
     download(song);
   };
+
+  useEffect(() => {
+    return () => {
+      if (ipcRenderer) {
+        ipcRenderer.send("reset-global-search");
+      }
+    };
+  }, []);
 
   return (
     <div className="music">

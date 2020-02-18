@@ -6,46 +6,20 @@ interface ShuffleProps {
 }
 
 const Shuffle = ({ enabled, onClick }: ShuffleProps) => (
-  <svg viewBox="0 0 140 85" onClick={onClick}>
+  <svg viewBox="-10 -10 150 120" onClick={onClick}>
     <path
-      style={{
-        fill: "none",
-        stroke: enabled ? "rgb(71, 135, 231)" : "#dddddd",
-        strokeWidth: "2.6458332px",
-        strokeLinecap: "butt",
-        strokeLinejoin: "miter"
-      }}
-      d="M 0.75239443,0.99622943 128.91186,84.24701 123.78475,65.112488"
+      d="M0 0 L126 97 M130 100 h-30 m30 0 l-7.69 -28.9"
+      fill="none"
+      strokeLinecap="round"
+      strokeWidth="7"
+      stroke={enabled ? "rgb(71, 135, 231)" : "#dddddd"}
     />
     <path
-      style={{
-        fill: "none",
-        stroke: enabled ? "rgb(71, 135, 231)" : "#dddddd",
-        strokeWidth: "2.6458332px",
-        strokeLinecap: "butt",
-        strokeLinejoin: "miter"
-      }}
-      d="M 128.91186,84.24701 H 109.21519"
-    />
-    <path
-      style={{
-        fill: "none",
-        stroke: enabled ? "rgb(71, 135, 231)" : "#dddddd",
-        strokeWidth: "2.6458332px",
-        strokeLinecap: "butt",
-        strokeLinejoin: "miter"
-      }}
-      d="M 0.75239443,84.24701 127.91186,0.69622943 123.77187,20.178823"
-    />
-    <path
-      style={{
-        fill: "none",
-        stroke: enabled ? "rgb(71, 135, 231)" : "#dddddd",
-        strokeWidth: "2.6458332px",
-        strokeLinecap: "butt",
-        strokeLinejoin: "miter"
-      }}
-      d="M 128.91186,0.99622943 H 109.21519"
+      d="M0 100 L126 3 M130 0 h-30 m30 0 l-7.69 28.9"
+      fill="none"
+      strokeLinecap="round"
+      strokeWidth="7"
+      stroke={enabled ? "rgb(71, 135, 231)" : "#dddddd"}
     />
   </svg>
 );

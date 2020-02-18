@@ -1,7 +1,12 @@
 import * as React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import search_icon from "./search_icon.jpg";
+
+let ipcRenderer;
+if (window.require) {
+  ipcRenderer = window.require("electron").ipcRenderer;
+}
 
 interface SearchProps {
   handleChange?: (value: string) => void;
@@ -22,6 +27,12 @@ function Search({ handleChange, handleSubmit }: SearchProps) {
       setValue("");
     }
   };
+
+  useEffect(() => {
+    if (ipcRenderer) {
+      ipcRenderer.on("reset-search-box", () => setValue(""));
+    }
+  }, []);
 
   return (
     <div className="search">

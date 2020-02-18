@@ -64,12 +64,15 @@ function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
   };
 
   const shuffleSongs = () => {
+    console.log({ shuffle });
     if (shuffle) {
+      const index = songs.findIndex(_song => _song === song);
+      console.log({ queue, songs, index });
       setQueue(songs);
-      setCur(songs.findIndex(song => song === songs[cur]));
+      setCur(index);
     } else {
       // Since arrays are passed in by reference, a shallow copy is passed down
-      setQueue(randOrder([...songs], cur));
+      setQueue(randOrder([...queue], cur));
       setCur(0);
     }
     setShuffle(!shuffle);
@@ -121,7 +124,7 @@ function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
             {formattedTime} / {formattedTotalTime}
           </p>
           <Loop enabled={loop} onClick={() => setLoop(!loop)} />
-          {/* <Shuffle enabled={shuffle} onClick={shuffleSongs} /> */}
+          <Shuffle enabled={shuffle} onClick={shuffleSongs} />
         </div>
         <audio
           onLoad={() => setLoaded(true)}

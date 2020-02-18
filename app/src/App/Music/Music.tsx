@@ -17,10 +17,11 @@ if (window.require) {
 
 interface MusicProps {
   setQueue: (songs: song[]) => void;
+  setSongs: (songs: song[]) => void;
   setCur: (num: number) => void;
 }
 
-function Music({ setQueue, setCur }: MusicProps) {
+function Music({ setQueue, setSongs: reduxSetSongs, setCur }: MusicProps) {
   const [songs, setSongs] = useState(initial);
 
   useEffect(() => {
@@ -34,6 +35,7 @@ function Music({ setQueue, setCur }: MusicProps) {
   const playSong = (index: number) => {
     console.log({ songs });
 
+    reduxSetSongs(songs);
     setQueue(songs);
     setCur(index);
   };
@@ -58,6 +60,7 @@ function Music({ setQueue, setCur }: MusicProps) {
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
   setQueue: create.setQueue(dispatch),
+  setSongs: create.setSongs(dispatch),
   setCur: create.setCur(dispatch)
 });
 
