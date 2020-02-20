@@ -62,7 +62,8 @@ app.on("ready", () => {
     webPreferences: {
       nodeIntegration: true,
       webSecurity: false
-    }
+    },
+    icon: path.resolve("app", "src", "logos", "logo.png")
   });
 
   // dev should be changed to false and frontend should be built for a proper app
@@ -100,7 +101,7 @@ ipcMain.handle("get:song-audio", async (evt, filePath: string) => {
           rej(err);
         }
         res(dataurl.convert({ data, mimetype: "audio/mp3" }));
-        db.increaseSongCount(filePath);
+        db.incrementNumListens(filePath);
       });
     } catch (error) {
       console.error(error);

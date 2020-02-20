@@ -150,22 +150,15 @@ class Database {
    *   ~ note this may be wrong if multiple songs from the same album are there, but they use different
    *     album id according to the napster result
    */
-  mostPopularAlbums = (limit: boolean): Promise<string[]> =>
+  mostPopularAlbums = (limit: boolean): Promise<album[]> =>
     new Promise((res, rej) =>
       this._db.all(
         `SELECT * FROM albumdata 
         ORDER BY numSongs DESC
         ${limit ? `LIMIT ${this._n}` : ""}`,
-        (err, lst) => {
+        (err, albums: album[]) => {
           if (err) console.error(err);
-
-          let thumbnails: string[] = [];
-
-          for (let { thumbnail } of lst) {
-            thumbnails.push(thumbnail);
-          }
-
-          res(thumbnails);
+          res(albums);
         }
       )
     );
@@ -211,13 +204,13 @@ class Database {
     );
 
   /**
-   * increaseSongCount()
+   * increaseNumListens()
    *
    * @param {string} filePath A way to id the song as no 2 files can have the same path
    *
    * Updates a particular songs times listened by one
    */
-  increaseSongCount = (filePath: string) =>
+  incrementNumListens = (filePath: string) =>
     this._db.run(
       `UPDATE songdata SET numListens = numListens + 1 WHERE filePath LIKE "${filePath}"`
     );
@@ -252,6 +245,13 @@ class Database {
       )
     );
 
+  /**
+   * addAlbum()
+   *
+   * @param {album} album The album to add
+   *
+   * Adds an album to the albumdata table
+   */
   addAlbum = ({ id, imagePath, name }: album): Promise<void> =>
     new Promise((res, rej) =>
       this._db.run(
@@ -265,13 +265,20 @@ class Database {
       )
     );
 
+  incrementNumSongs = (albumId: string) =>
+    this._db.run(
+      `UPDATE albumdata SET numSongs = numSongs + 1 WHERE id LIKE "${albumId}"`
+    );
+
   /**
    * clear()
    *
-   * Clears the database
+   * @param {string} table Table to delete
+   *
+   * clears all entries in the specified database
    */
-  clear = () => {
-    this._db.all("DELETE FROM songdata");
+  clear = (table: string) => {
+    this._db.all(`DELETE FROM ${table}`);
   };
 
   /**
@@ -287,9 +294,14 @@ class Database {
    * Prints the whole database
    */
   print = () => {
-    this._db.all(`SELECT * FROM songdata`, [], (err, val) => {
+    this._db.all(`SELECT * FROM songdata`, (err, val) => {
       if (err) console.error(err);
       console.log("SONG DB:\n", val);
+    });
+
+    this._db.all(`SELECT * FROM albumsdata`, (err, val) => {
+      if (err) console.error(err);
+      console.log("ALBUM DB:\n", val);
     });
   };
 }

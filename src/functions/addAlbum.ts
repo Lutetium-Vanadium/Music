@@ -20,7 +20,10 @@ const addAlbum = async (albumId: string) => {
 
   downloadImage(albumId);
 
-  if (await db.exists(albumId)) return;
+  if (await db.exists(albumId)) {
+    db.incrementNumSongs(albumId);
+    return;
+  }
 
   const { id, name } = await getAlbumInfo(albumId);
 

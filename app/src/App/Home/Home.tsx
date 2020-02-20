@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { Dispatch } from "redux";
 
 import { create } from "../../reduxHandler";
-import { song } from "../../types";
+import { song, album } from "../../types";
 import Settings from "./Settings";
 
 let ipcRenderer;
@@ -12,11 +12,11 @@ if (window.require) {
   ipcRenderer = window.require("electron").ipcRenderer;
 }
 
-const emptyStr: string[] = [];
+const emptyAlbum: album[] = [];
 const emptySong: song[] = [];
 
 function Home({ setCur, setQueue, setSongs }) {
-  const [topAlbums, setTopAlbums] = useState(emptyStr);
+  const [topAlbums, setTopAlbums] = useState(emptyAlbum);
   const [topSongs, setTopSongs] = useState(emptySong);
 
   const playSong = async (index: number) => {
@@ -33,7 +33,7 @@ function Home({ setCur, setQueue, setSongs }) {
       ipcRenderer.invoke("get:top-songs", true).then((data: song[]) => {
         setTopSongs(data);
       });
-      ipcRenderer.invoke("get:top-albums", true).then((data: string[]) => {
+      ipcRenderer.invoke("get:top-albums", true).then((data: album[]) => {
         setTopAlbums(data);
       });
     }
@@ -43,13 +43,11 @@ function Home({ setCur, setQueue, setSongs }) {
     <div className="home">
       <h1 className="header">Top Albums</h1>
       <div className="top-list">
-        {topAlbums.map((thumbnail, i) => (
-          <img
-            key={`index-${i}`}
-            className="top"
-            src={thumbnail}
-            alt="top-album"
-          />
+        {topAlbums.map((album, i) => (
+          <div key={album.imagePath} className="top">
+            <img className="top" src={album.imagePath} alt="top-album" />
+            <p className="top-title">{album.name}</p>
+          </div>
         ))}
       </div>
       <h1 className="header">Top Songs</h1>

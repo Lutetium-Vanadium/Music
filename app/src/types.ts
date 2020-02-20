@@ -12,3 +12,10 @@ export interface searchResult {
   songs?: song[];
   error?: string;
 }
+
+export interface album {
+  id: string;
+  imagePath: string;
+  name: string;
+  numSongs: number;
+}
