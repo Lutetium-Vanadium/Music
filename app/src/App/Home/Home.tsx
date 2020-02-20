@@ -1,6 +1,12 @@
 import React from "react";
 import { useState, useEffect } from "react";
+import { connect } from "react-redux";
+import { Dispatch } from "redux";
+
+import { create } from "../../reduxHandler";
 import { song } from "../../types";
+import Settings from "./Settings";
+
 let ipcRenderer;
 if (window.require) {
   ipcRenderer = window.require("electron").ipcRenderer;
@@ -9,16 +15,25 @@ if (window.require) {
 const emptyStr: string[] = [];
 const emptySong: song[] = [];
 
-function Home() {
+function Home({ setCur, setQueue, setSongs }) {
   const [topAlbums, setTopAlbums] = useState(emptyStr);
   const [topSongs, setTopSongs] = useState(emptySong);
 
+  const playSong = async (index: number) => {
+    if (ipcRenderer) {
+      const songs = await ipcRenderer.invoke("get:top-songs", false);
+      setCur(index);
+      setQueue(songs);
+      setSongs(songs);
+    }
+  };
+
   useEffect(() => {
     if (ipcRenderer) {
-      ipcRenderer.invoke("get:top-songs").then((data: song[]) => {
+      ipcRenderer.invoke("get:top-songs", true).then((data: song[]) => {
         setTopSongs(data);
       });
-      ipcRenderer.invoke("get:top-albums").then((data: string[]) => {
+      ipcRenderer.invoke("get:top-albums", true).then((data: string[]) => {
         setTopAlbums(data);
       });
     }
@@ -39,15 +54,26 @@ function Home() {
       </div>
       <h1 className="header">Top Songs</h1>
       <div className="top-list last">
-        {topSongs.map(song => (
-          <div key={song.filePath} className="top-song">
+        {topSongs.map((song, i) => (
+          <div
+            key={song.filePath}
+            className="top-song"
+            onClick={() => playSong(i)}
+          >
             <img className="top" src={song.thumbnail} alt="top-song" />
             <p className="top-title">{song.title}</p>
           </div>
         ))}
       </div>
+      <hr />
+      <Settings />
     </div>
   );
 }
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+  setCur: create.setCur(dispatch),
+  setQueue: create.setQueue(dispatch),
+  setSongs: create.setSongs(dispatch)
+});
 
-export default Home;
+export default connect(null, mapDispatchToProps)(Home);

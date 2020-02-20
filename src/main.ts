@@ -1,22 +1,22 @@
 import { app, BrowserWindow, ipcMain, dialog } from "electron";
 import * as path from "path";
 import * as fs from "fs";
+
+import "./console";
+import setMenu from "./menu";
 import Store from "./functions/store";
-const store = new Store({
+
+// store instance is required by 'downloader.js'
+export const store = new Store({
   name: "config",
   defaults: {
     folderStored: app.getPath("music")
   }
 });
 
-// store instance is required by 'downloader.js'
-export { store };
-
 import { getInfo, search } from "./functions/napster";
-import {
-  songDownloader as downloader,
-  downloadImage
-} from "./functions/downloader";
+import { songDownloader as downloader } from "./functions/downloader";
+import addAlbum from "./functions/addAlbum";
 import getYoutubeId from "./functions/getYoutubeId";
 import db from "./functions/db_handler";
 import dataurl from "dataurl";
@@ -70,6 +70,7 @@ app.on("ready", () => {
     ? win.loadURL("http://localhost:1234/")
     : win.loadFile("./public/index.html");
 
+  setMenu(win);
   checkSongs();
 });
 
@@ -99,7 +100,7 @@ ipcMain.handle("get:song-audio", async (evt, filePath: string) => {
           rej(err);
         }
         res(dataurl.convert({ data, mimetype: "audio/mp3" }));
-        db.increase_song_count(filePath);
+        db.increaseSongCount(filePath);
       });
     } catch (error) {
       console.error(error);
@@ -109,8 +110,21 @@ ipcMain.handle("get:song-audio", async (evt, filePath: string) => {
 });
 
 // Home page methods to show popular stuff
-ipcMain.handle("get:top-songs", async () => await db.most_popular_songs(5));
-ipcMain.handle("get:top-albums", async () => await db.most_popular_albums(5));
+ipcMain.handle(
+  "get:top-songs",
+  async (evt, limit: boolean) => await db.mostPopularSongs(limit)
+);
+ipcMain.handle(
+  "get:top-albums",
+  async (evt, limit: boolean) => await db.mostPopularAlbums(limit)
+);
+
+ipcMain.handle(
+  "get:album-songs",
+  async (evt, filePath: string) => await db.albums(filePath)
+);
+
+ipcMain.handle("get:liked", async () => await db.liked());
 
 // search methods
 
@@ -129,13 +143,9 @@ ipcMain.handle("search:global", async (evt, val) => {
   return result;
 });
 
-ipcMain.handle(
-  "get:album-songs",
-  async (evt, filePath: string) => await db.albums(filePath)
-);
-
 // Setters
 
+// Opens a select directory dialog which allows user to customize where the songs are stored and taken from
 ipcMain.handle("set:music-dir", async (evt, val) => {
   const { canceled, filePaths } = await dialog.showOpenDialog(win, {
     properties: ["openDirectory"],
@@ -158,7 +168,7 @@ ipcMain.handle("download-song", async (evt, songData: song) => {
   console.log("Downloading ", songData.title);
   downloader.download(youtubeId, fileName);
   const albumId = songData.thumbnail.split("/")[6];
-  downloadImage(albumId);
+  addAlbum(albumId);
 
   songData.thumbnail =
     "file://" +
@@ -169,8 +179,13 @@ ipcMain.handle("download-song", async (evt, songData: song) => {
   return youtubeId;
 });
 
+// When the search page is clicked out of, this is used to reset the input field
 ipcMain.on("reset-global-search", () => {
   win.webContents.send("reset-search-box");
+});
+
+ipcMain.on("delete:song", (evt, song: song) => {
+  db.delete(song.title);
 });
 
 // Given a range of song names, this adds them to the database
@@ -187,7 +202,7 @@ const addRange = async (lst: string[]) => {
 
     const fileName = lst[i] + ".mp3";
     const albumId = song.thumbnail.split("/")[6];
-    downloadImage(albumId);
+    addAlbum(albumId);
     console.log({ albumId });
 
     const songData = {
@@ -235,10 +250,13 @@ const checkSongs = async () => {
     }
   }
 
+  let changed = false;
+
   console.log(notAdded.length + " unknown songs detected.");
   if (notAdded.length) {
     console.log("Updating database...");
     await addRange(notAdded);
+    changed = true;
   }
 
   let deleted: string[] = [];
@@ -253,9 +271,10 @@ const checkSongs = async () => {
   if (deleted.length) {
     console.log("Updating database...");
     await deleteRange(deleted);
+    changed = true;
   }
 
-  console.log("Complete database update");
+  if (changed) console.log("Completed database update");
 };
 
 // Helper function that provides a promise based fs.readdir
@@ -268,20 +287,11 @@ const ls = (path: fs.PathLike): Promise<string[]> => {
   });
 };
 
-// const d = {
-//   "Billie Eilish": [
-//     "come out and play",
-//     "i love you",
-//   ]
-// };
-
 // const temp = async () => {
-//   // db.print();
-
-//   for (let artist in d) {
-//     console.log("Starting: " + artist);
-//     await addRange(d[artist]);
-//     console.log("Finished: " + artist);
+//   for (let album of albums) {
+//     console.log("Starting: " + album);
+//     await addAlbum(album);
+//     console.log("Finished: " + album);
 //   }
 // };
-// temp(); come out and play
+// temp();

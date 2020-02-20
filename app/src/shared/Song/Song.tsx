@@ -22,7 +22,7 @@ function Song({
         <h3>{title}</h3>
         <p>{artist}</p>
       </div>
-      <p>{formatLength(length)}</p>
+      <p className="length">{formatLength(length)}</p>
       {After && <After {...afterProps} />}
     </div>
   );

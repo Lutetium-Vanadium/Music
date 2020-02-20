@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState, useCallback, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { song } from "../../types";
 import { connect } from "react-redux";
 import { reduxState, create } from "../../reduxHandler";
@@ -17,9 +17,10 @@ let empty: HTMLAudioElement;
 function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
   const song: song = queue[cur];
 
-  const [ref, setRef] = useState(empty);
+  const ref = useRef(empty);
+  // const [ref, setRef] = useState(empty);
   const [timeStamp, setTimeStamp] = useState(0);
-  const onRefChange = useCallback(node => setRef(node), []);
+  // const onRefChange = useCallback(node => setRef(node), []);
   const [paused, setPaused] = useState(false);
   const [loop, setLoop] = useState(false);
   const [loaded, setLoaded] = useState(false);
@@ -27,19 +28,19 @@ function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
   const [shuffle, setShuffle] = useState(false);
   const [exit, setExit] = useState(false);
 
-  const pausePlay = () => {
-    if (!loaded) return;
-    if (ref.paused) {
-      ref.play();
+  const pausePlay = (override = false) => {
+    if (!(loaded || override)) return;
+    if (ref.current.paused) {
+      ref.current.play();
       document.getElementById("box1-play").beginElement();
       document.getElementById("box2-play").beginElement();
     } else {
-      ref.pause();
+      ref.current.pause();
       document.getElementById("box1-pause").beginElement();
       document.getElementById("box2-pause").beginElement();
     }
 
-    setPaused(ref.paused);
+    setPaused(ref.current.paused);
   };
 
   const updateTimeStamp = e => {
@@ -54,7 +55,6 @@ function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
           "get:song-audio",
           filePath
         );
-        console.log({ newSongData });
         setSongData(newSongData);
         setLoaded(true);
       } catch (error) {
@@ -67,7 +67,6 @@ function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
     console.log({ shuffle });
     if (shuffle) {
       const index = songs.findIndex(_song => _song === song);
-      console.log({ queue, songs, index });
       setQueue(songs);
       setCur(index);
     } else {
@@ -78,6 +77,10 @@ function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
     setShuffle(!shuffle);
   };
 
+  const handleEnded = () => {
+    setCur((cur + 1) % queue.length);
+  };
+
   const close = () => {
     setExit(true);
     setTimeout(() => setQueue([]), 301);
@@ -86,6 +89,20 @@ function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
   useEffect(() => {
     getSong(song.filePath);
   }, [song]);
+
+  useEffect(() => {
+    if (ipcRenderer) {
+      ipcRenderer.on("pause-play", () => {
+        if (window.isFocused) return;
+        console.log("HELLO FRIENDS");
+        pausePlay(true);
+      });
+      ipcRenderer.on("seek-back", () => (ref.current.currentTime -= 5));
+      ipcRenderer.on("seek-ahead", () => (ref.current.currentTime += 5));
+      ipcRenderer.on("prev-track", () => prevSong());
+      ipcRenderer.on("next-track", () => nextSong());
+    }
+  }, []);
 
   const [formattedTime, formattedTotalTime] = formatLength(
     timeStamp,
@@ -107,16 +124,16 @@ function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
         </div>
         <div className="controls">
           <button className="back" onClick={cur === 0 ? null : prevSong}>
-            <DoubleArrow reversed />
+            <DoubleArrow reversed disabled={cur === 0} />
           </button>
-          <button className="pause-play" onClick={pausePlay}>
+          <button className="pause-play" onClick={() => pausePlay()}>
             {loaded ? <PlayPause paused={paused} /> : "Loading"}
           </button>
           <button
             className="next"
             onClick={cur === songs.length - 1 ? null : nextSong}
           >
-            <DoubleArrow />
+            <DoubleArrow disabled={cur === song.length - 1} />
           </button>
         </div>
         <div className="end">
@@ -128,10 +145,11 @@ function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
         </div>
         <audio
           onLoad={() => setLoaded(true)}
+          onEnded={handleEnded}
           loop={loop}
-          ref={onRefChange}
+          ref={ref}
           onTimeUpdate={updateTimeStamp}
-          onError={console.log}
+          onError={console.error}
           src={songData}
           autoPlay
         ></audio>

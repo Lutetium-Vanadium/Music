@@ -4,7 +4,6 @@ import { Switch, Route } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 import Navbar from "./Navbar";
-import Settings from "./Settings";
 import Music from "./Music";
 import SearchPage from "./SearchPage";
 import Home from "./Home";
@@ -88,7 +87,7 @@ function App() {
       />
       <main>
         <Switch>
-          <Route path="/settings" component={Settings} />
+          {/* <Route path="/settings" component={Settings} /> */}
           <Route
             path="/search"
             render={() => (

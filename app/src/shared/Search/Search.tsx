@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 import search_icon from "./search_icon.jpg";
 
@@ -8,13 +8,21 @@ if (window.require) {
   ipcRenderer = window.require("electron").ipcRenderer;
 }
 
+let empty: HTMLInputElement;
+
 interface SearchProps {
+  placeholder?: string;
   handleChange?: (value: string) => void;
   handleSubmit?: (value: string) => void;
 }
 
-function Search({ handleChange, handleSubmit }: SearchProps) {
+function Search({
+  handleChange,
+  handleSubmit,
+  placeholder = "Search"
+}: SearchProps) {
   const [value, setValue] = useState("");
+  const input = useRef(empty);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setValue(e.target.value);
@@ -32,6 +40,13 @@ function Search({ handleChange, handleSubmit }: SearchProps) {
     if (ipcRenderer) {
       ipcRenderer.on("reset-search-box", () => setValue(""));
     }
+    input.current.addEventListener("focusin", () => {
+      window.isFocused = true;
+    });
+
+    input.current.addEventListener("focusout", () => {
+      window.isFocused = false;
+    });
   }, []);
 
   return (
@@ -47,8 +62,11 @@ function Search({ handleChange, handleSubmit }: SearchProps) {
         onChange={onChange}
         onKeyDown={handleKeyDown}
         className="search-box"
-        type="text"
+        type="search"
         value={value}
+        placeholder={placeholder}
+        onFocus={console.log}
+        ref={input}
       />
     </div>
   );

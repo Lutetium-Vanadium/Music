@@ -44,13 +44,14 @@ function Navbar({ downloading, errored, search }: NavbarParams) {
         <NavLink to="/" exact className="link" activeClassName="active">
           Home
         </NavLink>
-        <NavLink to="/settings" className="link" activeClassName="active">
-          Settings
-        </NavLink>
         <NavLink to="/music" className="link" activeClassName="active">
           My Music
         </NavLink>
-        <Search handleChange={handleChange} handleSubmit={handleSubmit} />
+        <Search
+          handleChange={handleChange}
+          handleSubmit={handleSubmit}
+          placeholder="Download"
+        />
       </div>
     </div>
   );

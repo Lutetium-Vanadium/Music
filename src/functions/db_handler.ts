@@ -1,7 +1,7 @@
 import { app } from "electron";
 import sqlite3 from "sqlite3";
 import * as path from "path";
-import { song } from "../types";
+import { song, album } from "../types";
 
 // This file provides the Database class which is a wrapper around the `song_info.db` database
 // It provides all functions needed to interact with the database
@@ -19,6 +19,7 @@ import { song } from "../types";
 
 class Database {
   private _db: sqlite3.Database;
+  private _n = 5;
 
   constructor() {
     const db_path = path.join(app.getPath("userData"), "song_info.db");
@@ -32,9 +33,14 @@ class Database {
    * Initiializes the database if it doesn't already exist
    */
   private _init = () => {
-    this._db.run(`CREATE TABLE IF NOT EXISTS songdata (
-      filePath TEXT, title TEXT, thumbnail TEXT, artist TEXT, length INT, numListens INT
-    )`);
+    this._db.run(
+      `CREATE TABLE IF NOT EXISTS songdata (
+      filePath TEXT, title TEXT, thumbnail TEXT, artist TEXT, length INT, numListens INT, liked BOOLEAN
+    )`
+    );
+    this._db.run(
+      `CREATE TABLE IF NOT EXISTS albumdata (id TEXT, imagePath TEXT, name TEXT, numSongs INT)`
+    );
   };
 
   /**
@@ -54,10 +60,9 @@ class Database {
     return new Promise((res, rej) => {
       this._db.run(
         `INSERT INTO songdata
-        (filePath, title, thumbnail, artist, length, numListens) VALUES
-        ("${filePath}", "${title}", "${thumbnail}", "${artist}", ${length}, 0)
+        (filePath, title, thumbnail, artist, length, numListens, liked) VALUES
+        ("${filePath}", "${title}", "${thumbnail}", "${artist}", ${length}, 0, false)
       `,
-        [],
         err => {
           if (err) console.error(err);
           res();
@@ -88,14 +93,16 @@ class Database {
    *
    * the search queries the database for all songs whose titles contains the search query
    */
-  search = (songTitle: string): Promise<song[]> =>
-    new Promise((res, rej) =>
+  search = (songTitle: string): Promise<song[]> => {
+    songTitle = "%" + songTitle.split("").join("%") + "%";
+
+    return new Promise((res, rej) =>
       this._db.all(
-        `SELECT * FROM songdata WHERE title LIKE '%${songTitle}%'`,
-        [],
+        `SELECT * FROM songdata WHERE title LIKE '${songTitle}' ORDER BY LOWER(title), title`,
         (err, data: song[]) => res(data)
       )
     );
+  };
 
   /**
    * albums()
@@ -108,7 +115,6 @@ class Database {
     new Promise((res, rej) =>
       this._db.all(
         `SELECT * FROM songdata WHERE thumbnail LIKE '${thumbnail}'`,
-        [],
         (err, songs: song[]) => {
           if (err) console.error(err);
           res(songs);
@@ -123,31 +129,33 @@ class Database {
    */
   all = (): Promise<song[]> =>
     new Promise((res, rej) =>
-      this._db.all(`SELECT * FROM songdata`, [], (err, data: song[]) => {
-        if (err) console.error(err);
-        res(data);
-      })
+      this._db.all(
+        `SELECT * FROM songdata ORDER BY LOWER(title), title`,
+        (err, data: song[]) => {
+          if (err) console.error(err);
+          res(data);
+        }
+      )
     );
 
   /**
-   * most_popular_albums()
+   * mostPopularAlbums()
    *
-   * @param {number} n The number of results to be returned
+   * @param {boolean} limit Controls if limited albums need to be returned
    *
-   * The top 'n' albums stored in the database
+   * If not limited all albums are sent
+   * If limited the top 'this._n' albums stored in the database are returned
    * - the top albums are essentially based on the most number of database entries that
    *   use a single album picture as its thumbnail
    *   ~ note this may be wrong if multiple songs from the same album are there, but they use different
    *     album id according to the napster result
    */
-  most_popular_albums = (n: number): Promise<string[]> =>
+  mostPopularAlbums = (limit: boolean): Promise<string[]> =>
     new Promise((res, rej) =>
       this._db.all(
-        `SELECT thumbnail, COUNT(thumbnail) as cnt FROM songdata 
-        GROUP BY thumbnail
-        ORDER BY cnt
-        DESC LIMIT ${n}`,
-        [],
+        `SELECT * FROM albumdata 
+        ORDER BY numSongs DESC
+        ${limit ? `LIMIT ${this._n}` : ""}`,
         (err, lst) => {
           if (err) console.error(err);
 
@@ -163,20 +171,22 @@ class Database {
     );
 
   /**
-   * most_popular_songs()
+   * mostPopularSongs()
    *
-   * @param {number} n The number of results to be returned
+   * @param {boolean} limit Controls if limited songs need to be returned
    *
-   * The top n number of songs which were heard by the user using this app
+   * If not limited all albums are sent
+   * If limited the top 'this._n' number of songs which were heard by the user using this app
    * ~ note Any song not heard using this app will obviously not show up and
    *   if a song is played multiple times within a minute if the user hit forward backward
    *   continously will be picked up as seperate times
    */
-  most_popular_songs = (n: number): Promise<song[]> =>
+  mostPopularSongs = (limit: boolean): Promise<song[]> =>
     new Promise((res, rej) =>
       this._db.all(
-        `SELECT * FROM songdata ORDER BY numListens DESC LIMIT ${n}`,
-        [],
+        `SELECT * FROM songdata ORDER BY numListens DESC${
+          limit ? ` LIMIT ${this._n}` : ""
+        }`,
         (err, songs: song[]) => {
           if (err) console.error(err);
           res(songs);
@@ -185,15 +195,74 @@ class Database {
     );
 
   /**
-   * increase_song_count()
+   * liked()
+   *
+   * Returns all the liked songs
+   */
+  liked = (): Promise<song[]> =>
+    new Promise((res, rej) =>
+      this._db.all(
+        `SELET * FROM songdata WHERE liked ORDER BY LOWER(title), title`,
+        (err, songs: song[]) => {
+          if (err) console.error(err);
+          res(songs);
+        }
+      )
+    );
+
+  /**
+   * increaseSongCount()
    *
    * @param {string} filePath A way to id the song as no 2 files can have the same path
    *
    * Updates a particular songs times listened by one
    */
-  increase_song_count = (filePath: string) =>
+  increaseSongCount = (filePath: string) =>
     this._db.run(
-      `UPDATE songdata SET numListens = numListens + 1 WHERE filePath LIKE '${filePath}'`
+      `UPDATE songdata SET numListens = numListens + 1 WHERE filePath LIKE "${filePath}"`
+    );
+
+  /**
+   * changeLiked()
+   *
+   * @param {string} title The title of the song to be liked/disliked
+   *
+   * Inverts the liked value of the song - works as both dislike and like
+   */
+  changeLiked = (title: string) =>
+    this._db.run(
+      `UPDATE songdata SET liked = NOT liked WHERE title LIKE "${title}"`
+    );
+
+  /**
+   * exists()
+   *
+   * @param {string} albumId The id of the album
+   *
+   * Checks if a certain album exists in the database
+   */
+  exists = (albumId: string): Promise<boolean> =>
+    new Promise((res, rej) =>
+      this._db.all(
+        `SELECT * FROM albumdata WHERE id like "${albumId}"`,
+        (err, data) => {
+          if (err) console.error(err);
+          res(data.length > 0);
+        }
+      )
+    );
+
+  addAlbum = ({ id, imagePath, name }: album): Promise<void> =>
+    new Promise((res, rej) =>
+      this._db.run(
+        `INSERT INTO albumdata
+    (id, imagePath, name, numSongs) VALUES
+    ("${id}", "${imagePath}", "${name}", 0)`,
+        err => {
+          if (err) console.error(err);
+          res();
+        }
+      )
     );
 
   /**

@@ -6,3 +6,10 @@ export interface song {
   length: number;
   numListens: number;
 }
+
+export interface album {
+  id: string;
+  imagePath: string;
+  name: string;
+  numSongs: number;
+}

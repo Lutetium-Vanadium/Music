@@ -2,11 +2,11 @@
 
 .home {
   max-width: 1000px;
-  // margin-left: auto;
+  margin: auto;
 }
 
 .top-list {
-  @include flex-box(space-evenly);
+  @include flex-box(space-evenly, flex-start);
 
   width: 100%;
   margin-bottom: 10%;
@@ -31,9 +31,7 @@ $max: 120px;
 .top-title {
   margin-top: 0.6rem;
   width: $size + 2vh;
-  height: $size + 2vh;
   max-width: $max + 20px;
-  max-height: $max + 20px;
   font-weight: 600;
   text-align: center;
 }

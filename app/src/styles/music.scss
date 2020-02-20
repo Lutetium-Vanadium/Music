@@ -5,6 +5,20 @@
   max-width: 1200px;
   margin: 0 auto;
 
+  .header-wrapper {
+    @include flex-box(space-between);
+
+    width: 100%;
+    top: 0;
+    padding-right: 6.9rem;
+    padding-left: 1rem;
+  }
+
+  .header {
+    position: sticky;
+    top: 0;
+  }
+
   .music-names {
     margin-top: 1rem;
   }
@@ -15,5 +29,10 @@
     .download {
       max-height: 2rem;
     }
+  }
+
+  .no-results {
+    font-size: 1.3rem;
+    margin: 2rem;
   }
 }
