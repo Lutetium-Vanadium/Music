@@ -5,7 +5,6 @@ import { Dispatch } from "redux";
 
 import { create } from "../../reduxHandler";
 import { song, album } from "../../types";
-import Settings from "./Settings";
 
 let ipcRenderer;
 if (window.require) {
@@ -63,8 +62,6 @@ function Home({ setCur, setQueue, setSongs }) {
           </div>
         ))}
       </div>
-      <hr />
-      <Settings />
     </div>
   );
 }

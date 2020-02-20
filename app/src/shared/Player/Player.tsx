@@ -92,16 +92,26 @@ function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
 
   useEffect(() => {
     if (ipcRenderer) {
-      ipcRenderer.on("pause-play", () => {
-        if (window.isFocused) return;
-        console.log("HELLO FRIENDS");
-        pausePlay(true);
+      ipcRenderer.on("jump-back", (evt, a) => {
+        ref.current.currentTime -= 15;
+        console.log({ a });
       });
       ipcRenderer.on("seek-back", () => (ref.current.currentTime -= 5));
       ipcRenderer.on("seek-ahead", () => (ref.current.currentTime += 5));
+      ipcRenderer.on("jump-ahead", () => (ref.current.currentTime += 15));
       ipcRenderer.on("prev-track", () => prevSong());
       ipcRenderer.on("next-track", () => nextSong());
     }
+
+    const handleKeydown = (e: KeyboardEvent) => {
+      if (e.keyCode == 32 && !window.isFocused) {
+        e.preventDefault();
+        pausePlay(true);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeydown);
+    return () => window.removeEventListener("keydown", handleKeydown);
   }, []);
 
   const [formattedTime, formattedTotalTime] = formatLength(

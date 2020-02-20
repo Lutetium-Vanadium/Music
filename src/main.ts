@@ -10,7 +10,11 @@ import Store from "./functions/store";
 export const store = new Store({
   name: "config",
   defaults: {
-    folderStored: app.getPath("music")
+    folderStored: app.getPath("music"),
+    jumpAhead: 15,
+    seekAhead: 5,
+    seekBack: 5,
+    jumpBack: 15
   }
 });
 

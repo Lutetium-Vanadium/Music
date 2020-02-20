@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 import Navbar from "./Navbar";
 import Music from "./Music";
 import SearchPage from "./SearchPage";
+import Settings from "./Settings";
 import Home from "./Home";
 import { song, searchResult } from "../types";
 import Player from "../shared/Player";
@@ -87,7 +88,7 @@ function App() {
       />
       <main>
         <Switch>
-          {/* <Route path="/settings" component={Settings} /> */}
+          <Route path="/settings" component={Settings} />
           <Route
             path="/search"
             render={() => (

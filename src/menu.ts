@@ -1,12 +1,5 @@
 import { app, Menu, MenuItemConstructorOptions, BrowserWindow } from "electron";
-
-// interface setMenuProps {
-//   pausePlay: Function;
-//   seekForward: Function;
-//   seekBackward: Function;
-//   nextTrack: Function;
-//   prevTrack: Function;
-// }
+import { store } from "./main";
 
 const setMenu = (win: BrowserWindow) => {
   const isMac = process.platform === "darwin";
@@ -25,14 +18,26 @@ const setMenu = (win: BrowserWindow) => {
           accelerator: "Space"
         },
         {
+          label: "Jump Backward",
+          click: () => win.webContents.send("jump-back", store.get("jumpBack")),
+          accelerator: "PageDown"
+        },
+        {
           label: "Seek Backward",
-          click: () => win.webContents.send("seek-back"),
+          click: () => win.webContents.send("seek-back", store.get("seekBack")),
           accelerator: "Left"
         },
         {
           label: "Seek Forward",
-          click: () => win.webContents.send("seek-ahead"),
+          click: () =>
+            win.webContents.send("seek-ahead", store.get("seekAhead")),
           accelerator: "Right"
+        },
+        {
+          label: "Jump Forward",
+          click: () =>
+            win.webContents.send("jump-ahead", store.get("jumpAhead")),
+          accelerator: "PageUp"
         },
         {
           label: "Previous Track",

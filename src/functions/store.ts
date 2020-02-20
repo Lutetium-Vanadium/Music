@@ -24,6 +24,10 @@ class Store {
     this.parseDataFile(defaults);
   }
 
+  private _write = () => {
+    fs.writeFileSync(this._path, JSON.stringify(this._data));
+  };
+
   /**
    * Store.get()
    *
@@ -44,8 +48,7 @@ class Store {
    */
   set = (key: string, val: any) => {
     this._data[key] = val;
-
-    fs.writeFileSync(this._path, JSON.stringify(this._data));
+    this._write();
   };
 
   /**
@@ -60,6 +63,7 @@ class Store {
       this._data = JSON.parse(fs.readFileSync(this._path).toString());
     } catch (error) {
       this._data = defaults;
+      this._write();
     }
   };
 }

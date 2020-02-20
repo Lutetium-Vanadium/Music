@@ -5,6 +5,5 @@
     "baseUrl": "./src",
     "rootDir": "src"
   },
-  "include": ["global.d.ts", "./src/**"],
-  "exclude": ["node_modules"]
+  "include": ["global.d.ts"]
 }

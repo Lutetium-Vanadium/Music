@@ -41,10 +41,13 @@ function Navbar({ downloading, errored, search }: NavbarParams) {
         ))}
       </div>
       <div className="routes">
-        <NavLink to="/" exact className="link" activeClassName="active">
+        <NavLink to="/" exact activeClassName="active" className="link">
           Home
         </NavLink>
-        <NavLink to="/music" className="link" activeClassName="active">
+        <NavLink to="/settings" activeClassName="active" className="link">
+          Settings
+        </NavLink>
+        <NavLink to="/music" activeClassName="active" className="link">
           My Music
         </NavLink>
         <Search
