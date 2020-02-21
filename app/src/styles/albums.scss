@@ -1,0 +1,39 @@
+@import "./vars";
+
+$img-size: 17vh;
+$img-max: 150px;
+
+.albums {
+  padding: 0 2rem;
+  margin: 0 3rem;
+  margin-bottom: 6rem;
+}
+
+.content {
+  @include flex-box(center, flex-start);
+
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.album {
+  margin: 2rem 3rem;
+}
+
+.album-img {
+  height: $img-size;
+  width: $img-size;
+  max-height: $img-max;
+  max-width: $img-max;
+  border-radius: 0.6rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.album-title {
+  margin-top: 0.6rem;
+  width: $size + 2vh;
+  max-width: $max + 20px;
+  font-weight: 600;
+  text-align: center;
+}

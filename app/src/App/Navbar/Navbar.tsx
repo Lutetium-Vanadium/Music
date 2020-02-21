@@ -47,6 +47,9 @@ function Navbar({ downloading, errored, search }: NavbarParams) {
         <NavLink to="/settings" activeClassName="active" className="link">
           Settings
         </NavLink>
+        <NavLink to="/albums" activeClassName="active" className="link">
+          Albums
+        </NavLink>
         <NavLink to="/music" activeClassName="active" className="link">
           My Music
         </NavLink>

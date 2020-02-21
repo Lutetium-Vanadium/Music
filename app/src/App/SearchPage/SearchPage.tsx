@@ -52,7 +52,7 @@ function SearchPage({ results, download }: SearchPageParams) {
           ))}
         </ul>
       ) : (
-        "No Results"
+        <p className="no-results">No Results</p>
       )}
     </div>
   );

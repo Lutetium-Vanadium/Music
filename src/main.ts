@@ -87,9 +87,15 @@ app.on("quit", () => {
 // Get methods
 
 // gets the configured music directory
-ipcMain.handle("get:music-dir", (evt, val) => {
+ipcMain.handle("get:info", (evt, val) => {
   return new Promise((res, rej) => {
-    res(store.get("folderStored"));
+    res({
+      dir: store.get("folderStored"),
+      jumpAhead: store.get("jumpAhead"),
+      seekAhead: store.get("seekAhead"),
+      seekBack: store.get("seekBack"),
+      jumpBack: store.get("jumpBack")
+    });
   });
 });
 
@@ -165,6 +171,10 @@ ipcMain.handle("set:music-dir", async (evt, val) => {
   return store.get("folderStored");
 });
 
+ipcMain.on("set:info", (evt, info) => {
+  store.setAll(info);
+});
+
 // The download song port- Given an id, downloads the song
 ipcMain.handle("download-song", async (evt, songData: song) => {
   const youtubeId = await getYoutubeId(songData);
@@ -184,13 +194,25 @@ ipcMain.handle("download-song", async (evt, songData: song) => {
   return youtubeId;
 });
 
+ipcMain.handle("delete:song", async (evt, song: song) => {
+  try {
+    console.log("Deleting", song.title);
+    const dbSongPromise = db.delete(song.title);
+    const dbAlbumPromise = db.decrementNumSongs(song.thumbnail);
+    const fsPromise = rm(song.filePath);
+
+    await Promise.all([dbSongPromise, fsPromise, dbAlbumPromise]);
+    console.log("Finished deletion");
+    return true;
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+});
+
 // When the search page is clicked out of, this is used to reset the input field
 ipcMain.on("reset-global-search", () => {
   win.webContents.send("reset-search-box");
-});
-
-ipcMain.on("delete:song", (evt, song: song) => {
-  db.delete(song.title);
 });
 
 // Given a range of song names, this adds them to the database
@@ -285,9 +307,18 @@ const checkSongs = async () => {
 // Helper function that provides a promise based fs.readdir
 const ls = (path: fs.PathLike): Promise<string[]> => {
   return new Promise((res, rej) => {
-    return fs.readdir(path, (err, files) => {
+    fs.readdir(path, (err, files) => {
       if (err) rej(err);
       res(files);
+    });
+  });
+};
+
+const rm = (path: fs.PathLike): Promise<void> => {
+  return new Promise((res, rej) => {
+    fs.unlink(path, err => {
+      if (err) rej(err);
+      res();
     });
   });
 };

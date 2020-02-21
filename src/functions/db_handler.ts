@@ -265,9 +265,29 @@ class Database {
       )
     );
 
+  /**
+   * incrementNumSongs()
+   *
+   * @param {string} albumId The id for the album to increment
+   *
+   * Increments the number of songs for the given albumId
+   */
   incrementNumSongs = (albumId: string) =>
     this._db.run(
       `UPDATE albumdata SET numSongs = numSongs + 1 WHERE id LIKE "${albumId}"`
+    );
+
+  /**
+   * deccrementNumSongs()
+   *
+   * @param {string} imagePath The image path for the album to increment
+   *
+   * Deccrements the number of songs for the given imagePath
+   * Image Path is used because the api is used only while deleteing songs, which does not have albumId as of now
+   */
+  decrementNumSongs = (imagePath: string) =>
+    this._db.run(
+      `UPDATE albumdata SET numSongs = numSongs - 1 WHERE imagePath LIKE "${imagePath}"`
     );
 
   /**

@@ -52,6 +52,19 @@ class Store {
   };
 
   /**
+   * Store.setAll()
+   *
+   * @param {object} obj An Object to destructure into data
+   *
+   * Adds/replaces all values in the given object in the data file
+   * WARNING: The data being sent has to be only what you want added. It does not perform any checks and just destructures it
+   */
+  setAll = (obj: object) => {
+    this._data = { ...this._data, ...obj };
+    this._write();
+  };
+
+  /**
    * Store.parseDataFile()
    *
    * @param {object} defaults The JSON to store if the file doesn't exist

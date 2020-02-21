@@ -7,34 +7,83 @@
   margin-bottom: 10%;
   padding-top: 0;
 
-  .dir {
+  .setting {
     @include flex-box(space-between);
 
     width: 90%;
-    margin: 0 auto;
+    margin: 2rem auto;
+  }
 
-    .song-dir {
-      font-size: 1.3rem;
+  .name {
+    font-size: 1.3rem;
 
-      span {
-        background-color: $bgm;
-        padding: 0.4rem 0.7rem;
-        border-radius: 0.4rem;
-        font-family: monospace;
-        font-size: 0.8em;
-        margin-left: 1rem;
-      }
+    span {
+      background-color: $bgm;
+      padding: 0.4rem 0.7rem;
+      border-radius: 0.4rem;
+      font-family: monospace;
+      font-size: 0.8em;
+      margin-left: 1rem;
     }
+  }
 
-    .change-dir {
-      background: $highlightd;
-      padding: 0.75rem 1.5rem;
-      transition: background-color 100ms linear;
-      border-radius: 0.3rem;
+  .change {
+    background: $highlightd;
+    padding: 0.75rem 1.5rem;
+    transition: background-color 100ms linear;
+    border-radius: 0.3rem;
 
-      &:hover {
-        background-color: $highlight;
-      }
+    &:hover {
+      background-color: $highlight;
+    }
+  }
+
+  .center {
+    margin-left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+.number-selection {
+  @include flex-box(space-evenly);
+
+  height: 3rem;
+  background-color: $bgm;
+  border-radius: 1.3rem;
+  width: 4.5rem;
+  margin: 0 2rem;
+  transition: 0.6s;
+
+  .num {
+    font-size: 1.6rem;
+    margin: 0 0.8rem;
+    transform: translateY(-0.15rem);
+    user-select: none;
+  }
+
+  svg {
+    height: 1.3rem;
+    transform: translateX(1rem) scale(0.7);
+    opacity: 0;
+    pointer-events: all;
+
+    transition: 0.4s;
+  }
+
+  .rev {
+    transform: translateX(-1rem) scale(0.7);
+  }
+
+  &:hover {
+    cursor: pointer;
+    background-color: $highlightd;
+    width: 8.5rem;
+    margin: 0;
+
+    svg {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+      transition: 0.4s 0.2s;
     }
   }
 }

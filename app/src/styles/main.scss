@@ -7,6 +7,7 @@
 @import "./settings";
 @import "./player";
 @import "./home";
+@import "./albums";
 
 * {
   margin: 0;
@@ -17,6 +18,10 @@
 
   &:focus {
     outline: none;
+  }
+
+  &::selection {
+    background-color: #dfdfdf69;
   }
 }
 
@@ -45,6 +50,11 @@ body,
   font-size: 3.2rem;
   margin-left: 15%;
   margin-bottom: 2rem;
+}
+
+.no-results {
+  font-size: 1.3rem;
+  margin: 2rem;
 }
 
 main {

@@ -92,13 +92,22 @@ function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
 
   useEffect(() => {
     if (ipcRenderer) {
-      ipcRenderer.on("jump-back", (evt, a) => {
-        ref.current.currentTime -= 15;
-        console.log({ a });
-      });
-      ipcRenderer.on("seek-back", () => (ref.current.currentTime -= 5));
-      ipcRenderer.on("seek-ahead", () => (ref.current.currentTime += 5));
-      ipcRenderer.on("jump-ahead", () => (ref.current.currentTime += 15));
+      ipcRenderer.on(
+        "jump-back",
+        (evt, val: number) => (ref.current.currentTime -= val)
+      );
+      ipcRenderer.on(
+        "seek-back",
+        (evt, val: number) => (ref.current.currentTime -= val)
+      );
+      ipcRenderer.on(
+        "seek-ahead",
+        (evt, val: number) => (ref.current.currentTime += val)
+      );
+      ipcRenderer.on(
+        "jump-ahead",
+        (evt, val: number) => (ref.current.currentTime += val)
+      );
       ipcRenderer.on("prev-track", () => prevSong());
       ipcRenderer.on("next-track", () => nextSong());
     }
