@@ -43,7 +43,7 @@ function Home({ setCur, setQueue, setSongs }) {
       <h1 className="header">Top Albums</h1>
       <div className="top-list">
         {topAlbums.map((album, i) => (
-          <div key={album.imagePath} className="top">
+          <div key={album.imagePath} className="top-wrapper">
             <img className="top" src={album.imagePath} alt="top-album" />
             <p className="top-title">{album.name}</p>
           </div>
@@ -54,7 +54,7 @@ function Home({ setCur, setQueue, setSongs }) {
         {topSongs.map((song, i) => (
           <div
             key={song.filePath}
-            className="top-song"
+            className="top-wraper"
             onClick={() => playSong(i)}
           >
             <img className="top" src={song.thumbnail} alt="top-song" />

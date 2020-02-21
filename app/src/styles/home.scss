@@ -36,6 +36,6 @@ $max: 120px;
   text-align: center;
 }
 
-.top-song {
+.top-wrapper {
   @include flex-box($direction: column);
 }

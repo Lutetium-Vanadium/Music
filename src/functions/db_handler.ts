@@ -195,7 +195,7 @@ class Database {
   liked = (): Promise<song[]> =>
     new Promise((res, rej) =>
       this._db.all(
-        `SELET * FROM songdata WHERE liked ORDER BY LOWER(title), title`,
+        `SELECT * FROM songdata WHERE liked ORDER BY LOWER(title), title`,
         (err, songs: song[]) => {
           if (err) console.error(err);
           res(songs);
