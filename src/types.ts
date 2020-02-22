@@ -6,6 +6,7 @@ export interface song {
   length: number;
   numListens: number;
   albumId: string;
+  liked: boolean;
 }
 
 export interface album {

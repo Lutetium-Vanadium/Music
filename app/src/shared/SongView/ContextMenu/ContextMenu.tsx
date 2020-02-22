@@ -3,12 +3,21 @@ import { useState } from "react";
 
 interface ContextMenuProps {
   pos: number[];
+  liked: boolean;
+  toggleLiked: () => void;
   reset: () => void;
   play: () => void;
   del: () => void;
 }
 
-function ContextMenu({ pos, reset, play, del }: ContextMenuProps) {
+function ContextMenu({
+  pos,
+  reset,
+  play,
+  del,
+  liked,
+  toggleLiked
+}: ContextMenuProps) {
   const [_timeout, _setTimeout] = useState();
 
   const handleMouseEnter = () => {
@@ -40,6 +49,9 @@ function ContextMenu({ pos, reset, play, del }: ContextMenuProps) {
     >
       <div className="play" onClick={play}>
         Play
+      </div>
+      <div className="like" onClick={toggleLiked}>
+        {liked ? "Unlike" : "Like"}
       </div>
       <div className="delete" onClick={del}>
         Delete

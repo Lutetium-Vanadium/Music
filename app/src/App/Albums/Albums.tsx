@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 import { album } from "../../types";
+import liked from "../liked.png";
+console.log({ liked });
 
 let ipcRenderer;
 if (window.require) {
@@ -27,11 +29,7 @@ function Albums() {
       <h1 className="header">Albums</h1>
       <div className="content">
         <Link to="/albums/liked" className="album">
-          <img
-            className="album-img"
-            src={require("../liked.png")}
-            alt="top-album"
-          />
+          <img className="album-img" src={liked} alt="top-album" />
           <p className="album-title">Liked</p>
         </Link>
         {albums.map(album => (

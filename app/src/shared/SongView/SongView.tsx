@@ -61,6 +61,12 @@ function SongView({
     setIndex(+e.currentTarget.dataset.index);
   };
 
+  const toggleLiked = async () => {
+    if (ipcRenderer) {
+      await ipcRenderer.send("set:liked", songs[index].title);
+    }
+  };
+
   const del = async () => {
     const song = songs[index];
     setSongs([
@@ -89,6 +95,8 @@ function SongView({
     }
   };
 
+  console.log({ songs, index });
+
   return (
     <>
       <ContextMenu
@@ -96,6 +104,8 @@ function SongView({
         reset={() => setPos([-200, -200])}
         play={play}
         del={del}
+        toggleLiked={toggleLiked}
+        liked={index !== -1 && songs[index].liked}
       />
       <ul className="music-names">
         {songs.length ? (

@@ -5,6 +5,8 @@ import formatLength from "../formatLength";
 
 import backup from "./backup.png";
 
+console.log({ backup });
+
 interface SongProps {
   song: song;
   className?: string;

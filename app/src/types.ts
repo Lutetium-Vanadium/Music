@@ -1,10 +1,12 @@
 export interface song {
-  artist: string;
   filePath: string;
-  thumbnail: string;
   title: string;
+  thumbnail: string;
+  artist: string;
   length: number;
   numListens: number;
+  albumId: string;
+  liked: boolean;
 }
 
 export interface searchResult {

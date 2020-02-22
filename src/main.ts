@@ -180,6 +180,11 @@ ipcMain.on("set:info", (evt, info) => {
   store.setAll(info);
 });
 
+ipcMain.on(
+  "set:liked",
+  async (evt, title: string) => await db.changeLiked(title)
+);
+
 // The download song port- Given an id, downloads the song
 ipcMain.handle("download-song", async (evt, songData: song) => {
   const youtubeId = await getYoutubeId(songData);
@@ -187,14 +192,13 @@ ipcMain.handle("download-song", async (evt, songData: song) => {
   const fileName = songData.title + ".mp3";
   console.log("Downloading ", songData.title);
   downloader.download(youtubeId, fileName);
-  const albumId = songData.thumbnail.split("/")[6];
+  const albumId = songData.albumId;
   addAlbum(albumId);
 
   songData.thumbnail =
     "file://" +
     path.join(app.getPath("userData"), "album_images", `${albumId}.jpg`);
   songData.filePath = path.join(store.get("folderStored"), fileName);
-  songData.albumId = albumId;
   db.addSong(songData);
 
   return youtubeId;
@@ -247,7 +251,8 @@ const addRange = async (lst: string[]) => {
       length: song.length,
       title: lst[i],
       numListens: 0,
-      albumId
+      albumId,
+      liked: false
     };
     await db.addSong(songData);
 

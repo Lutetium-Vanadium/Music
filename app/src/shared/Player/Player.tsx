@@ -7,6 +7,9 @@ import { Dispatch } from "redux";
 import { DoubleArrow, Loop, PlayPause, Shuffle, randOrder } from "./helpers";
 import formatLength from "../formatLength";
 
+import songLiked from "./song-liked.png";
+import songNotLiked from "./song-not-liked.png";
+
 let ipcRenderer;
 if (window.require) {
   ipcRenderer = window.require("electron").ipcRenderer;
@@ -90,7 +93,14 @@ function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
     setTimeout(() => setQueue([]), 301);
   };
 
+  const toggleLiked = async () => {
+    if (ipcRenderer) {
+      await ipcRenderer.send("set:liked", song.title);
+    }
+  };
+
   useEffect(() => {
+    setPaused(false);
     getSong(song.filePath);
   }, [song]);
 
@@ -163,8 +173,22 @@ function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
           <p className="time">
             {formattedTime} / {formattedTotalTime}
           </p>
-          <Loop enabled={loop} onClick={() => setLoop(!loop)} />
-          <Shuffle enabled={shuffle} onClick={shuffleSongs} />
+          <Loop
+            className="control"
+            enabled={loop}
+            onClick={() => setLoop(!loop)}
+          />
+          <Shuffle
+            className="control"
+            enabled={shuffle}
+            onClick={shuffleSongs}
+          />
+          <img
+            src={song.liked ? songLiked : songNotLiked}
+            alt="liked"
+            className="control"
+            onClick={toggleLiked}
+          />
         </div>
         <audio
           onLoad={() => setLoaded(true)}

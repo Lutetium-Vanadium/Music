@@ -2,6 +2,7 @@ import * as React from "react";
 import { useState, useEffect, useRef } from "react";
 
 import search_icon from "./search_icon.jpg";
+console.log({ search_icon });
 
 let ipcRenderer;
 if (window.require) {

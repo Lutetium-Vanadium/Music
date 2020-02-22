@@ -88,7 +88,7 @@
       @include flex-box(flex-start, $direction: row-reverse);
     }
 
-    svg {
+    .control {
       height: 1.6rem;
       margin: 0.4rem;
       cursor: pointer;

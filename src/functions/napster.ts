@@ -172,5 +172,6 @@ const formatTrackData = track => ({
   artist: track.artistName,
   title: track.name,
   length: track.playbackSeconds,
-  thumbnail: `https://api.napster.com/imageserver/v2/albums/${track.albumId}/images/200x200.jpg`
+  thumbnail: `https://api.napster.com/imageserver/v2/albums/${track.albumId}/images/200x200.jpg`,
+  albumId: track.albumId
 });
