@@ -2,16 +2,19 @@ import Downloader from "youtube-mp3-downloader";
 import { store } from "../main";
 import { app } from "electron";
 import axios from "axios";
+import { execSync } from "child_process";
 import * as path from "path";
 import * as fs from "fs";
 
 // This file has the specified configurations for the youtuber downloader
 // and a function to download images
 
-// NOTE ffmpegPath must be fixed as it only supports linux as of now (die plebs)
+const ffmpegPath = execSync("which ffmpeg")
+  .toString()
+  .slice(0, -1);
 
 const options = {
-  ffmpegPath: "/usr/bin/ffmpeg",
+  ffmpegPath,
   outputPath: store.get("folderStored"),
   youtubeVideoQuality: "highest",
   progressTimeout: 100,

@@ -62,7 +62,7 @@ class Database {
       this._db.run(
         `INSERT INTO songdata
         (filePath, title, thumbnail, artist, length, numListens, liked, albumId) VALUES
-        ("${filePath}", "${title}", "${thumbnail}", "${artist}", ${length}, 0, false, ${albumId})
+        ("${filePath}", "${title}", "${thumbnail}", "${artist}", ${length}, 0, false, "${albumId}")
       `,
         err => {
           if (err) console.error(err);

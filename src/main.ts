@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, dialog } from "electron";
+import { app, BrowserWindow, ipcMain, dialog, protocol } from "electron";
 import * as path from "path";
 import * as fs from "fs";
 
@@ -56,7 +56,7 @@ if (!fs.existsSync(album_images_path)) fs.mkdir(album_images_path, console.log);
 
 // needed variables
 let win: BrowserWindow;
-const dev = true;
+const dev = false;
 
 // Main window creation
 app.on("ready", () => {
@@ -73,7 +73,7 @@ app.on("ready", () => {
   // dev should be changed to false and frontend should be built for a proper app
   dev
     ? win.loadURL("http://localhost:1234/")
-    : win.loadFile("./public/index.html");
+    : win.loadURL("file://" + path.resolve("public", "index.html"));
 
   setMenu(win);
   checkSongs();
@@ -194,6 +194,7 @@ ipcMain.handle("download-song", async (evt, songData: song) => {
     "file://" +
     path.join(app.getPath("userData"), "album_images", `${albumId}.jpg`);
   songData.filePath = path.join(store.get("folderStored"), fileName);
+  songData.albumId = albumId;
   db.addSong(songData);
 
   return youtubeId;
