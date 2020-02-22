@@ -10,7 +10,7 @@ $img-max: 150px;
 }
 
 .content {
-  @include flex-box(center, flex-start);
+  @include flex-box(flex-start, flex-start);
 
   width: 100%;
   flex-wrap: wrap;
@@ -36,4 +36,20 @@ $img-max: 150px;
   max-width: $max + 20px;
   font-weight: 600;
   text-align: center;
+}
+
+.album-header {
+  @include flex-box(flex-start);
+
+  margin-left: 10%;
+  margin-bottom: 2rem;
+
+  .header {
+    margin: 0;
+    margin-left: 4rem;
+  }
+
+  img {
+    cursor: auto;
+  }
 }

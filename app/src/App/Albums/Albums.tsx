@@ -1,8 +1,8 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
-import { album } from "../../types";
+import { Link } from "react-router-dom";
 
-import liked from "./liked.png";
+import { album } from "../../types";
 
 let ipcRenderer;
 if (window.require) {
@@ -26,24 +26,20 @@ function Albums() {
     <div className="albums">
       <h1 className="header">Albums</h1>
       <div className="content">
-        <div className="album">
-          <img className="album-img" src={liked} alt="top-album" />
+        <Link to="/albums/liked" className="album">
+          <img
+            className="album-img"
+            src={require("../liked.png")}
+            alt="top-album"
+          />
           <p className="album-title">Liked</p>
-        </div>
-        {albums.length ? (
-          albums.map(album => (
-            <div key={album.id} className="album">
-              <img
-                className="album-img"
-                src={album.imagePath}
-                alt="top-album"
-              />
-              <p className="album-title">{album.name}</p>
-            </div>
-          ))
-        ) : (
-          <p className="no-results">No Results</p>
-        )}
+        </Link>
+        {albums.map(album => (
+          <Link to={`/albums/${album.id}`} key={album.id} className="album">
+            <img className="album-img" src={album.imagePath} alt="top-album" />
+            <p className="album-title">{album.name}</p>
+          </Link>
+        ))}
       </div>
     </div>
   );

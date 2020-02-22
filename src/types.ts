@@ -5,6 +5,7 @@ export interface song {
   artist: string;
   length: number;
   numListens: number;
+  albumId: string;
 }
 
 export interface album {

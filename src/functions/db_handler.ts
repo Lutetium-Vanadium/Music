@@ -35,7 +35,7 @@ class Database {
   private _init = () => {
     this._db.run(
       `CREATE TABLE IF NOT EXISTS songdata (
-      filePath TEXT, title TEXT, thumbnail TEXT, artist TEXT, length INT, numListens INT, liked BOOLEAN
+      filePath TEXT, title TEXT, thumbnail TEXT, artist TEXT, length INT, numListens INT, liked BOOLEAN, albumId TEXT
     )`
     );
     this._db.run(
@@ -55,13 +55,14 @@ class Database {
     title,
     thumbnail,
     artist,
-    length
+    length,
+    albumId
   }: song): Promise<void> => {
     return new Promise((res, rej) => {
       this._db.run(
         `INSERT INTO songdata
-        (filePath, title, thumbnail, artist, length, numListens, liked) VALUES
-        ("${filePath}", "${title}", "${thumbnail}", "${artist}", ${length}, 0, false)
+        (filePath, title, thumbnail, artist, length, numListens, liked, albumId) VALUES
+        ("${filePath}", "${title}", "${thumbnail}", "${artist}", ${length}, 0, false, ${albumId})
       `,
         err => {
           if (err) console.error(err);
@@ -105,16 +106,16 @@ class Database {
   };
 
   /**
-   * albums()
+   * albumSongs()
    *
-   * @param thumbnail The thumbnail link for the album
+   * @param albumId The albumId for the album
    *
-   * Returns all songs which have the same this album thumbnail
+   * Returns all songs which have the same albumId
    */
-  albums = (thumbnail: string): Promise<song[]> =>
+  albumSongs = (albumId: string): Promise<song[]> =>
     new Promise((res, rej) =>
       this._db.all(
-        `SELECT * FROM songdata WHERE thumbnail LIKE '${thumbnail}'`,
+        `SELECT * FROM songdata WHERE albumId LIKE '${albumId}'`,
         (err, songs: song[]) => {
           if (err) console.error(err);
           res(songs);
@@ -261,6 +262,24 @@ class Database {
         err => {
           if (err) console.error(err);
           res();
+        }
+      )
+    );
+
+  /**
+   * albumDetails()
+   *
+   * @param {string} id The id of the album
+   *
+   * Returns the details of the album id
+   */
+  albumDetails = (id: string): Promise<album> =>
+    new Promise((res, rej) =>
+      this._db.get(
+        `SELECT * FROM albumdata where id LIKE "${id}"`,
+        (err, row: album) => {
+          if (err) console.error(err);
+          res(row);
         }
       )
     );

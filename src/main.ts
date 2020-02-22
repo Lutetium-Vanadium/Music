@@ -131,8 +131,13 @@ ipcMain.handle(
 );
 
 ipcMain.handle(
+  "get:album",
+  async (evt, id: string) => await db.albumDetails(id)
+);
+
+ipcMain.handle(
   "get:album-songs",
-  async (evt, filePath: string) => await db.albums(filePath)
+  async (evt, albumId: string) => await db.albumSongs(albumId)
 );
 
 ipcMain.handle("get:liked", async () => await db.liked());
@@ -240,7 +245,8 @@ const addRange = async (lst: string[]) => {
       artist: song.artist,
       length: song.length,
       title: lst[i],
-      numListens: 0
+      numListens: 0,
+      albumId
     };
     await db.addSong(songData);
 

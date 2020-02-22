@@ -2,6 +2,7 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
+import { Link } from "react-router-dom";
 
 import { create } from "../../reduxHandler";
 import { song, album } from "../../types";
@@ -42,11 +43,15 @@ function Home({ setCur, setQueue, setSongs }) {
     <div className="home">
       <h1 className="header">Top Albums</h1>
       <div className="top-list">
-        {topAlbums.map((album, i) => (
-          <div key={album.imagePath} className="top-wrapper">
+        {topAlbums.map(album => (
+          <Link
+            to={`/albums/${album.id}`}
+            key={album.id}
+            className="top-wrapper"
+          >
             <img className="top" src={album.imagePath} alt="top-album" />
             <p className="top-title">{album.name}</p>
-          </div>
+          </Link>
         ))}
       </div>
       <h1 className="header">Top Songs</h1>

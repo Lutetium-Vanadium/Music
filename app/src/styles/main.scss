@@ -69,10 +69,13 @@ img {
   max-width: 90%;
 }
 
-a,
-a:hover,
-a::-moz-focus-inner,
-a::-moz-focus-outer {
+a {
+  text-decoration: none;
+  outline: none;
+  border: none;
+}
+
+p {
   text-decoration: none;
   outline: none;
   border: none;
