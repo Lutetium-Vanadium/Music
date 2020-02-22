@@ -81,6 +81,10 @@ function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
     setCur((cur + 1) % queue.length);
   };
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    ref.current.currentTime = e.target.valueAsNumber;
+  };
+
   const close = () => {
     setExit(true);
     setTimeout(() => setQueue([]), 301);
@@ -173,10 +177,19 @@ function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
           autoPlay
         ></audio>
       </div>
-      <span
-        style={{ width: `${(timeStamp / song.length) * 100}%` }}
+      <input
+        type="range"
+        name="timeline"
         className="timeline"
-      ></span>
+        value={timeStamp}
+        min={0}
+        max={song.length}
+        onChange={handleChange}
+      />
+      {/* <span
+        style={{ width: `${(timeStamp / song.length) * 100}%` }}
+        className="timeline-span"
+      ></span> */}
     </div>
   );
 }

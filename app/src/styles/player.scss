@@ -101,8 +101,38 @@
 
 .timeline {
   display: inline-block;
-  background-color: $highlight;
+  overflow: hidden;
+  width: 100%;
+  -webkit-appearance: none;
   height: 0.3rem;
+  cursor: pointer;
+
+  &:focus {
+    outline: none;
+  }
+
+  &::-webkit-slider-runnable-track {
+    height: 0.3rem;
+    -webkit-appearance: none;
+    color: $highlight;
+    margin-top: -1px;
+  }
+
+  &::-webkit-slider-thumb {
+    width: 0px;
+    -webkit-appearance: none;
+    height: 0.3rem;
+    cursor: ew-resize;
+    background: transparent;
+    box-shadow: -100vh 0 0 100vh $highlight;
+  }
+}
+
+.timeline-span {
+  display: inline-block;
+  background-color: #dada19;
+  height: 0.3rem;
+  width: 100%;
 }
 
 @keyframes pop-in {
