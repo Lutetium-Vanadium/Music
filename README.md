@@ -39,6 +39,12 @@ yarn build-start
 ```
 
 > It is equivalent to running `yarn build` and then `yarn start`
+> <br>
+> To build the app into an exectuable one:
+
+```sh
+yarn deploy
+```
 
 ### In the `/app` Directory
 
