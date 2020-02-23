@@ -3,7 +3,6 @@ import { NavLink, useHistory } from "react-router-dom";
 
 import Search from "../../shared/Search";
 
-import logo from "#logos/logo.png";
 import ProgressBar, { ProgressBarProps } from "../../shared/ProgressBar";
 
 interface NavbarParams {
@@ -29,7 +28,11 @@ function Navbar({ downloading, errored, search }: NavbarParams) {
   return (
     <div className="navbar">
       <div className="identifier">
-        <img className="logo" src={logo} alt="logo" />
+        <img
+          className="logo"
+          src={require("../../logos/logo.png")}
+          alt="logo"
+        />
         <h2>Music</h2>
         {Object.keys(downloading).map(key => (
           <ProgressBar

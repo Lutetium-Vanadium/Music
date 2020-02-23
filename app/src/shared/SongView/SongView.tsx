@@ -8,7 +8,7 @@ import Song from "../../shared/Song";
 import { Dispatch } from "redux";
 import { create } from "../../reduxHandler";
 
-import logo from "#logos/logo.png";
+const logo = require("../../../logos/log.png");
 
 let ipcRenderer;
 if (window.require) {

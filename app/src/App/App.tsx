@@ -14,7 +14,7 @@ import { song, searchResult } from "../types";
 import Player from "../shared/Player";
 import { reduxState } from "../reduxHandler";
 
-import logo from "#logos/logo.png";
+const logo = require("../logos/logo.png");
 
 let ipcRenderer;
 if (window.require) ipcRenderer = window.require("electron").ipcRenderer;

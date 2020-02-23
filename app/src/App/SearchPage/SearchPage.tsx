@@ -4,7 +4,6 @@ import { useEffect } from "react";
 import { song } from "../../types";
 import Song from "../../shared/Song";
 
-import downloadImg from "./download.png";
 import Loader from "../../shared/Loader";
 
 let ipcRenderer;
@@ -45,7 +44,7 @@ function SearchPage({ results, download, loading }: SearchPageParams) {
                 After={() => (
                   <img
                     className="download"
-                    src={downloadImg}
+                    src={require("./download.png")}
                     alt="download button"
                     onClick={handleDownload}
                     data-index={i}

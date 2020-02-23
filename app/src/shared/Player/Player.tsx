@@ -7,8 +7,8 @@ import { Dispatch } from "redux";
 import { DoubleArrow, Loop, PlayPause, Shuffle, randOrder } from "./helpers";
 import formatLength from "../formatLength";
 
-import songLiked from "./song-liked.png";
-import songNotLiked from "./song-not-liked.png";
+const songLiked = require("./song-liked.png");
+const songNotLiked = require("./song-not-liked.png");
 
 let ipcRenderer;
 if (window.require) {

@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { song } from "../../types";
 import formatLength from "../formatLength";
 
-import backup from "./backup.png";
+const backup = require("./backup.png");
 
 interface SongProps {
   song: song;
