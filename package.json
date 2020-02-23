@@ -10,6 +10,9 @@
     "build-react": "cd app && yarn build",
     "build-start": "yarn build-react && yarn start",
     "deploy": "electron-packager . --overwrite",
+    "deploy-l": "electron-packager . --overwrite --platform=linux --out=\"Music(linux)\"",
+    "deploy-m": "electron-packager . --overwrite --platform=darwin --out=\"Music(MacOS)\"",
+    "deploy-w": "electron-packager . --overwrite --platform=win32 --out=\"Music(Windows)\"",
     "fix-sqlite3": "./node_modules/.bin/electron-rebuild -w sqlite3 -p"
   },
   "dependencies": {

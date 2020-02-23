@@ -38,7 +38,6 @@ function Album({
           });
         });
       } else {
-        console.log({ id });
         ipcRenderer.invoke("get:album", id).then((res: album) => setAlbum(res));
 
         ipcRenderer

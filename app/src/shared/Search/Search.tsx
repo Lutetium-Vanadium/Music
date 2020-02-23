@@ -2,7 +2,6 @@ import * as React from "react";
 import { useState, useEffect, useRef } from "react";
 
 import search_icon from "./search_icon.jpg";
-console.log({ search_icon });
 
 let ipcRenderer;
 if (window.require) {
@@ -66,7 +65,6 @@ function Search({
         type="search"
         value={value}
         placeholder={placeholder}
-        onFocus={console.log}
         ref={input}
       />
     </div>

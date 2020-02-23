@@ -5,6 +5,7 @@ import { song } from "../../types";
 import Song from "../../shared/Song";
 
 import downloadImg from "./download.png";
+import Loader from "../../shared/Loader";
 
 let ipcRenderer;
 if (window.require) {
@@ -13,10 +14,11 @@ if (window.require) {
 
 interface SearchPageParams {
   results: song[];
+  loading: boolean;
   download: (song: song) => Promise<void>;
 }
 
-function SearchPage({ results, download }: SearchPageParams) {
+function SearchPage({ results, download, loading }: SearchPageParams) {
   const handleDownload = e => {
     const song = results[+e.target.dataset.index];
     download(song);
@@ -29,6 +31,8 @@ function SearchPage({ results, download }: SearchPageParams) {
       }
     };
   }, []);
+
+  if (loading) return Loader;
 
   return (
     <div className="music">

@@ -7,6 +7,9 @@ import "./styles/main.scss";
 
 import App from "./App";
 import { store } from "./reduxHandler";
+import { init } from "./localStorage";
+
+init();
 
 render(
   <MemoryRouter>

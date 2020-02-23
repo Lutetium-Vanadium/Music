@@ -1,4 +1,5 @@
 import { song } from "../types";
+import { getArr, getNum, setArr, setNum } from "../localStorage";
 
 /**
  * interface reduxState
@@ -18,37 +19,10 @@ export interface reduxAction {
   payload: any;
 }
 
-const temp_song: song = {
-  artist: "Artist",
-  filePath: "fileName",
-  thumbnail: "http://placekitten.com/200/200",
-  title:
-    "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reprehenderit, quibusdam!",
-  length: 69,
-  numListens: 0
-};
-
-const initial: song[] = [
-  // temp_song,
-  // temp_song,
-  // temp_song,
-  // temp_song,
-  // temp_song,
-  // temp_song,
-  // temp_song,
-  // temp_song,
-  // temp_song,
-  // temp_song,
-  // temp_song,
-  // temp_song,
-  // temp_song,
-  // temp_song
-];
-
 const initialState: reduxState = {
-  queue: initial,
-  songs: initial,
-  cur: 0
+  queue: getArr("queue"),
+  songs: getArr("songs"),
+  cur: getNum("cur")
 };
 
 const reducer = (oldState = initialState, action: reduxAction) => {
@@ -57,15 +31,19 @@ const reducer = (oldState = initialState, action: reduxAction) => {
   switch (action.type) {
     case "set:songs":
       state.songs = action.payload;
+      setArr("songs", action.payload);
       break;
     case "set:queue":
       state.queue = action.payload;
+      setArr("queue", action.payload);
       break;
     case "set:cur":
       state.cur = action.payload;
+      setNum("cur", action.payload);
       break;
     case "update:cur":
       state.cur += action.payload;
+      setNum("cur", state.cur);
       break;
     default:
       break;

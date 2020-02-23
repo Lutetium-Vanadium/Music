@@ -59,7 +59,7 @@ function Home({ setCur, setQueue, setSongs }) {
         {topSongs.map((song, i) => (
           <div
             key={song.filePath}
-            className="top-wraper"
+            className="top-wrapper"
             onClick={() => playSong(i)}
           >
             <img className="top" src={song.thumbnail} alt="top-song" />

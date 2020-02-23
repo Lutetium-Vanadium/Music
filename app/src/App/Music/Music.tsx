@@ -10,9 +10,11 @@ if (window.require) {
   ipcRenderer = window.require("electron").ipcRenderer;
 }
 
+const empty: song[] = [];
+
 function Music() {
-  const [allSongs, setAllSongs] = useState(initial);
-  const [songs, setSongs] = useState(initial);
+  const [allSongs, setAllSongs] = useState(empty);
+  const [songs, setSongs] = useState(empty);
 
   useEffect(() => {
     if (ipcRenderer) {
@@ -51,132 +53,3 @@ function Music() {
 }
 
 export default Music;
-
-const initial: song[] = [
-  {
-    artist: "Artist",
-    filePath: "filePath",
-    thumbnail: "http://placekitten.com/200/200",
-    title:
-      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reprehenderit, quibusdam!",
-    length: 69,
-    numListens: 0
-  },
-  {
-    artist: "Artist",
-    filePath: "filePath",
-    thumbnail: "http://pacekitten.com/200/200",
-    title:
-      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reprehenderit, quibusdam!",
-    length: 69,
-    numListens: 0
-  },
-  {
-    artist: "Artist",
-    filePath: "filePath",
-    thumbnail: "http://placekitten.com/200/200",
-    title:
-      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reprehenderit, quibusdam!",
-    length: 69,
-    numListens: 0
-  },
-  {
-    artist: "Artist",
-    filePath: "filePath",
-    thumbnail: "http://placekitten.com/200/200",
-    title:
-      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reprehenderit, quibusdam!",
-    length: 69,
-    numListens: 0
-  },
-  {
-    artist: "Artist",
-    filePath: "filePath",
-    thumbnail: "http://placekitten.com/200/200",
-    title:
-      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reprehenderit, quibusdam!",
-    length: 69,
-    numListens: 0
-  },
-  {
-    artist: "Artist",
-    filePath: "filePath",
-    thumbnail: "http://placekitten.com/200/200",
-    title:
-      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reprehenderit, quibusdam!",
-    length: 69,
-    numListens: 0
-  },
-  {
-    artist: "Artist",
-    filePath: "filePath",
-    thumbnail: "http://placekitten.com/200/200",
-    title:
-      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reprehenderit, quibusdam!",
-    length: 69,
-    numListens: 0
-  },
-  {
-    artist: "Artist",
-    filePath: "filePath",
-    thumbnail: "http://placekitten.com/200/200",
-    title:
-      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reprehenderit, quibusdam!",
-    length: 69,
-    numListens: 0
-  },
-  {
-    artist: "Artist",
-    filePath: "filePath",
-    thumbnail: "http://placekitten.com/200/200",
-    title:
-      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reprehenderit, quibusdam!",
-    length: 69,
-    numListens: 0
-  },
-  {
-    artist: "Artist",
-    filePath: "filePath",
-    thumbnail: "http://placekitten.com/200/200",
-    title:
-      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reprehenderit, quibusdam!",
-    length: 69,
-    numListens: 0
-  },
-  {
-    artist: "Artist",
-    filePath: "filePath",
-    thumbnail: "http://placekitten.com/200/200",
-    title:
-      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reprehenderit, quibusdam!",
-    length: 69,
-    numListens: 0
-  },
-  {
-    artist: "Artist",
-    filePath: "filePath",
-    thumbnail: "http://placekitten.com/200/200",
-    title:
-      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reprehenderit, quibusdam!",
-    length: 69,
-    numListens: 0
-  },
-  {
-    artist: "Artist",
-    filePath: "filePath",
-    thumbnail: "http://placekitten.com/200/200",
-    title:
-      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reprehenderit, quibusdam!",
-    length: 69,
-    numListens: 0
-  },
-  {
-    artist: "Artist",
-    filePath: "filePath",
-    thumbnail: "http://placekitten.com/200/200",
-    title:
-      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reprehenderit, quibusdam!",
-    length: 69,
-    numListens: 0
-  }
-];

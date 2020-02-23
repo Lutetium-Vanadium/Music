@@ -67,7 +67,6 @@ function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
   };
 
   const shuffleSongs = () => {
-    console.log({ shuffle });
     if (shuffle) {
       const index = songs.findIndex(_song => _song === song);
       setQueue(songs);

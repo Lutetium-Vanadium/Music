@@ -1,8 +1,25 @@
 import { app, Menu, MenuItemConstructorOptions, BrowserWindow } from "electron";
 import { store } from "./main";
 
-const setMenu = (win: BrowserWindow) => {
+const setMenu = (win: BrowserWindow, dev: boolean) => {
   const isMac = process.platform === "darwin";
+
+  let viewSubmenu: MenuItemConstructorOptions[] = [
+    { role: "resetZoom" },
+    { role: "zoomIn" },
+    { role: "zoomOut" },
+    { type: "separator" },
+    { role: "togglefullscreen" }
+  ];
+
+  if (dev) {
+    viewSubmenu.unshift(
+      { role: "reload" },
+      { role: "forceReload" },
+      { role: "toggleDevTools" },
+      { type: "separator" }
+    );
+  }
 
   let template: MenuItemConstructorOptions[] = [
     {
@@ -53,13 +70,7 @@ const setMenu = (win: BrowserWindow) => {
     },
     {
       label: "View",
-      submenu: [
-        { role: "resetZoom" },
-        { role: "zoomIn" },
-        { role: "zoomOut" },
-        { type: "separator" },
-        { role: "togglefullscreen" }
-      ]
+      submenu: viewSubmenu
     }
   ];
 

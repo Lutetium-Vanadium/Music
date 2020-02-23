@@ -19,15 +19,17 @@ import logo from "#logos/logo.png";
 let ipcRenderer;
 if (window.require) ipcRenderer = window.require("electron").ipcRenderer;
 
+const empty: song[] = [];
+
 function App() {
-  const [searchResults, setSearchResults] = useState(initialSearchParams);
+  const [searchResults, setSearchResults] = useState(empty);
+  // TODO use searchSuccess
   const [searchSuccess, setSearchSuccess] = useState(true);
-  // const [progress, setProgress] = useState(0);
-  // const [downloading, setDownloading] = useState(false);
   const [downloadError, setDownloadError] = useState(false);
-  // const [downloading, setDownloading] = useState({});
   const [downloading, dispatch] = useReducer(reducer, {});
   const queue = useSelector((state: reduxState) => state.queue);
+  // Used by SearchPage to show loader on initial search results
+  const [loading, setLoading] = useState(true);
 
   const search = async (query: string) => {
     if (ipcRenderer) {
@@ -40,6 +42,9 @@ function App() {
       } else {
         setSearchSuccess(false);
       }
+      setLoading(false);
+    } else {
+      setLoading(false);
     }
   };
 
@@ -78,6 +83,7 @@ function App() {
         });
       });
       ipcRenderer.on("error:download-query", () => setDownloadError(true));
+      ipcRenderer.on("reset-global-search", () => setLoading(true));
     }
   }, []);
 
@@ -93,7 +99,11 @@ function App() {
           <Route
             path="/search"
             render={() => (
-              <SearchPage download={download} results={searchResults} />
+              <SearchPage
+                download={download}
+                results={searchResults}
+                loading={loading}
+              />
             )}
           />
           <Route path="/music" component={Music} />
@@ -138,7 +148,6 @@ const reducer = (state: object, action: action) => {
     case "finish:download":
       // While this may not be the best place to put a notification, it is required since updated
       // `state` is not available in the useEffect
-      console.log({ newState, action });
       const song: song = newState[action.id].song;
       new Notification(song.title, {
         body: `Finished Downloading ${song.title} by ${
@@ -155,30 +164,3 @@ const reducer = (state: object, action: action) => {
 
   return newState;
 };
-
-const temp_song: song = {
-  artist: "Artist",
-  filePath: "fileName",
-  thumbnail: "http://placekitten.com/200/200",
-  title:
-    "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reprehenderit, quibusdam!",
-  length: 69,
-  numListens: 0
-};
-
-const initialSearchParams: song[] = [
-  temp_song,
-  temp_song,
-  temp_song,
-  temp_song,
-  temp_song,
-  temp_song,
-  temp_song,
-  temp_song,
-  temp_song,
-  temp_song,
-  temp_song,
-  temp_song,
-  temp_song,
-  temp_song
-];

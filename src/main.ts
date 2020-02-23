@@ -1,9 +1,14 @@
 import { app, BrowserWindow, ipcMain, dialog } from "electron";
+import * as dataurl from "dataurl";
 import * as path from "path";
 import * as fs from "fs";
 import "./console";
 import setMenu from "./menu";
 import Store from "./functions/store";
+
+// In the built application, proccess directory is taken as the one it is being run from.
+// app.getAppPath() gives the correct directory for everything to be loaded
+process.chdir(app.getAppPath());
 
 // store instance is required by 'downloader.js'
 export const store = new Store({
@@ -22,7 +27,6 @@ import { songDownloader as downloader } from "./functions/downloader";
 import addAlbum from "./functions/addAlbum";
 import getYoutubeId from "./functions/getYoutubeId";
 import db from "./functions/db_handler";
-import dataurl from "dataurl";
 import { song } from "./types";
 
 // Downloader settings
@@ -55,7 +59,7 @@ if (!fs.existsSync(album_images_path)) fs.mkdir(album_images_path, console.log);
 
 // needed variables
 let win: BrowserWindow;
-const dev = false;
+const dev = true;
 
 // Main window creation
 app.on("ready", () => {
@@ -63,7 +67,8 @@ app.on("ready", () => {
     width: 1000,
     height: 800,
     webPreferences: {
-      nodeIntegration: true
+      nodeIntegration: true,
+      webSecurity: !dev
     },
     icon: path.join(app.getAppPath(), "app", "src", "logos", "logo.png")
   });
@@ -75,7 +80,7 @@ app.on("ready", () => {
         "file://" + path.join(app.getAppPath(), "public", "index.html")
       );
 
-  setMenu(win);
+  setMenu(win, dev);
   checkSongs();
 });
 
@@ -326,6 +331,7 @@ const ls = (path: fs.PathLike): Promise<string[]> => {
   });
 };
 
+// Helper function that provides a promised based fs.unlink
 const rm = (path: fs.PathLike): Promise<void> => {
   return new Promise((res, rej) => {
     fs.unlink(path, err => {

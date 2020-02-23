@@ -42,7 +42,6 @@ function SongView({
     setQueue(allSongs);
     setCur(index);
   };
-
   const play = () => {
     if (index === -1) return;
     _play(index);
@@ -65,6 +64,7 @@ function SongView({
     if (ipcRenderer) {
       await ipcRenderer.send("set:liked", songs[index].title);
     }
+    setPos([-200, -200]);
   };
 
   const del = async () => {
@@ -94,8 +94,6 @@ function SongView({
       });
     }
   };
-
-  console.log({ songs, index });
 
   return (
     <>

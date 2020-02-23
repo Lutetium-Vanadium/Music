@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 
 import { album } from "../../types";
 import liked from "../liked.png";
-console.log({ liked });
 
 let ipcRenderer;
 if (window.require) {
