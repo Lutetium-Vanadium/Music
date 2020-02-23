@@ -1,10 +1,11 @@
-import Downloader from "youtube-mp3-downloader";
 import { store } from "../main";
 import { app } from "electron";
 import axios from "axios";
 import { execSync } from "child_process";
 import * as path from "path";
 import * as fs from "fs";
+
+const Downloader = require("youtube-mp3-downloader");
 
 // This file has the specified configurations for the youtuber downloader
 // and a function to download images

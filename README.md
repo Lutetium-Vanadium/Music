@@ -39,12 +39,23 @@ yarn build-start
 ```
 
 > It is equivalent to running `yarn build` and then `yarn start`
-> <br>
-> To build the app into an exectuable one:
+
+<br>
+
+To build the app into an exectuable one:
 
 ```sh
 yarn deploy
 ```
+
+<br>
+Rebuild sqlite3:
+
+```sh
+yarn fix-sqlite3
+```
+
+<br>
 
 ### In the `/app` Directory
 

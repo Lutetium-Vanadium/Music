@@ -54,10 +54,6 @@ const setMenu = (win: BrowserWindow) => {
     {
       label: "View",
       submenu: [
-        { role: "reload" }, // Temp
-        { role: "forceReload" }, // Temp
-        { role: "toggleDevTools" }, // Temp
-        { type: "separator" }, // Temp
         { role: "resetZoom" },
         { role: "zoomIn" },
         { role: "zoomOut" },

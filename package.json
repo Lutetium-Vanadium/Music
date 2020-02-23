@@ -1,32 +1,35 @@
 {
   "name": "Music",
+  "author": "Lutetium-Vanadium",
   "type": "module",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "./index.js",
   "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "build-react": "cd app && yarn build",
+    "build-start": "yarn build-react && yarn start",
+    "deploy": "electron-packager . --overwrite",
+    "fix-sqlite3": "./node_modules/.bin/electron-rebuild -w sqlite3 -p"
+  },
   "dependencies": {
-    "@types/electron": "^1.6.10",
-    "@types/react-redux": "^7.1.7",
     "axios": "^0.19.2",
     "dataurl": "^0.1.0",
     "dotenv": "^8.2.0",
-    "electron-rebuild": "^1.10.0",
     "request": "^2.88.0",
     "request-promise": "^4.2.5",
+    "shell-path": "^2.1.0",
     "sqlite3": "^4.1.1",
     "ts-node": "^8.6.2",
     "typescript": "^3.8.2",
     "youtube-mp3-downloader": "^0.6.5"
   },
-  "scripts": {
-    "start": "electron .",
-    "build-react": "cd app && yarn build",
-    "build-start": "yarn build-react && yarn start",
-    "deploy": "electron-packager . --overwrite"
-  },
   "devDependencies": {
+    "@types/electron": "^1.6.10",
+    "@types/react-redux": "^7.1.7",
     "@types/sqlite3": "^3.1.6",
     "electron": "^8.0.1",
-    "electron-packager": "^14.2.1"
+    "electron-packager": "^14.1.1",
+    "electron-rebuild": "^1.10.0"
   }
 }

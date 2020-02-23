@@ -1,5 +1,5 @@
 import { app } from "electron";
-import sqlite3 from "sqlite3";
+import * as sqlite3 from "sqlite3";
 import * as path from "path";
 import { song, album } from "../types";
 

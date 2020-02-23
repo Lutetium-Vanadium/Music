@@ -4,6 +4,7 @@
     "jsx": "react",
     "baseUrl": "./src",
     "moduleResolution": "node",
+    "esModuleInterop": true,
     "rootDir": "src",
     "paths": {
       "#root/*": ["./src/*"],

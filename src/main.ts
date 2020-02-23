@@ -1,7 +1,6 @@
-import { app, BrowserWindow, ipcMain, dialog, protocol } from "electron";
+import { app, BrowserWindow, ipcMain, dialog } from "electron";
 import * as path from "path";
 import * as fs from "fs";
-
 import "./console";
 import setMenu from "./menu";
 import Store from "./functions/store";
@@ -64,16 +63,17 @@ app.on("ready", () => {
     width: 1000,
     height: 800,
     webPreferences: {
-      nodeIntegration: true,
-      webSecurity: false
+      nodeIntegration: true
     },
-    icon: path.resolve("app", "src", "logos", "logo.png")
+    icon: path.join(app.getAppPath(), "app", "src", "logos", "logo.png")
   });
 
   // dev should be changed to false and frontend should be built for a proper app
   dev
     ? win.loadURL("http://localhost:1234/")
-    : win.loadURL("file://" + path.resolve("public", "index.html"));
+    : win.loadURL(
+        "file://" + path.join(app.getAppPath(), "public", "index.html")
+      );
 
   setMenu(win);
   checkSongs();
@@ -334,12 +334,3 @@ const rm = (path: fs.PathLike): Promise<void> => {
     });
   });
 };
-
-// const temp = async () => {
-//   for (let album of albums) {
-//     console.log("Starting: " + album);
-//     await addAlbum(album);
-//     console.log("Finished: " + album);
-//   }
-// };
-// temp();
