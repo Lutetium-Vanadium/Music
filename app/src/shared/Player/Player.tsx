@@ -28,10 +28,11 @@ function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
   const [loop, setLoop] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [songData, setSongData] = useState();
-  const [shuffle, setShuffle] = useState(false);
+  const [shuffle, setShuffle] = useState(true);
   const [exit, setExit] = useState(false);
 
-  const pausePlay = (override = false) => {
+  const pausePlay = (override = false, isRemote = false) => {
+    console.log({ override, isRemote });
     if (!(loaded || override)) return;
     if (ref.current.paused) {
       ref.current.play();
@@ -43,6 +44,9 @@ function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
       document.getElementById("box2-pause").beginElement();
     }
 
+    if (!isRemote) {
+      ipcRenderer.send("main-play-pause", ref.current.paused);
+    }
     setPaused(ref.current.paused);
   };
 
@@ -101,6 +105,9 @@ function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
   useEffect(() => {
     setPaused(false);
     getSong(song.filePath);
+    if (ipcRenderer) {
+      ipcRenderer.send("main-song-update", song);
+    }
   }, [song]);
 
   useEffect(() => {
@@ -123,6 +130,10 @@ function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
       );
       ipcRenderer.on("prev-track", () => prevSong());
       ipcRenderer.on("next-track", () => nextSong());
+      ipcRenderer.on("pause-play", (evt, isRemote) =>
+        pausePlay(true, isRemote)
+      );
+      ipcRenderer.send("toggle-remote");
     }
 
     const handleKeydown = (e: KeyboardEvent) => {
@@ -133,7 +144,10 @@ function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
     };
 
     window.addEventListener("keydown", handleKeydown);
-    return () => window.removeEventListener("keydown", handleKeydown);
+    return () => {
+      window.removeEventListener("keydown", handleKeydown);
+      ipcRenderer.send("toggle-remote", song);
+    };
   }, []);
 
   const [formattedTime, formattedTotalTime] = formatLength(
@@ -209,10 +223,6 @@ function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
         max={song.length}
         onChange={handleChange}
       />
-      {/* <span
-        style={{ width: `${(timeStamp / song.length) * 100}%` }}
-        className="timeline-span"
-      ></span> */}
     </div>
   );
 }

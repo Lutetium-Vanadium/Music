@@ -44,7 +44,7 @@ function App() {
       }
       setLoading(false);
     } else {
-      setLoading(false);
+      setTimeout(() => setLoading(false), 400);
     }
   };
 

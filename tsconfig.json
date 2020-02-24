@@ -2,7 +2,8 @@
   "compilerOptions": {
     "moduleResolution": "node",
     "baseUrl": "./src",
-    "rootDir": "src"
+    "rootDir": "src",
+    "experimentalDecorators": true
   },
   "include": ["global.d.ts"]
 }

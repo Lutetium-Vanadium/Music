@@ -63,6 +63,7 @@ main {
   top: 6rem;
   height: calc(100vh - 5rem);
   overflow: auto;
+  transition: 0.2s cubic-bezier(0.785, 0.135, 0.15, 0.86);
 }
 
 img {
@@ -87,7 +88,7 @@ hr {
   width: 80%;
   background-color: #dfdfdf69;
   border: none;
-  margin: 4rem auto;
+  margin: 3rem auto 4rem auto;
 }
 
 button {

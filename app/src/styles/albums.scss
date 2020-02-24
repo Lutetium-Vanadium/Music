@@ -41,7 +41,7 @@ $img-max: 150px;
 .album-header {
   @include flex-box(flex-start);
 
-  margin-left: 10%;
+  margin-left: 15%;
   margin-bottom: 2rem;
 
   .header {

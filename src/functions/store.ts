@@ -24,10 +24,6 @@ class Store {
     this.parseDataFile(defaults);
   }
 
-  private _write = () => {
-    fs.writeFileSync(this._path, JSON.stringify(this._data));
-  };
-
   /**
    * Store.get()
    *
@@ -73,11 +69,21 @@ class Store {
    */
   private parseDataFile = (defaults: object) => {
     try {
-      this._data = JSON.parse(fs.readFileSync(this._path).toString());
+      const data = JSON.parse(fs.readFileSync(this._path).toString());
+      // Makes sure if new properties have been introduced, they will be set to their defaults;
+      this._data = {
+        ...defaults,
+        ...data
+      };
     } catch (error) {
       this._data = defaults;
-      this._write();
     }
+    this._write();
+  };
+
+  // The defination for the @Write decorator
+  private _write = () => {
+    fs.writeFileSync(this._path, JSON.stringify(this._data));
   };
 }
 

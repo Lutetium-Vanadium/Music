@@ -4,7 +4,7 @@
   padding: 1.5rem;
   max-width: 1200px;
   margin: 0 auto;
-  margin-bottom: 10%;
+  margin-bottom: 4%;
   padding-top: 0;
 
   .setting {
@@ -30,7 +30,7 @@
   .change {
     background: $highlightd;
     padding: 0.75rem 1.5rem;
-    transition: background-color 100ms linear;
+    transition: background-color 0.3s linear;
     border-radius: 0.3rem;
 
     &:hover {
@@ -85,5 +85,51 @@
       transform: translateX(0) scale(1);
       transition: 0.4s 0.2s;
     }
+  }
+}
+
+.toggle {
+  width: 4rem;
+  height: 2rem;
+  // background-color: $bgm;
+  border-radius: 1rem;
+  overflow: hidden;
+  background-color: $bgl;
+  cursor: pointer;
+
+  transition: 0.3s;
+
+  .button {
+    display: inline-block;
+    position: absolute;
+    height: 1.5rem;
+    width: 1.5rem;
+    border-radius: 50%;
+    background-color: #ddd;
+    margin: 0.25rem;
+    transform: translateX(0);
+    z-index: 2;
+
+    transition: background-color 0.3s,
+      transform 0.2s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+  }
+  .color {
+    display: inline-block;
+    border-radius: 0.3rem;
+    z-index: 1;
+    transform: translateX(-4rem);
+    background-color: $highlight;
+    width: 4rem;
+    height: 2rem;
+
+    transition: 0.3s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+  }
+
+  .toggled.button {
+    transform: translateX(2rem);
+  }
+
+  .toggled.color {
+    transform: translateX(0);
   }
 }

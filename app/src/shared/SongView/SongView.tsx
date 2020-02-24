@@ -8,7 +8,7 @@ import Song from "../../shared/Song";
 import { Dispatch } from "redux";
 import { create } from "../../reduxHandler";
 
-const logo = require("../../../logos/log.png");
+const logo = require("../../logos/logo.png");
 
 let ipcRenderer;
 if (window.require) {
@@ -69,6 +69,13 @@ function SongView({
 
   const del = async () => {
     const song = songs[index];
+
+    const confirmed = confirm(
+      `Are you sure you want to delete ${song.title} by ${song.artist}?`
+    );
+    setPos([-200, -200]);
+    if (!confirmed) return;
+
     setSongs([
       ...songs.slice(0, index),
       ...songs.slice(index + 1, songs.length)
@@ -80,7 +87,6 @@ function SongView({
       ...allSongs.slice(0, allSongsIndex),
       ...allSongs.slice(allSongsIndex + 1, allSongs.length)
     ]);
-    setPos([-200, -200]);
     if (ipcRenderer) {
       const success = await ipcRenderer.invoke("delete:song", song);
       let body = success
@@ -97,6 +103,10 @@ function SongView({
 
   return (
     <>
+      <div className="buttons">
+        <button className="begin" onClick={() => _play(0)}>Play First Song</button>
+        <button className="random" onClick={() => _play(randint(songs.length))}>Play Random Song</button>
+      </div>
       <ContextMenu
         pos={pos}
         reset={() => setPos([-200, -200])}
@@ -147,3 +157,7 @@ const TripleDot = ({ onClick, ...props }: TripleDotProps) => (
     <circle cx="80" cy="10" r="10" fill="white" />
   </svg>
 );
+
+const randint = (max: number) => {
+  return Math.floor(Math.random() * max);
+}

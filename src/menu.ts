@@ -31,7 +31,7 @@ const setMenu = (win: BrowserWindow, dev: boolean) => {
       submenu: [
         {
           label: "Pause/Play",
-          click: () => win.webContents.send("pause-play"),
+          click: () => win.webContents.send("pause-play", false),
           accelerator: "Space"
         },
         {

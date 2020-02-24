@@ -18,7 +18,8 @@ export const store = new Store({
     jumpAhead: 15,
     seekAhead: 5,
     seekBack: 5,
-    jumpBack: 15
+    jumpBack: 15,
+    controlWindow: false
   }
 });
 
@@ -59,6 +60,7 @@ if (!fs.existsSync(album_images_path)) fs.mkdir(album_images_path, console.log);
 
 // needed variables
 let win: BrowserWindow;
+let remote: BrowserWindow;
 const dev = true;
 
 // Main window creation
@@ -94,12 +96,14 @@ app.on("quit", () => {
 // gets the configured music directory
 ipcMain.handle("get:info", (evt, val) => {
   return new Promise((res, rej) => {
+    const controlWindow = store.get("controlWindow");
     res({
       dir: store.get("folderStored"),
       jumpAhead: store.get("jumpAhead"),
       seekAhead: store.get("seekAhead"),
       seekBack: store.get("seekBack"),
-      jumpBack: store.get("jumpBack")
+      jumpBack: store.get("jumpBack"),
+      controlWindow
     });
   });
 });
@@ -186,6 +190,18 @@ ipcMain.on("set:info", (evt, info) => {
 });
 
 ipcMain.on(
+  "set:control-window",
+  (evt, value: boolean, playing: boolean, song: song) => {
+    store.set("controlWindow", value);
+    if (!remote && value && playing) {
+      setUpRemote(song);
+    } else if (remote && !value) {
+      remote.close();
+    }
+  }
+);
+
+ipcMain.on(
   "set:liked",
   async (evt, title: string) => await db.changeLiked(title)
 );
@@ -228,6 +244,63 @@ ipcMain.handle("delete:song", async (evt, song: song) => {
 // When the search page is clicked out of, this is used to reset the input field
 ipcMain.on("reset-global-search", () => {
   win.webContents.send("reset-search-box");
+});
+
+// Methods to handle the remote controller
+
+const setUpRemote = (song: song) => {
+  remote = new BrowserWindow({
+    width: 500,
+    height: 105,
+    webPreferences: {
+      nodeIntegration: true,
+      webSecurity: !dev
+    },
+    resizable: false,
+    alwaysOnTop: true,
+    icon: path.join(app.getAppPath(), "app", "src", "logos", "logo.png")
+  });
+
+  remote.on("close", () => (remote = null));
+
+  remote.loadURL("file://" + path.join(app.getAppPath(), "remote.html"));
+  remote.once("ready-to-show", () => {
+    remote.webContents.send("song-update", song);
+    remote.show();
+  });
+};
+
+ipcMain.on("toggle-remote", (evt, song: song) => {
+  if (!store.get("controlWindow")) return;
+  if (remote) {
+    remote.close();
+  } else {
+    setUpRemote(song);
+  }
+});
+
+ipcMain.on("main-song-update", (evt, song: song) => {
+  if (remote) {
+    remote.webContents.send("song-update", song);
+  }
+});
+
+ipcMain.on("main-play-pause", (evt, isPaused) => {
+  if (remote) {
+    remote.webContents.send("song-pause-play", isPaused);
+  }
+});
+
+ipcMain.on("remote-prev", () => {
+  win.webContents.send("prev-track", true);
+});
+
+ipcMain.on("remote-next", () => {
+  win.webContents.send("next-track");
+});
+
+ipcMain.on("remote-pause-play", () => {
+  win.webContents.send("pause-play");
 });
 
 // Given a range of song names, this adds them to the database

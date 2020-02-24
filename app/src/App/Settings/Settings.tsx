@@ -1,7 +1,10 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 
 import NumberSelection from "./NumberSelection";
+import Toggle from "./Toggle";
+import { reduxState } from "../../reduxHandler";
 
 let ipcRenderer;
 if (window.require) {
@@ -19,6 +22,9 @@ function Settings() {
   const [seekBack, setSeekBack] = useState(min);
   const [seekAhead, setSeekAhead] = useState(min);
   const [jumpAhead, setJumpAhead] = useState(min * 2);
+  const [controls, setControls] = useState(false);
+
+  const { queue, cur } = useSelector((state: reduxState) => state);
 
   const changeDirectory = () => {
     if (ipcRenderer) {
@@ -44,6 +50,20 @@ function Settings() {
     }
   };
 
+  const toggleControlWindow = () => {
+    if (ipcRenderer) {
+      const isPlaying: boolean = queue.length > 0;
+
+      ipcRenderer.send(
+        "set:control-window",
+        !controls,
+        isPlaying,
+        isPlaying ? queue[cur] : null
+      );
+    }
+    setControls(!controls);
+  };
+
   useEffect(() => {
     if (ipcRenderer) {
       ipcRenderer.invoke("get:info").then(info => {
@@ -52,6 +72,7 @@ function Settings() {
         setSeekBack(info.seekBack);
         setSeekAhead(info.seekAhead);
         setJumpAhead(info.jumpAhead);
+        setControls(info.controlWindow);
       });
     }
   }, []);
@@ -88,6 +109,13 @@ function Settings() {
       <button className="change center" onClick={applyChanges}>
         Change
       </button>
+      <hr />
+      <div className="setting">
+        <p className="name">
+          Open Secondary Control Window when music is playing?
+        </p>
+        <Toggle toggled={controls} toggle={toggleControlWindow} />
+      </div>
     </div>
   );
 }
