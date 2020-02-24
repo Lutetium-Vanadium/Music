@@ -192,6 +192,7 @@ ipcMain.on("set:info", (evt, info) => {
 ipcMain.on(
   "set:control-window",
   (evt, value: boolean, playing: boolean, song: song) => {
+    console.log(value, playing, song);
     store.set("controlWindow", value);
     if (!remote && value && playing) {
       setUpRemote(song);
@@ -264,17 +265,17 @@ const setUpRemote = (song: song) => {
   remote.on("close", () => (remote = null));
 
   remote.loadURL("file://" + path.join(app.getAppPath(), "remote.html"));
-  remote.once("ready-to-show", () => {
+
+  ipcMain.on("remote-ready", () => {
     remote.webContents.send("song-update", song);
-    remote.show();
   });
 };
 
 ipcMain.on("toggle-remote", (evt, song: song) => {
   if (!store.get("controlWindow")) return;
-  if (remote) {
+  if (song === null && remote) {
     remote.close();
-  } else {
+  } else if (song !== null && !remote) {
     setUpRemote(song);
   }
 });

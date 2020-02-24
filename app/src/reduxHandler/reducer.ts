@@ -1,5 +1,5 @@
 import { song } from "../types";
-import { getArr, getNum, setArr, setNum } from "../localStorage";
+import { setArr, setNum } from "../localStorage";
 
 /**
  * interface reduxState
@@ -20,9 +20,9 @@ export interface reduxAction {
 }
 
 const initialState: reduxState = {
-  queue: getArr("queue"),
-  songs: getArr("songs"),
-  cur: getNum("cur")
+  queue: [],
+  songs: [],
+  cur: -1
 };
 
 const reducer = (oldState = initialState, action: reduxAction) => {
@@ -31,7 +31,6 @@ const reducer = (oldState = initialState, action: reduxAction) => {
   switch (action.type) {
     case "set:songs":
       state.songs = action.payload;
-      setArr("songs", action.payload);
       break;
     case "set:queue":
       state.queue = action.payload;

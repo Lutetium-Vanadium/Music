@@ -146,7 +146,7 @@ function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
     window.addEventListener("keydown", handleKeydown);
     return () => {
       window.removeEventListener("keydown", handleKeydown);
-      ipcRenderer.send("toggle-remote", song);
+      ipcRenderer.send("toggle-remote", null);
     };
   }, []);
 
@@ -211,7 +211,7 @@ function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
           onTimeUpdate={updateTimeStamp}
           onError={console.error}
           src={songData}
-          autoPlay
+          autoPlay={!paused}
         ></audio>
       </div>
       <input

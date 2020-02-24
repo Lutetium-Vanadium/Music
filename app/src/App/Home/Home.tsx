@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 
 import { create } from "../../reduxHandler";
 import { song, album } from "../../types";
+import { getArr, getNum } from "../../localStorage";
 
 let ipcRenderer;
 if (window.require) {
@@ -15,17 +16,29 @@ if (window.require) {
 const emptyAlbum: album[] = [];
 const emptySong: song[] = [];
 
+const reposition = (arr: any[], index: number) => {
+  return [...arr.slice(index, arr.length), ...arr.slice(0, index)];
+};
+
+const lastQueue: song[] = reposition(getArr("queue"), getNum("cur"));
+
 function Home({ setCur, setQueue, setSongs }) {
   const [topAlbums, setTopAlbums] = useState(emptyAlbum);
   const [topSongs, setTopSongs] = useState(emptySong);
 
   const playSong = async (index: number) => {
     if (ipcRenderer) {
-      const songs = await ipcRenderer.invoke("get:top-songs", false);
+      const songs: song[] = await ipcRenderer.invoke("get:top-songs", false);
       setCur(index);
       setQueue(songs);
       setSongs(songs);
     }
+  };
+
+  const playLastQueue = (index: number) => {
+    setCur(index);
+    setQueue(lastQueue);
+    setSongs(lastQueue);
   };
 
   useEffect(() => {
@@ -41,6 +54,23 @@ function Home({ setCur, setQueue, setSongs }) {
 
   return (
     <div className="home">
+      {lastQueue.length ? (
+        <>
+          <h1 className="header">Pickup Where You Left Off</h1>
+          <div className="top-list">
+            {lastQueue.slice(0, 5).map((song, i) => (
+              <div
+                key={song.filePath}
+                className="top-wrapper"
+                onClick={() => playLastQueue(i)}
+              >
+                <img className="top" src={song.thumbnail} alt="top-song" />
+                <p className="top-title">{song.title}</p>
+              </div>
+            ))}
+          </div>
+        </>
+      ) : null}
       <h1 className="header">Top Albums</h1>
       <div className="top-list">
         {topAlbums.map(album => (
@@ -54,8 +84,8 @@ function Home({ setCur, setQueue, setSongs }) {
           </Link>
         ))}
       </div>
-      <h1 className="header">Top Songs</h1>
-      <div className="top-list last">
+      <h1 className="header">Most Heard Songs</h1>
+      <div className="top-list">
         {topSongs.map((song, i) => (
           <div
             key={song.filePath}

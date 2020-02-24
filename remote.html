@@ -155,6 +155,10 @@
           document.getElementById("box2-play").beginElement();
         }
       });
+
+      document.addEventListener("DOMContentLoaded", () => {
+        ipcRenderer.send("remote-ready");
+      });
     </script>
   </body>
 </html>
