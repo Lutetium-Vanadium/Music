@@ -133,7 +133,7 @@ function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
       ipcRenderer.on("pause-play", (evt, isRemote) =>
         pausePlay(true, isRemote)
       );
-      ipcRenderer.send("toggle-remote");
+      ipcRenderer.send("toggle-remote", song);
     }
 
     const handleKeydown = (e: KeyboardEvent) => {

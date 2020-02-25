@@ -4,6 +4,7 @@
   padding: 1.5rem;
   max-width: 1200px;
   margin: 0 auto;
+  margin-bottom: 9%;
 
   .header-wrapper {
     @include flex-box(space-between);

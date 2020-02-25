@@ -85,7 +85,7 @@ function Home({ setCur, setQueue, setSongs }) {
         ))}
       </div>
       <h1 className="header">Most Heard Songs</h1>
-      <div className="top-list">
+      <div className="top-list last">
         {topSongs.map((song, i) => (
           <div
             key={song.filePath}
