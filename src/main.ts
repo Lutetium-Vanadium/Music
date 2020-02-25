@@ -61,13 +61,15 @@ if (!fs.existsSync(album_images_path)) fs.mkdir(album_images_path, console.log);
 // needed variables
 let win: BrowserWindow;
 let remote: BrowserWindow;
-const dev = true;
+const dev = !app.isPackaged;
+
+app.allowRendererProcessReuse = true;
 
 // Main window creation
 app.on("ready", () => {
   win = new BrowserWindow({
-    width: 1000,
-    height: 800,
+    width: 1130,
+    height: 840,
     webPreferences: {
       nodeIntegration: true,
       webSecurity: !dev

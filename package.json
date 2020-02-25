@@ -6,6 +6,7 @@
   "main": "./index.js",
   "license": "MIT",
   "scripts": {
+    "watch": "watch 'yarn start' ./src --wait=1",
     "start": "electron .",
     "build-react": "cd app && yarn build",
     "build-start": "yarn build-react && yarn start",
@@ -33,6 +34,7 @@
     "@types/sqlite3": "^3.1.6",
     "electron": "^8.0.1",
     "electron-packager": "^14.1.1",
-    "electron-rebuild": "^1.10.0"
+    "electron-rebuild": "^1.10.0",
+    "watch": "^1.0.2"
   }
 }
