@@ -7,7 +7,7 @@ DIR=`pwd`
 echo "[Desktop Entry]
 Name=Music
 Exec=$DIR/Music-linux-x64/Music
-Icon=$DIR/app/src/logos/logo.png
+Icon=$DIR/Music-linux-x64/resources/app/src/logo.png
 Terminal=false
 Type=Application
 Categories=Utilities

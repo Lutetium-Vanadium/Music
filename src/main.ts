@@ -72,7 +72,7 @@ app.on("ready", () => {
       nodeIntegration: true,
       webSecurity: !dev
     },
-    icon: path.join(app.getAppPath(), "app", "src", "logos", "logo.png")
+    icon: path.join(app.getAppPath(), "src", "logo.png")
   });
 
   // dev should be changed to false and frontend should be built for a proper app
@@ -264,7 +264,7 @@ const setUpRemote = (song: song) => {
 
   remote.on("close", () => (remote = null));
 
-  remote.loadURL("file://" + path.join(app.getAppPath(), "remote.html"));
+  remote.loadURL("file://" + path.join(app.getAppPath(), "src", "remote.html"));
 
   ipcMain.on("remote-ready", () => {
     remote.webContents.send("song-update", song);
