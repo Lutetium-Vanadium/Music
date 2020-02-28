@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, dialog } from "electron";
+import { app, BrowserWindow, ipcMain, dialog, globalShortcut } from "electron";
 import * as dataurl from "dataurl";
 import * as path from "path";
 import * as fs from "fs";
@@ -86,11 +86,21 @@ app.on("ready", () => {
 
   setMenu(win, dev);
   checkSongs();
+  globalShortcut.register("MediaPlayPause", () =>
+    win.webContents.send("pause-play", false)
+  );
+  globalShortcut.register("MediaNextTrack", () =>
+    win.webContents.send("next-track")
+  );
+  globalShortcut.register("MediaPreviousTrack", () =>
+    win.webContents.send("prev-track")
+  );
 });
 
 app.on("quit", () => {
   db.close();
   app.quit();
+  globalShortcut.unregisterAll();
 });
 
 // Get methods
