@@ -95,12 +95,14 @@ app.on("ready", () => {
   globalShortcut.register("MediaPreviousTrack", () =>
     win.webContents.send("prev-track")
   );
+
+  win.on("close", () => app.quit());
 });
 
 app.on("quit", () => {
   db.close();
-  app.quit();
   globalShortcut.unregisterAll();
+  app.quit();
 });
 
 // Get methods

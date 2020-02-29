@@ -14,6 +14,8 @@ import { song, searchResult } from "../types";
 import Player from "../shared/Player";
 import { reduxState } from "../reduxHandler";
 
+import Error from "../shared/Error";
+
 const logo = require("../logos/logo.png");
 
 let ipcRenderer;
@@ -39,12 +41,15 @@ function App() {
       );
       if (result.status) {
         setSearchResults(result.songs);
-      } else {
-        setSearchSuccess(false);
       }
+
+      setSearchSuccess(result.status);
       setLoading(false);
     } else {
-      setTimeout(() => setLoading(false), 400);
+      setTimeout(() => {
+        setLoading(false);
+        setSearchSuccess(false);
+      }, 1000);
     }
   };
 
@@ -103,6 +108,7 @@ function App() {
                 download={download}
                 results={searchResults}
                 loading={loading}
+                success={searchSuccess}
               />
             )}
           />

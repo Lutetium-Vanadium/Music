@@ -5,6 +5,7 @@
   "license": "MIT",
   "scripts": {
     "watch": "parcel ./src/index.html",
+    "prebuild": "rm -rf ../public",
     "build": "parcel build --out-dir=../public --public-url=./ ./src/index.html"
   },
   "dependencies": {
