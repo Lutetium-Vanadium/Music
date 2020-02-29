@@ -98,6 +98,7 @@ function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
 
   const toggleLiked = async () => {
     if (ipcRenderer) {
+      song.liked = !song.liked;
       await ipcRenderer.send("set:liked", song.title);
     }
   };
