@@ -52,25 +52,10 @@ function Home({ setCur, setQueue, setSongs }) {
     }
   }, []);
 
+  const showPrev = lastQueue.length > 0;
+
   return (
     <div className="home">
-      {lastQueue.length ? (
-        <>
-          <h1 className="header">Pickup Where You Left Off</h1>
-          <div className="top-list">
-            {lastQueue.slice(0, 5).map((song, i) => (
-              <div
-                key={song.filePath}
-                className="top-wrapper"
-                onClick={() => playLastQueue(i)}
-              >
-                <img className="top" src={song.thumbnail} alt="top-song" />
-                <p className="top-title">{song.title}</p>
-              </div>
-            ))}
-          </div>
-        </>
-      ) : null}
       <h1 className="header">Top Albums</h1>
       <div className="top-list">
         {topAlbums.map(album => (
@@ -85,7 +70,7 @@ function Home({ setCur, setQueue, setSongs }) {
         ))}
       </div>
       <h1 className="header">Most Heard Songs</h1>
-      <div className="top-list last">
+      <div className={`top-list${showPrev ? "" : " last"}`}>
         {topSongs.map((song, i) => (
           <div
             key={song.filePath}
@@ -96,6 +81,23 @@ function Home({ setCur, setQueue, setSongs }) {
             <p className="top-title">{song.title}</p>
           </div>
         ))}
+      {showPrev ? (
+        <>
+          <h1 className="header">Pickup Where You Left Off</h1>
+          <div className="top-list last">
+            {lastQueue.slice(0, 5).map((song, i) => (
+              <div
+                key={song.filePath}
+                className="top-wrapper"
+                onClick={() => playLastQueue(i)}
+              >
+                <img className="top" src={song.thumbnail} alt="top-song" />
+                <p className="top-title">{song.title}</p>
+              </div>
+            ))}
+          </div>
+        </>
+      ) : null}
       </div>
     </div>
   );

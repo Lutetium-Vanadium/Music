@@ -2,7 +2,7 @@ import { app, BrowserWindow, ipcMain, dialog, globalShortcut } from "electron";
 import * as dataurl from "dataurl";
 import * as path from "path";
 import * as fs from "fs";
-import "./console";
+import debug from "./console";
 import setMenu from "./menu";
 import Store from "./functions/store";
 
@@ -32,7 +32,7 @@ import { song } from "./types";
 
 // Downloader settings
 downloader.on("error", err => {
-  console.error({ err });
+  console.error('[main.ts downloader.on("error"...] ', err);
   win.webContents.send("error:download-query", err);
 });
 
@@ -56,11 +56,11 @@ downloader.on("finished", async (err, data) => {
 // check if image directory exists
 const album_images_path = path.join(app.getPath("userData"), "album_images");
 
-if (!fs.existsSync(album_images_path)) fs.mkdir(album_images_path, console.log);
+if (!fs.existsSync(album_images_path)) fs.mkdir(album_images_path, debug.log);
 
 // needed variables
-let win: BrowserWindow;
-let remote: BrowserWindow;
+let win: BrowserWindow = null;
+let remote: BrowserWindow = null;
 const dev = !app.isPackaged;
 
 app.allowRendererProcessReuse = true;
@@ -95,6 +95,9 @@ app.on("ready", () => {
   globalShortcut.register("MediaPreviousTrack", () =>
     win.webContents.send("prev-track")
   );
+  globalShortcut.register("MediaStop", () => {
+    remote?.close();
+  });
 
   win.on("close", () => app.quit());
 });
@@ -206,7 +209,7 @@ ipcMain.on("set:info", (evt, info) => {
 ipcMain.on(
   "set:control-window",
   (evt, value: boolean, playing: boolean, song: song) => {
-    console.log(value, playing, song);
+    debug.log(value, playing, song);
     store.set("controlWindow", value);
     if (!remote && value && playing) {
       setUpRemote(song);
@@ -295,15 +298,11 @@ ipcMain.on("toggle-remote", (evt, song: song) => {
 });
 
 ipcMain.on("main-song-update", (evt, song: song) => {
-  if (remote) {
-    remote.webContents.send("song-update", song);
-  }
+  remote?.webContents.send("song-update", song);
 });
 
 ipcMain.on("main-play-pause", (evt, isPaused) => {
-  if (remote) {
-    remote.webContents.send("song-pause-play", isPaused);
-  }
+  remote?.webContents.send("song-pause-play", isPaused);
 });
 
 ipcMain.on("remote-prev", () => {
@@ -326,14 +325,14 @@ const addRange = async (lst: string[]) => {
     const { song, status } = await getInfo(lst[i]);
 
     if (status === 0) {
-      console.log("Failed: " + lst[i]);
+      console.error("Failed: " + lst[i]);
       continue;
     }
 
     const fileName = lst[i] + ".mp3";
     const albumId = song.thumbnail.split("/")[6];
     addAlbum(albumId);
-    console.log({ albumId });
+    debug.log({ albumId });
 
     const songData = {
       thumbnail:
