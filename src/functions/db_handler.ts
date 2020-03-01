@@ -44,6 +44,30 @@ class Database {
   };
 
   /**
+   * _escape()
+   *
+   * @param {string} str The string to escape
+   *
+   * @param {Quotes} quote The type of quote based on enum `Quote`
+   *
+   * Escapes all quotes based on the type of quote given
+   */
+  private _escape = (str: string, quote = Quotes.Double) => {
+    console.log({ str });
+    switch (quote) {
+      case Quotes.Double:
+        str = str.replace(`"`, `""`);
+        break;
+      case Quotes.Single:
+        str = str.replace(`'`, `''`);
+      default:
+        console.error("Unrecognosed Quote:", quote);
+        break;
+    }
+    return str;
+  };
+
+  /**
    * addSong()
    *
    * @param {song} song The song to be added
@@ -62,7 +86,13 @@ class Database {
       this._db.run(
         `INSERT INTO songdata
         (filePath, title, thumbnail, artist, length, numListens, liked, albumId) VALUES
-        ("${filePath}", "${title}", "${thumbnail}", "${artist}", ${length}, 0, false, "${albumId}")
+        (
+          "${this._escape(filePath)}",
+          "${this._escape(title)}",
+          "${this._escape(thumbnail)}",
+          "${this._escape(artist)}",
+          ${length}, 0, false,
+          "${this._escape(albumId)}")
       `,
         err => {
           if (err) console.error(err);
@@ -81,10 +111,13 @@ class Database {
    */
   delete = (title: string): Promise<void> => {
     return new Promise((res, rej) => {
-      this._db.run(`DELETE FROM songdata WHERE title LIKE "${title}"`, err => {
-        if (err) console.error(err);
-        res();
-      });
+      this._db.run(
+        `DELETE FROM songdata WHERE title LIKE "${this._escape(title)}"`,
+        err => {
+          if (err) console.error(err);
+          res();
+        }
+      );
     });
   };
 
@@ -99,7 +132,9 @@ class Database {
 
     return new Promise((res, rej) =>
       this._db.all(
-        `SELECT * FROM songdata WHERE title LIKE '${songTitle}' ORDER BY LOWER(title), title`,
+        `SELECT * FROM songdata WHERE title LIKE "${this._escape(
+          songTitle
+        )}" ORDER BY LOWER(title), title`,
         (err, data: song[]) => res(data)
       )
     );
@@ -115,7 +150,7 @@ class Database {
   albumSongs = (albumId: string): Promise<song[]> =>
     new Promise((res, rej) =>
       this._db.all(
-        `SELECT * FROM songdata WHERE albumId LIKE '${albumId}'`,
+        `SELECT * FROM songdata WHERE albumId LIKE "${this._escape(albumId)}"`,
         (err, songs: song[]) => {
           if (err) console.error(err);
           res(songs);
@@ -213,7 +248,9 @@ class Database {
    */
   incrementNumListens = (filePath: string) =>
     this._db.run(
-      `UPDATE songdata SET numListens = numListens + 1 WHERE filePath LIKE "${filePath}"`
+      `UPDATE songdata SET numListens = numListens + 1 WHERE filePath LIKE "${this._escape(
+        filePath
+      )}"`
     );
 
   /**
@@ -225,7 +262,9 @@ class Database {
    */
   changeLiked = (title: string) =>
     this._db.run(
-      `UPDATE songdata SET liked = NOT liked WHERE title LIKE "${title}"`
+      `UPDATE songdata SET liked = NOT liked WHERE title LIKE "${this._escape(
+        title
+      )}"`
     );
 
   /**
@@ -238,7 +277,7 @@ class Database {
   exists = (albumId: string): Promise<boolean> =>
     new Promise((res, rej) =>
       this._db.all(
-        `SELECT * FROM albumdata WHERE id like "${albumId}"`,
+        `SELECT * FROM albumdata WHERE id like "${this._escape(albumId)}"`,
         (err, data) => {
           if (err) console.error(err);
           res(data.length > 0);
@@ -257,8 +296,10 @@ class Database {
     new Promise((res, rej) =>
       this._db.run(
         `INSERT INTO albumdata
-    (id, imagePath, name, numSongs) VALUES
-    ("${id}", "${imagePath}", "${name}", 0)`,
+          (id, imagePath, name, numSongs) VALUES
+          ("${this._escape(id)}",
+          "${this._escape(imagePath)}",
+          "${this._escape(name)}", 0)`,
         err => {
           if (err) console.error(err);
           res();
@@ -276,7 +317,7 @@ class Database {
   albumDetails = (id: string): Promise<album> =>
     new Promise((res, rej) =>
       this._db.get(
-        `SELECT * FROM albumdata where id LIKE "${id}"`,
+        `SELECT * FROM albumdata where id LIKE "${this._escape(id)}"`,
         (err, row: album) => {
           if (err) console.error(err);
           res(row);
@@ -293,7 +334,9 @@ class Database {
    */
   incrementNumSongs = (albumId: string) =>
     this._db.run(
-      `UPDATE albumdata SET numSongs = numSongs + 1 WHERE id LIKE "${albumId}"`
+      `UPDATE albumdata SET numSongs = numSongs + 1 WHERE id LIKE "${this._escape(
+        albumId
+      )}"`
     );
 
   /**
@@ -306,7 +349,9 @@ class Database {
    */
   decrementNumSongs = (imagePath: string) =>
     this._db.run(
-      `UPDATE albumdata SET numSongs = numSongs - 1 WHERE imagePath LIKE "${imagePath}"`
+      `UPDATE albumdata SET numSongs = numSongs - 1 WHERE imagePath LIKE "${this._escape(
+        imagePath
+      )}"`
     );
 
   /**
@@ -346,3 +391,8 @@ class Database {
 }
 
 export default new Database();
+
+enum Quotes {
+  Double,
+  Single
+}

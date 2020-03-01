@@ -32,7 +32,7 @@ import { song } from "./types";
 
 // Downloader settings
 downloader.on("error", err => {
-  console.error('[main.ts downloader.on("error"...] ', err);
+  console.error(err);
   win.webContents.send("error:download-query", err);
 });
 
