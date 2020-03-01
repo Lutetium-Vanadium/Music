@@ -48,6 +48,24 @@
   }
 }
 
+.back {
+  height: 1.6rem;
+  width: 0;
+  transform: translateX(-3rem);
+  margin: 0;
+  transition: 0.5s;
+
+  &.show {
+    width: 0.8rem;
+    transform: translateX(0);
+    margin-right: 0.8rem;
+  }
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
 .search {
   @include flex-box(flex-start, $direction: row-reverse);
 

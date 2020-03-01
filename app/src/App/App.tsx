@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useState, useEffect, useReducer } from "react";
-import { Switch, Route } from "react-router-dom";
+import { Switch, Route, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 import Navbar from "./Navbar";
@@ -13,8 +13,6 @@ import Album from "./Album";
 import { song, searchResult } from "../types";
 import Player from "../shared/Player";
 import { reduxState } from "../reduxHandler";
-
-import Error from "../shared/Error";
 
 const logo = require("../logos/logo.png");
 
@@ -32,6 +30,8 @@ function App() {
   const queue = useSelector((state: reduxState) => state.queue);
   // Used by SearchPage to show loader on initial search results
   const [loading, setLoading] = useState(true);
+
+  const location = useLocation();
 
   const search = async (query: string) => {
     if (ipcRenderer) {
@@ -92,12 +92,22 @@ function App() {
     }
   }, []);
 
+  const temp = location.pathname
+    .split("/")
+    .pop()
+    .match(/(alb\.[0-9]*|liked|search)/);
+
+  console.log(location.pathname, temp);
+  const showBack = temp !== null;
+
   return (
     <div>
       <Navbar
         search={search}
         downloading={downloading}
         errored={downloadError}
+        showBack={showBack}
+        // backClick={handleBackClick}
       />
       <main>
         <Switch>

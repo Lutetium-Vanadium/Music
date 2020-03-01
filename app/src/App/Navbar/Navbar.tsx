@@ -3,15 +3,16 @@ import { NavLink, useHistory } from "react-router-dom";
 
 import Search from "../../shared/Search";
 
-import ProgressBar, { ProgressBarProps } from "../../shared/ProgressBar";
+import ProgressBar from "../../shared/ProgressBar";
 
 interface NavbarParams {
   downloading: object;
   errored: boolean;
+  showBack: boolean;
   search: (query: string) => void;
 }
 
-function Navbar({ downloading, errored, search }: NavbarParams) {
+function Navbar({ downloading, errored, search, showBack }: NavbarParams) {
   const history = useHistory();
 
   const handleChange = (value: string) => {
@@ -25,9 +26,14 @@ function Navbar({ downloading, errored, search }: NavbarParams) {
     search(value);
   };
 
+  const backClick = () => {
+    history.goBack();
+  };
+
   return (
     <div className="navbar">
       <div className="identifier">
+        <Back show={showBack} onClick={backClick} />
         <img
           className="logo"
           src={require("../../logos/logo.png")}
@@ -67,3 +73,23 @@ function Navbar({ downloading, errored, search }: NavbarParams) {
 }
 
 export default Navbar;
+
+interface BackProps {
+  show: boolean;
+  onClick: () => void;
+}
+
+const Back = ({ show, onClick }) => (
+  <svg
+    viewBox="0 0 50 100"
+    onClick={onClick}
+    className={`back${show ? " show" : ""}`}
+  >
+    <path
+      d="M50 0 L0 50 L50 100"
+      fill="transparent"
+      stroke="white"
+      strokeWidth="10"
+    />
+  </svg>
+);

@@ -81,6 +81,7 @@ function Home({ setCur, setQueue, setSongs }) {
             <p className="top-title">{song.title}</p>
           </div>
         ))}
+      </div>
       {showPrev ? (
         <>
           <h1 className="header">Pickup Where You Left Off</h1>
@@ -98,7 +99,6 @@ function Home({ setCur, setQueue, setSongs }) {
           </div>
         </>
       ) : null}
-      </div>
     </div>
   );
 }
