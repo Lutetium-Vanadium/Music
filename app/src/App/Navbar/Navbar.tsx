@@ -1,9 +1,10 @@
 import * as React from "react";
 import { NavLink, useHistory } from "react-router-dom";
 
-import Search from "../../shared/Search";
+import Search from "#shared/Search";
+import ProgressBar from "#shared/ProgressBar";
 
-import ProgressBar from "../../shared/ProgressBar";
+import logo from "#logos/logo.png";
 
 interface NavbarParams {
   downloading: object;
@@ -34,11 +35,7 @@ function Navbar({ downloading, errored, search, showBack }: NavbarParams) {
     <div className="navbar">
       <div className="identifier">
         <Back show={showBack} onClick={backClick} />
-        <img
-          className="logo"
-          src={require("../../logos/logo.png")}
-          alt="logo"
-        />
+        <img className="logo" src={logo} alt="logo" />
         <h2>Music</h2>
         {Object.keys(downloading).map(key => (
           <ProgressBar
@@ -79,17 +76,19 @@ interface BackProps {
   onClick: () => void;
 }
 
-const Back = ({ show, onClick }) => (
-  <svg
-    viewBox="0 0 50 100"
-    onClick={onClick}
-    className={`back${show ? " show" : ""}`}
-  >
-    <path
-      d="M50 0 L0 50 L50 100"
-      fill="transparent"
-      stroke="white"
-      strokeWidth="10"
-    />
-  </svg>
-);
+function Back({ show, onClick }: BackProps) {
+  return (
+    <svg
+      viewBox="0 0 50 100"
+      onClick={onClick}
+      className={`back${show ? " show" : ""}`}
+    >
+      <path
+        d="M50 0 L0 50 L50 100"
+        fill="transparent"
+        stroke="white"
+        strokeWidth="10"
+      />
+    </svg>
+  );
+}

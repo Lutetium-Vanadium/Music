@@ -5,10 +5,7 @@ interface DoubleArrowProps {
   disabled?: boolean;
 }
 
-const DoubleArrow = ({
-  reversed = false,
-  disabled = false
-}: DoubleArrowProps) => {
+function DoubleArrow({ reversed = false, disabled = false }: DoubleArrowProps) {
   return (
     <svg
       style={{
@@ -21,6 +18,6 @@ const DoubleArrow = ({
       <polygon fill="white" points="60,0 120,50 60,100"></polygon>
     </svg>
   );
-};
+}
 
 export default DoubleArrow;

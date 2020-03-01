@@ -1,14 +1,11 @@
 import * as React from "react";
 import { useState, useEffect, useRef } from "react";
 
-import { song } from "../../types";
-import Search from "../../shared/Search";
-import SongView from "../../shared/SongView";
+import { song } from "#root/types";
+import Search from "#shared/Search";
+import SongView from "#shared/SongView";
 
-let ipcRenderer;
-if (window.require) {
-  ipcRenderer = window.require("electron").ipcRenderer;
-}
+const { ipcRenderer } = window.require("electron");
 
 const empty: song[] = [];
 
@@ -17,19 +14,15 @@ function Music() {
   const [songs, setSongs] = useState(empty);
 
   useEffect(() => {
-    if (ipcRenderer) {
-      ipcRenderer.invoke("get:music-names").then((songs: song[]) => {
-        setSongs(songs);
-        setAllSongs(songs);
-      });
-    }
+    ipcRenderer.invoke("get:music-names").then((songs: song[]) => {
+      setSongs(songs);
+      setAllSongs(songs);
+    });
   }, []);
 
   const search = async (value: string) => {
-    if (ipcRenderer) {
-      const songs = await ipcRenderer.invoke("search:local", value);
-      setSongs(songs);
-    }
+    const songs = await ipcRenderer.invoke("search:local", value);
+    setSongs(songs);
   };
 
   return (

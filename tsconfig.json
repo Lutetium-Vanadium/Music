@@ -5,5 +5,5 @@
     "rootDir": "src",
     "experimentalDecorators": true
   },
-  "include": ["global.d.ts"]
+  "include": ["./src/**/*", "global.d.ts"]
 }

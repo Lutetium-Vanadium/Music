@@ -1,0 +1,68 @@
+import { ipcMain } from "electron";
+import * as dataurl from "dataurl";
+import * as fs from "fs";
+import Store from "../functions/store";
+import db from "../functions/db_handler";
+// Get methods
+
+const initGetters = (store: Store) => {
+  // gets the configured music directory
+  ipcMain.handle("get:info", (evt, val) => {
+    return new Promise((res, rej) => {
+      const controlWindow = store.get("controlWindow");
+      res({
+        dir: store.get("folderStored"),
+        jumpAhead: store.get("jumpAhead"),
+        seekAhead: store.get("seekAhead"),
+        seekBack: store.get("seekBack"),
+        jumpBack: store.get("jumpBack"),
+        controlWindow
+      });
+    });
+  });
+
+  // Gets all music files stored in the configured directory
+  ipcMain.handle("get:music-names", async (evt, val) => await db.all());
+
+  ipcMain.handle("get:song-audio", async (evt, filePath: string) => {
+    return new Promise((res, rej) => {
+      try {
+        fs.readFile(filePath, (err, data) => {
+          if (err) {
+            console.error(err);
+            rej(err);
+          }
+          res(dataurl.convert({ data, mimetype: "audio/mp3" }));
+          db.incrementNumListens(filePath);
+        });
+      } catch (error) {
+        console.error(error);
+        rej(error);
+      }
+    });
+  });
+
+  // Home page methods to show popular stuff
+  ipcMain.handle(
+    "get:top-songs",
+    async (evt, limit: boolean) => await db.mostPopularSongs(limit)
+  );
+  ipcMain.handle(
+    "get:top-albums",
+    async (evt, limit: boolean) => await db.mostPopularAlbums(limit)
+  );
+
+  ipcMain.handle(
+    "get:album",
+    async (evt, id: string) => await db.albumDetails(id)
+  );
+
+  ipcMain.handle(
+    "get:album-songs",
+    async (evt, albumId: string) => await db.albumSongs(albumId)
+  );
+
+  ipcMain.handle("get:liked", async () => await db.liked());
+};
+
+export default initGetters;

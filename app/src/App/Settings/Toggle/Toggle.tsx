@@ -1,5 +1,4 @@
 import * as React from "react";
-import { useState } from "react";
 
 interface ToggleProps {
   toggled: boolean;

@@ -1,15 +1,15 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
-import { song } from "../../types";
-import formatLength from "../formatLength";
+import { song } from "#root/types";
+import formatLength from "#shared/formatLength";
 
-const backup = require("./backup.png");
+import backup from "./backup.png";
 
 interface SongProps {
   song: song;
   className?: string;
   onClick?: () => void;
-  After?: (any) => JSX.Element;
+  After?: (props: any) => JSX.Element;
   afterProps?: object;
 }
 

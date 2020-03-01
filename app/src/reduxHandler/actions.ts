@@ -1,4 +1,4 @@
-import { song } from "../types";
+import { song } from "#root/types";
 import { Dispatch } from "redux";
 
 // These functions take a dispatch event and return a function which call a dispatch with the appropiate options

@@ -1,10 +1,10 @@
-import { store } from "../main";
 import { app } from "electron";
 import axios from "axios";
 import { execSync } from "child_process";
 import * as path from "path";
 import * as fs from "fs";
 
+// Started bugging out when it was gotten using import for some reason
 const Downloader = require("youtube-mp3-downloader");
 
 // This file has the specified configurations for the youtuber downloader
@@ -14,16 +14,17 @@ const ffmpegPath = execSync("which ffmpeg")
   .toString()
   .slice(0, -1);
 
-const options = {
-  ffmpegPath,
-  outputPath: store.get("folderStored"),
-  youtubeVideoQuality: "highest",
-  progressTimeout: 100,
-  queueParallelism: 2
+const createDownloader = (path: string) => {
+  const options = {
+    ffmpegPath,
+    outputPath: path,
+    youtubeVideoQuality: "highest",
+    progressTimeout: 100,
+    queueParallelism: 2
+  };
+
+  return new Downloader(options);
 };
-
-const songDownloader = new Downloader(options);
-
 /**
  * downloadImage()
  *
@@ -53,4 +54,4 @@ const downloadImage = async (id: string) => {
   });
 };
 
-export { songDownloader, downloadImage };
+export { createDownloader, downloadImage };

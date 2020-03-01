@@ -156,9 +156,9 @@
         }
       });
 
-      document.addEventListener("DOMContentLoaded", () => {
-        ipcRenderer.send("remote-ready");
-      });
+      document.addEventListener("DOMContentLoaded", () =>
+        ipcRenderer.send("remote-ready")
+      );
     </script>
   </body>
 </html>

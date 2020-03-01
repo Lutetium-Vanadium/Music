@@ -1,7 +1,7 @@
 import { app, Menu, MenuItemConstructorOptions, BrowserWindow } from "electron";
-import { store } from "./main";
+import Store from "./functions/store";
 
-const setMenu = (win: BrowserWindow, dev: boolean) => {
+const createMenu = (win: BrowserWindow, store: Store, dev: boolean) => {
   const isMac = process.platform === "darwin";
 
   let viewSubmenu: MenuItemConstructorOptions[] = [
@@ -95,4 +95,4 @@ const setMenu = (win: BrowserWindow, dev: boolean) => {
   Menu.setApplicationMenu(menu);
 };
 
-export default setMenu;
+export default createMenu;

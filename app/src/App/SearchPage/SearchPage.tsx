@@ -1,16 +1,14 @@
 import * as React from "react";
 import { useEffect } from "react";
 
-import { song } from "../../types";
-import Song from "../../shared/Song";
+import { song } from "#root/types";
+import Song from "#shared/Song";
+import Loader from "#shared/Loader";
+import Error from "#shared/Error";
 
-import Loader from "../../shared/Loader";
-import Error from "../../shared/Error";
+import downloadImg from "./download.png";
 
-let ipcRenderer;
-if (window.require) {
-  ipcRenderer = window.require("electron").ipcRenderer;
-}
+const { ipcRenderer } = window.require("electron");
 
 interface SearchPageParams {
   results: song[];
@@ -27,9 +25,7 @@ function SearchPage({ results, download, success, loading }: SearchPageParams) {
 
   useEffect(() => {
     return () => {
-      if (ipcRenderer) {
-        ipcRenderer.send("reset-global-search");
-      }
+      ipcRenderer.send("reset-global-search");
     };
   }, []);
 
@@ -48,7 +44,7 @@ function SearchPage({ results, download, success, loading }: SearchPageParams) {
                 After={() => (
                   <img
                     className="download"
-                    src={require("./download.png")}
+                    src={downloadImg}
                     alt="download button"
                     onClick={handleDownload}
                     data-index={i}

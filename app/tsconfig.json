@@ -5,12 +5,7 @@
     "baseUrl": "./src",
     "moduleResolution": "node",
     "esModuleInterop": true,
-    "rootDir": "src",
-    "paths": {
-      "#root/*": ["./src/*"],
-      "#logos/*": ["./src/logos/*"],
-      "#shared/*": ["./src/shared/*"]
-    }
+    "rootDir": "./src"
   },
   "include": ["global.d.ts", "./declarations.d.ts"],
   "exclude": ["node_modules"]

@@ -1,5 +1,5 @@
-import { app } from "electron";
 import { createWriteStream } from "fs";
+import { app } from "electron";
 import * as path from "path";
 
 const logPath = app.getPath("logs");
@@ -50,25 +50,19 @@ process.on("uncaughtException", function(err) {
 });
 
 class Debug {
-  constructor(public readonly debug: boolean) {}
+  constructor(private readonly _debug: boolean) {}
 
-  @Filter()
   log(...args: any[]) {
-    console.log(...args, "\t@" + getPos());
-  }
-
-  @Filter()
-  error(...args: any[]) {
-    console.trace("\x1b[31m", ...args, "\x1b[0m");
-  }
-}
-
-function Filter() {
-  return function(target, property, descriptor: PropertyDescriptor) {
-    if (target.debug) {
-      descriptor.value();
+    if (this._debug) {
+      console.log(...args, "\t@" + getPos());
     }
-  };
+  }
+
+  error(...args: any[]) {
+    if (this._debug) {
+      console.trace("\x1b[31m", ...args, "\x1b[0m");
+    }
+  }
 }
 
 export default new Debug(!app.isPackaged);

@@ -4,16 +4,12 @@ import { useSelector } from "react-redux";
 
 import NumberSelection from "./NumberSelection";
 import Toggle from "./Toggle";
-import { reduxState } from "../../reduxHandler";
+import { reduxState } from "#root/reduxHandler";
 
-let ipcRenderer;
-if (window.require) {
-  ipcRenderer = window.require("electron").ipcRenderer;
-}
+const { ipcRenderer } = window.require("electron");
 
 const min = 2;
 const thresh = 30;
-// Modulo cannot give the top-most value
 const dthresh = thresh - min + 1;
 
 function Settings() {
@@ -27,9 +23,7 @@ function Settings() {
   const { queue, cur } = useSelector((state: reduxState) => state);
 
   const changeDirectory = () => {
-    if (ipcRenderer) {
-      ipcRenderer.invoke("set:music-dir").then((res: string) => setDir(res));
-    }
+    ipcRenderer.invoke("set:music-dir").then((res: string) => setDir(res));
   };
 
   const generateFunctions = (
@@ -40,41 +34,35 @@ function Settings() {
   });
 
   const applyChanges = () => {
-    if (ipcRenderer) {
-      ipcRenderer.send("set:info", {
-        jumpBack,
-        seekBack,
-        seekAhead,
-        jumpAhead
-      });
-    }
+    ipcRenderer.send("set:info", {
+      jumpBack,
+      seekBack,
+      seekAhead,
+      jumpAhead
+    });
   };
 
   const toggleControlWindow = () => {
-    if (ipcRenderer) {
-      const isPlaying: boolean = queue.length > 0;
+    const isPlaying: boolean = queue.length > 0;
 
-      ipcRenderer.send(
-        "set:control-window",
-        !controls,
-        isPlaying,
-        isPlaying ? queue[cur] : null
-      );
-    }
+    ipcRenderer.send(
+      "set:control-window",
+      !controls,
+      isPlaying,
+      isPlaying ? queue[cur] : null
+    );
     setControls(!controls);
   };
 
   useEffect(() => {
-    if (ipcRenderer) {
-      ipcRenderer.invoke("get:info").then(info => {
-        setDir(info.dir);
-        setJumpBack(info.jumpBack);
-        setSeekBack(info.seekBack);
-        setSeekAhead(info.seekAhead);
-        setJumpAhead(info.jumpAhead);
-        setControls(info.controlWindow);
-      });
-    }
+    ipcRenderer.invoke("get:info").then(info => {
+      setDir(info.dir);
+      setJumpBack(info.jumpBack);
+      setSeekBack(info.seekBack);
+      setSeekAhead(info.seekAhead);
+      setJumpAhead(info.jumpAhead);
+      setControls(info.controlWindow);
+    });
   }, []);
 
   return (

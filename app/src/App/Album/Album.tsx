@@ -1,13 +1,11 @@
-import React from "react";
+import * as React from "react";
 import { useState, useEffect } from "react";
 
-import SongView from "../../shared/SongView";
-import { song, album } from "../../types";
+import SongView from "#shared/SongView";
+import { song, album } from "#root/types";
+import liked from "#root/App/liked.png";
 
-let ipcRenderer;
-if (window.require) {
-  ipcRenderer = window.require("electron").ipcRenderer;
-}
+const { ipcRenderer } = window.require("electron");
 
 const emptySongs: song[] = [];
 const emptyAlbum: album = {
@@ -26,24 +24,22 @@ function Album({
   const [album, setAlbum] = useState(emptyAlbum);
 
   useEffect(() => {
-    if (ipcRenderer) {
-      if (id === "liked") {
-        ipcRenderer.invoke("get:liked").then((res: song[]) => {
-          setSongs(res);
-          setAlbum({
-            id: "liked",
-            imagePath: require("../liked.png"),
-            name: "Liked",
-            numSongs: songs.length
-          });
+    if (id === "liked") {
+      ipcRenderer.invoke("get:liked").then((res: song[]) => {
+        setSongs(res);
+        setAlbum({
+          id: "liked",
+          imagePath: liked,
+          name: "Liked",
+          numSongs: songs.length
         });
-      } else {
-        ipcRenderer.invoke("get:album", id).then((res: album) => setAlbum(res));
+      });
+    } else {
+      ipcRenderer.invoke("get:album", id).then((res: album) => setAlbum(res));
 
-        ipcRenderer
-          .invoke("get:album-songs", id)
-          .then((res: song[]) => setSongs(res));
-      }
+      ipcRenderer
+        .invoke("get:album-songs", id)
+        .then((res: song[]) => setSongs(res));
     }
   }, []);
 

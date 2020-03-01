@@ -10,14 +10,12 @@ import Settings from "./Settings";
 import Home from "./Home";
 import Albums from "./Albums";
 import Album from "./Album";
-import { song, searchResult } from "../types";
-import Player from "../shared/Player";
-import { reduxState } from "../reduxHandler";
+import { song, searchResult } from "#root/types";
+import Player from "#shared/Player";
+import { reduxState } from "#root/reduxHandler";
 
-const logo = require("../logos/logo.png");
-
-let ipcRenderer;
-if (window.require) ipcRenderer = window.require("electron").ipcRenderer;
+import logo from "#logos/logo.png";
+const { ipcRenderer } = window.require("electron");
 
 const empty: song[] = [];
 
@@ -34,62 +32,51 @@ function App() {
   const location = useLocation();
 
   const search = async (query: string) => {
-    if (ipcRenderer) {
-      const result: searchResult = await ipcRenderer.invoke(
-        "search:global",
-        query
-      );
-      if (result.status) {
-        setSearchResults(result.songs);
-      }
-
-      setSearchSuccess(result.status);
-      setLoading(false);
-    } else {
-      setTimeout(() => {
-        setLoading(false);
-        setSearchSuccess(false);
-      }, 1000);
+    const result: searchResult = await ipcRenderer.invoke(
+      "search:global",
+      query
+    );
+    if (result.status) {
+      setSearchResults(result.songs);
     }
+
+    setSearchSuccess(result.status);
+    setLoading(false);
   };
 
   const download = async (song: song) => {
-    if (ipcRenderer) {
-      const id = await ipcRenderer.invoke("download-song", song);
-      setDownloadError(false);
-      dispatch({
-        type: "start:download",
-        id,
-        payload: song
-      });
-      new Notification(song.title, {
-        body: `Downloading ${song.title} by ${song.artist}.`,
-        badge: logo,
-        icon: song.thumbnail
-      });
-    }
+    const id = await ipcRenderer.invoke("download-song", song);
+    setDownloadError(false);
+    dispatch({
+      type: "start:download",
+      id,
+      payload: song
+    });
+    new Notification(song.title, {
+      body: `Downloading ${song.title} by ${song.artist}.`,
+      badge: logo,
+      icon: song.thumbnail
+    });
   };
 
   useEffect(() => {
-    if (ipcRenderer) {
-      // Handles progress updates sent by electron for when a song is being downloaded
-      ipcRenderer.on("update:download-query", (evt, { progress, id }) => {
-        dispatch({
-          type: "update:download",
-          id,
-          payload: progress
-        });
+    // Handles progress updates sent by electron for when a song is being downloaded
+    ipcRenderer.on("update:download-query", (evt, { progress, id }) => {
+      dispatch({
+        type: "update:download",
+        id,
+        payload: progress
       });
-      ipcRenderer.on("finished:download-query", (evt, { id, filePath }) => {
-        dispatch({
-          type: "finish:download",
-          id,
-          payload: filePath
-        });
+    });
+    ipcRenderer.on("finished:download-query", (evt, { id, filePath }) => {
+      dispatch({
+        type: "finish:download",
+        id,
+        payload: filePath
       });
-      ipcRenderer.on("error:download-query", () => setDownloadError(true));
-      ipcRenderer.on("reset-global-search", () => setLoading(true));
-    }
+    });
+    ipcRenderer.on("error:download-query", () => setDownloadError(true));
+    ipcRenderer.on("reset-global-search", () => setLoading(true));
   }, []);
 
   const temp = location.pathname

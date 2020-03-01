@@ -1,17 +1,14 @@
-import React from "react";
+import * as React from "react";
 import { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
 import { Link } from "react-router-dom";
 
-import { create } from "../../reduxHandler";
-import { song, album } from "../../types";
-import { getArr, getNum } from "../../localStorage";
+import { create } from "#root/reduxHandler";
+import { song, album } from "#root/types";
+import { getArr, getNum } from "#root/localStorage";
 
-let ipcRenderer;
-if (window.require) {
-  ipcRenderer = window.require("electron").ipcRenderer;
-}
+const { ipcRenderer } = window.require("electron");
 
 const emptyAlbum: album[] = [];
 const emptySong: song[] = [];
@@ -27,12 +24,10 @@ function Home({ setCur, setQueue, setSongs }) {
   const [topSongs, setTopSongs] = useState(emptySong);
 
   const playSong = async (index: number) => {
-    if (ipcRenderer) {
-      const songs: song[] = await ipcRenderer.invoke("get:top-songs", false);
-      setCur(index);
-      setQueue(songs);
-      setSongs(songs);
-    }
+    const songs: song[] = await ipcRenderer.invoke("get:top-songs", false);
+    setCur(index);
+    setQueue(songs);
+    setSongs(songs);
   };
 
   const playLastQueue = (index: number) => {
@@ -42,14 +37,12 @@ function Home({ setCur, setQueue, setSongs }) {
   };
 
   useEffect(() => {
-    if (ipcRenderer) {
-      ipcRenderer.invoke("get:top-songs", true).then((data: song[]) => {
-        setTopSongs(data);
-      });
-      ipcRenderer.invoke("get:top-albums", true).then((data: album[]) => {
-        setTopAlbums(data);
-      });
-    }
+    ipcRenderer.invoke("get:top-songs", true).then((data: song[]) => {
+      setTopSongs(data);
+    });
+    ipcRenderer.invoke("get:top-albums", true).then((data: album[]) => {
+      setTopAlbums(data);
+    });
   }, []);
 
   const showPrev = lastQueue.length > 0;

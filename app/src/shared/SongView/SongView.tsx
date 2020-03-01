@@ -1,19 +1,16 @@
 import * as React from "react";
 import { useState } from "react";
 import { connect } from "react-redux";
+import { Dispatch } from "redux";
 
 import ContextMenu from "./ContextMenu";
-import { song } from "../../types";
-import Song from "../../shared/Song";
-import { Dispatch } from "redux";
-import { create } from "../../reduxHandler";
+import { song } from "#root/types";
+import Song from "#shared/Song";
+import { create } from "#root/reduxHandler";
 
-const logo = require("../../logos/logo.png");
+import logo from "#logos/logo.png";
 
-let ipcRenderer;
-if (window.require) {
-  ipcRenderer = window.require("electron").ipcRenderer;
-}
+const { ipcRenderer } = window.require("electron");
 
 interface SongViewProps {
   songs: song[];
@@ -54,16 +51,13 @@ function SongView({
   };
 
   const handleDotClick = (e: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
-    // Prevent event bubbling
     e.stopPropagation();
     setPos([e.pageX, e.pageY]);
     setIndex(+e.currentTarget.dataset.index);
   };
 
   const toggleLiked = async () => {
-    if (ipcRenderer) {
-      await ipcRenderer.send("set:liked", songs[index].title);
-    }
+    await ipcRenderer.send("set:liked", songs[index].title);
     setPos([-200, -200]);
   };
 
@@ -87,25 +81,27 @@ function SongView({
       ...allSongs.slice(0, allSongsIndex),
       ...allSongs.slice(allSongsIndex + 1, allSongs.length)
     ]);
-    if (ipcRenderer) {
-      const success = await ipcRenderer.invoke("delete:song", song);
-      let body = success
-        ? `Succesfully deleted ${song.title} by ${song.artist}`
-        : `Couldn't delete ${song.title} by ${song.artist}`;
+    const success = await ipcRenderer.invoke("delete:song", song);
+    let body = success
+      ? `Succesfully deleted ${song.title} by ${song.artist}`
+      : `Couldn't delete ${song.title} by ${song.artist}`;
 
-      new Notification(`${song.title}`, {
-        body,
-        badge: logo,
-        icon: song.thumbnail
-      });
-    }
+    new Notification(`${song.title}`, {
+      body,
+      badge: logo,
+      icon: song.thumbnail
+    });
   };
 
   return (
     <>
       <div className="buttons">
-        <button className="begin" onClick={() => _play(0)}>Play First Song</button>
-        <button className="random" onClick={() => _play(randint(songs.length))}>Play Random Song</button>
+        <button className="begin" onClick={() => _play(0)}>
+          Play First Song
+        </button>
+        <button className="random" onClick={() => _play(randint(songs.length))}>
+          Play Random Song
+        </button>
       </div>
       <ContextMenu
         pos={pos}
@@ -150,14 +146,21 @@ interface TripleDotProps {
   onClick?: (event: React.MouseEvent<SVGSVGElement, MouseEvent>) => void;
 }
 
-const TripleDot = ({ onClick, ...props }: TripleDotProps) => (
-  <svg {...props} viewBox="-30 -80 150 180" className="dot3" onClick={onClick}>
-    <circle cx="10" cy="10" r="10" fill="white" />
-    <circle cx="45" cy="10" r="10" fill="white" />
-    <circle cx="80" cy="10" r="10" fill="white" />
-  </svg>
-);
+function TripleDot({ onClick, ...props }: TripleDotProps) {
+  return (
+    <svg
+      {...props}
+      viewBox="-30 -80 150 180"
+      className="dot3"
+      onClick={onClick}
+    >
+      <circle cx="10" cy="10" r="10" fill="white" />
+      <circle cx="45" cy="10" r="10" fill="white" />
+      <circle cx="80" cy="10" r="10" fill="white" />
+    </svg>
+  );
+}
 
 const randint = (max: number) => {
   return Math.floor(Math.random() * max);
-}
+};

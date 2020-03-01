@@ -6,10 +6,9 @@
   "main": "./index.js",
   "license": "MIT",
   "scripts": {
-    "watch": "watch 'yarn start' ./src --wait=1",
+    "watch": "concurrently \"cd app && yarn watch\" \"yarn start\"",
     "start": "electron .",
     "build-react": "cd app && yarn build",
-    "build-start": "yarn build-react && yarn start",
     "deploy": "yarn build-react && electron-packager . --overwrite",
     "deploy-l": "yarn build-react && electron-packager . --overwrite --platform=linux --out=\"Music(linux)\"",
     "deploy-m": "yarn build-react && electron-packager . --overwrite --platform=darwin --out=\"Music(MacOS)\"",
@@ -32,9 +31,9 @@
     "@types/electron": "^1.6.10",
     "@types/react-redux": "^7.1.7",
     "@types/sqlite3": "^3.1.6",
+    "concurrently": "^5.1.0",
     "electron": "^8.0.1",
     "electron-packager": "^14.1.1",
-    "electron-rebuild": "^1.10.0",
-    "watch": "^1.0.2"
+    "electron-rebuild": "^1.10.0"
   }
 }

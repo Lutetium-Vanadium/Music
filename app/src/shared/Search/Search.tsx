@@ -3,10 +3,7 @@ import { useState, useEffect, useRef } from "react";
 
 import search_icon from "./search_icon.jpg";
 
-let ipcRenderer;
-if (window.require) {
-  ipcRenderer = window.require("electron").ipcRenderer;
-}
+const { ipcRenderer } = window.require("electron");
 
 let empty: HTMLInputElement;
 
@@ -37,9 +34,7 @@ function Search({
   };
 
   useEffect(() => {
-    if (ipcRenderer) {
-      ipcRenderer.on("reset-search-box", () => setValue(""));
-    }
+    ipcRenderer.on("reset-search-box", () => setValue(""));
     input.current.addEventListener("focusin", () => {
       window.isFocused = true;
     });

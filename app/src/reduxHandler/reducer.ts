@@ -1,5 +1,5 @@
-import { song } from "../types";
-import { setArr, setNum } from "../localStorage";
+import { song } from "#root/types";
+import { setArr, setNum } from "#root/localStorage";
 
 /**
  * interface reduxState

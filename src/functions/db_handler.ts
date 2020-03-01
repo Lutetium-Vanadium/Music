@@ -53,7 +53,6 @@ class Database {
    * Escapes all quotes based on the type of quote given
    */
   private _escape = (str: string, quote = Quotes.Double) => {
-    console.log({ str });
     switch (quote) {
       case Quotes.Double:
         str = str.replace(`"`, `""`);

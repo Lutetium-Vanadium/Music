@@ -1,19 +1,17 @@
 import * as React from "react";
 import { useState, useRef, useEffect } from "react";
-import { song } from "../../types";
 import { connect } from "react-redux";
-import { reduxState, create } from "../../reduxHandler";
 import { Dispatch } from "redux";
+
 import { DoubleArrow, Loop, PlayPause, Shuffle, randOrder } from "./helpers";
-import formatLength from "../formatLength";
+import { song } from "#root/types";
+import { reduxState, create } from "#root/reduxHandler";
+import formatLength from "#shared/formatLength";
 
-const songLiked = require("./song-liked.png");
-const songNotLiked = require("./song-not-liked.png");
+import songLiked from "./song-liked.png";
+import songNotLiked from "./song-not-liked.png";
 
-let ipcRenderer;
-if (window.require) {
-  ipcRenderer = window.require("electron").ipcRenderer;
-}
+const { ipcRenderer } = window.require("electron");
 
 let empty: HTMLAudioElement;
 
@@ -21,9 +19,7 @@ function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
   const song: song = queue[cur];
 
   const ref = useRef(empty);
-  // const [ref, setRef] = useState(empty);
   const [timeStamp, setTimeStamp] = useState(0);
-  // const onRefChange = useCallback(node => setRef(node), []);
   const [paused, setPaused] = useState(false);
   const [loop, setLoop] = useState(false);
   const [loaded, setLoaded] = useState(false);
@@ -32,7 +28,6 @@ function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
   const [exit, setExit] = useState(false);
 
   const pausePlay = (override = false, isRemote = false) => {
-    console.log({ override, isRemote });
     if (!(loaded || override)) return;
     if (ref.current.paused) {
       ref.current.play();
@@ -56,17 +51,12 @@ function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
   };
 
   const getSong = async (filePath: string) => {
-    if (ipcRenderer) {
-      try {
-        const newSongData = await ipcRenderer.invoke(
-          "get:song-audio",
-          filePath
-        );
-        setSongData(newSongData);
-        setLoaded(true);
-      } catch (error) {
-        console.error(error);
-      }
+    try {
+      const newSongData = await ipcRenderer.invoke("get:song-audio", filePath);
+      setSongData(newSongData);
+      setLoaded(true);
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -76,7 +66,6 @@ function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
       setQueue(songs);
       setCur(index);
     } else {
-      // Since arrays are passed in by reference, a shallow copy is passed down
       setQueue(randOrder([...queue], cur));
       setCur(0);
     }
@@ -97,45 +86,37 @@ function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
   };
 
   const toggleLiked = async () => {
-    if (ipcRenderer) {
-      song.liked = !song.liked;
-      await ipcRenderer.send("set:liked", song.title);
-    }
+    song.liked = !song.liked;
+    await ipcRenderer.send("set:liked", song.title);
   };
 
   useEffect(() => {
     setPaused(false);
     getSong(song.filePath);
-    if (ipcRenderer) {
-      ipcRenderer.send("main-song-update", song);
-    }
+    ipcRenderer.send("main-song-update", song);
   }, [song]);
 
   useEffect(() => {
-    if (ipcRenderer) {
-      ipcRenderer.on(
-        "jump-back",
-        (evt, val: number) => (ref.current.currentTime -= val)
-      );
-      ipcRenderer.on(
-        "seek-back",
-        (evt, val: number) => (ref.current.currentTime -= val)
-      );
-      ipcRenderer.on(
-        "seek-ahead",
-        (evt, val: number) => (ref.current.currentTime += val)
-      );
-      ipcRenderer.on(
-        "jump-ahead",
-        (evt, val: number) => (ref.current.currentTime += val)
-      );
-      ipcRenderer.on("prev-track", () => prevSong());
-      ipcRenderer.on("next-track", () => nextSong());
-      ipcRenderer.on("pause-play", (evt, isRemote) =>
-        pausePlay(true, isRemote)
-      );
-      ipcRenderer.send("toggle-remote", song);
-    }
+    ipcRenderer.on(
+      "jump-back",
+      (evt, val: number) => (ref.current.currentTime -= val)
+    );
+    ipcRenderer.on(
+      "seek-back",
+      (evt, val: number) => (ref.current.currentTime -= val)
+    );
+    ipcRenderer.on(
+      "seek-ahead",
+      (evt, val: number) => (ref.current.currentTime += val)
+    );
+    ipcRenderer.on(
+      "jump-ahead",
+      (evt, val: number) => (ref.current.currentTime += val)
+    );
+    ipcRenderer.on("prev-track", () => prevSong());
+    ipcRenderer.on("next-track", () => nextSong());
+    ipcRenderer.on("pause-play", (evt, isRemote) => pausePlay(true, isRemote));
+    ipcRenderer.send("toggle-remote", song);
 
     const handleKeydown = (e: KeyboardEvent) => {
       if (e.keyCode == 32 && !window.isFocused) {
@@ -170,16 +151,13 @@ function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
           </div>
         </div>
         <div className="controls">
-          <button className="back" onClick={cur === 0 ? null : prevSong}>
+          <button onClick={cur === 0 ? null : prevSong}>
             <DoubleArrow reversed disabled={cur === 0} />
           </button>
-          <button className="pause-play" onClick={() => pausePlay()}>
+          <button onClick={() => pausePlay()}>
             {loaded ? <PlayPause paused={paused} /> : "Loading"}
           </button>
-          <button
-            className="next"
-            onClick={cur === songs.length - 1 ? null : nextSong}
-          >
+          <button onClick={cur === songs.length - 1 ? null : nextSong}>
             <DoubleArrow disabled={cur === song.length - 1} />
           </button>
         </div>
