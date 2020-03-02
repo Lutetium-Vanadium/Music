@@ -51,17 +51,25 @@ const initGetters = (store: Store) => {
     "get:top-albums",
     async (evt, limit: boolean) => await db.mostPopularAlbums(limit)
   );
+  ipcMain.handle("get:artists", async () => await db.getArtists());
 
   ipcMain.handle(
     "get:album",
     async (evt, id: string) => await db.albumDetails(id)
+  );
+  ipcMain.handle(
+    "get:artist",
+    async (evt, name: string) => await db.artistDetails(name)
   );
 
   ipcMain.handle(
     "get:album-songs",
     async (evt, albumId: string) => await db.albumSongs(albumId)
   );
-
+  ipcMain.handle(
+    "get:artist-songs",
+    async (evt, name: string) => await db.artistSongs(name)
+  );
   ipcMain.handle("get:liked", async () => await db.liked());
 };
 

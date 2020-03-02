@@ -41,7 +41,7 @@ if (app.isPackaged) {
 const getPos = () =>
   new Error().stack
     .split("\n")[3]
-    .match(/\(?\/(.*?)(.*?):[0-9]*:[0-9]*\)?/)[0]
+    .match(/\(?\/(.*?)(.*?):[0-9]*:[0-9]*/)[0]
     .split("/")
     .pop();
 

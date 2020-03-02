@@ -10,6 +10,8 @@ import Settings from "./Settings";
 import Home from "./Home";
 import Albums from "./Albums";
 import Album from "./Album";
+import Artists from "./Artists";
+import Artist from "./Artist";
 import { song, searchResult } from "#root/types";
 import Player from "#shared/Player";
 import { reduxState } from "#root/reduxHandler";
@@ -79,13 +81,10 @@ function App() {
     ipcRenderer.on("reset-global-search", () => setLoading(true));
   }, []);
 
-  const temp = location.pathname
-    .split("/")
-    .pop()
-    .match(/(alb\.[0-9]*|liked|search)/);
-
-  console.log(location.pathname, temp);
-  const showBack = temp !== null;
+  const showBack =
+    location.pathname.match(
+      /\/(albums\/alb\.[0-9]*|liked|search|artists\/[a-zA-Z0-9]*)/
+    ) !== null;
 
   return (
     <div>
@@ -112,6 +111,8 @@ function App() {
           <Route path="/music" component={Music} />
           <Route path="/albums/:id" component={Album} />
           <Route path="/albums" component={Albums} />
+          <Route path="/artists/:name" component={Artist} />
+          <Route path="/artists" component={Artists} />
           <Route path="/settings" component={Settings} />
           <Route path="/" component={Home} />
         </Switch>

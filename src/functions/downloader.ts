@@ -1,8 +1,11 @@
 import { app } from "electron";
 import axios from "axios";
-import { execSync } from "child_process";
 import * as path from "path";
 import * as fs from "fs";
+import * as ffmpeg from "ffmpeg-cli";
+import debug from "../console";
+
+debug.log({ ffmpeg });
 
 // Started bugging out when it was gotten using import for some reason
 const Downloader = require("youtube-mp3-downloader");
@@ -10,13 +13,9 @@ const Downloader = require("youtube-mp3-downloader");
 // This file has the specified configurations for the youtuber downloader
 // and a function to download images
 
-const ffmpegPath = execSync("which ffmpeg")
-  .toString()
-  .slice(0, -1);
-
 const createDownloader = (path: string) => {
   const options = {
-    ffmpegPath,
+    ffmpegPath: ffmpeg.path,
     outputPath: path,
     youtubeVideoQuality: "highest",
     progressTimeout: 100,

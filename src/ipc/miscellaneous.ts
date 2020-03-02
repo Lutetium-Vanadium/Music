@@ -18,7 +18,7 @@ const initMiscellaneous = (store: Store, { win }: Windows, downloader) => {
     console.log("Downloading ", songData.title);
     downloader.download(youtubeId, fileName);
     const albumId = songData.albumId;
-    addAlbum(albumId);
+    addAlbum(albumId, songData.artist);
 
     songData.thumbnail =
       "file://" +
@@ -33,7 +33,7 @@ const initMiscellaneous = (store: Store, { win }: Windows, downloader) => {
     try {
       console.log("Deleting", song.title);
       const dbSongPromise = db.delete(song.title);
-      const dbAlbumPromise = db.decrementNumSongs(song.thumbnail);
+      const dbAlbumPromise = db.decrementNumSongs(song.albumId);
       const fsPromise = rm(song.filePath);
 
       await Promise.all([dbSongPromise, fsPromise, dbAlbumPromise]);

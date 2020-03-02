@@ -81,6 +81,7 @@ function SongView({
       ...allSongs.slice(0, allSongsIndex),
       ...allSongs.slice(allSongsIndex + 1, allSongs.length)
     ]);
+    setIndex(index - 1);
     const success = await ipcRenderer.invoke("delete:song", song);
     let body = success
       ? `Succesfully deleted ${song.title} by ${song.artist}`

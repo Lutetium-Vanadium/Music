@@ -20,4 +20,10 @@ export interface album {
   imagePath: string;
   name: string;
   numSongs: number;
+  artist: string;
+}
+
+export interface artist {
+  name: string;
+  images: string[];
 }

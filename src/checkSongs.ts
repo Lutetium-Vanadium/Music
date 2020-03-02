@@ -21,7 +21,7 @@ const addRange = async (lst: string[], folderStored: string) => {
 
     const fileName = lst[i] + ".mp3";
     const albumId = song.thumbnail.split("/")[6];
-    addAlbum(albumId);
+    addAlbum(albumId, song.artist);
     debug.log({ albumId });
 
     const songData = {

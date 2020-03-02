@@ -6,7 +6,7 @@
   "main": "./index.js",
   "license": "MIT",
   "scripts": {
-    "watch": "concurrently \"cd app && yarn watch\" \"yarn start\"",
+    "watch": "concurrently \"cd app && yarn watch\" \"wait-on http://localhost:1234 && yarn start\"",
     "start": "electron .",
     "build-react": "cd app && yarn build",
     "deploy": "yarn build-react && electron-packager . --overwrite",
@@ -19,6 +19,7 @@
     "axios": "^0.19.2",
     "dataurl": "^0.1.0",
     "dotenv": "^8.2.0",
+    "ffmpeg-cli": "^2.3.0",
     "request": "^2.88.0",
     "request-promise": "^4.2.5",
     "shell-path": "^2.1.0",
@@ -34,6 +35,7 @@
     "concurrently": "^5.1.0",
     "electron": "^8.0.1",
     "electron-packager": "^14.1.1",
-    "electron-rebuild": "^1.10.0"
+    "electron-rebuild": "^1.10.0",
+    "wait-on": "^4.0.1"
   }
 }

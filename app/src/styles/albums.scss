@@ -29,6 +29,19 @@ $img-max: 150px;
   border-radius: 0.6rem;
   cursor: pointer;
   user-select: none;
+
+  &.mozaic {
+    @include flex-box;
+    flex-wrap: wrap;
+    overflow: hidden;
+
+    img {
+      width: $img-size / 2;
+      height: $img-size / 2;
+      max-width: $img-max / 2;
+      max-height: $img-max / 2;
+    }
+  }
 }
 
 .album-title {

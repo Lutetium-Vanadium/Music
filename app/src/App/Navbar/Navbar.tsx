@@ -53,6 +53,9 @@ function Navbar({ downloading, errored, search, showBack }: NavbarParams) {
         <NavLink to="/settings" activeClassName="active" className="link">
           Settings
         </NavLink>
+        <NavLink to="/artists" activeClassName="active" className="link">
+          Artist
+        </NavLink>
         <NavLink to="/albums" activeClassName="active" className="link">
           Albums
         </NavLink>

@@ -1,7 +1,8 @@
 import { app } from "electron";
 import * as sqlite3 from "sqlite3";
 import * as path from "path";
-import { song, album } from "../types";
+import { song, album, artist } from "../types";
+import debug from "../console";
 
 // This file provides the Database class which is a wrapper around the `song_info.db` database
 // It provides all functions needed to interact with the database
@@ -39,7 +40,7 @@ class Database {
     )`
     );
     this._db.run(
-      `CREATE TABLE IF NOT EXISTS albumdata (id TEXT, imagePath TEXT, name TEXT, numSongs INT)`
+      `CREATE TABLE IF NOT EXISTS albumdata (id TEXT, imagePath TEXT, name TEXT, numSongs INT, artist TEXT)`
     );
   };
 
@@ -291,14 +292,15 @@ class Database {
    *
    * Adds an album to the albumdata table
    */
-  addAlbum = ({ id, imagePath, name }: album): Promise<void> =>
+  addAlbum = ({ id, imagePath, name, artist }: album): Promise<void> =>
     new Promise((res, rej) =>
       this._db.run(
         `INSERT INTO albumdata
-          (id, imagePath, name, numSongs) VALUES
+          (id, imagePath, name, artist, numSongs) VALUES
           ("${this._escape(id)}",
           "${this._escape(imagePath)}",
-          "${this._escape(name)}", 0)`,
+          "${this._escape(name)}"
+          "${this._escape(artist)}", 0)`,
         err => {
           if (err) console.error(err);
           res();
@@ -339,18 +341,95 @@ class Database {
     );
 
   /**
-   * deccrementNumSongs()
+   * decrementNumSongs()
    *
-   * @param {string} imagePath The image path for the album to increment
+   * @param {string} albumId The image path for the album to increment
    *
-   * Deccrements the number of songs for the given imagePath
+   * Deccrements the number of songs for the given albumId
    * Image Path is used because the api is used only while deleteing songs, which does not have albumId as of now
    */
-  decrementNumSongs = (imagePath: string) =>
+  decrementNumSongs = (albumId: string) => {
     this._db.run(
-      `UPDATE albumdata SET numSongs = numSongs - 1 WHERE imagePath LIKE "${this._escape(
-        imagePath
+      `UPDATE albumdata SET numSongs = numSongs - 1 WHERE id LIKE "${this._escape(
+        albumId
       )}"`
+    );
+    this._db.run(`DELETE FROM albumdata WHERE numSongs < 1`);
+  };
+
+  /**
+   * artistDetails()
+   *
+   * @param {string} name Name of the artist
+   *
+   * Returns the details of the artist
+   */
+  artistDetails = (name: string): Promise<artist> =>
+    new Promise((res, rej) =>
+      this._db.all(
+        `SELECT imagePath FROM albumdata WHERE artist LIKE "${this._escape(
+          name
+        )}" ORDER BY numSongs DESC LIMIT 4`,
+        (err, albums: album[]) => {
+          if (err) console.error(err);
+
+          let images: string[] = [];
+
+          albums.forEach(({ imagePath }) => {
+            images.push(imagePath);
+          });
+
+          res({ name, images });
+        }
+      )
+    );
+
+  /**
+   * getArtists()
+   *
+   * Gets all the artists and the top four most heard albums by them (For the image)
+   */
+  getArtists = (): Promise<artist[]> =>
+    new Promise((res, rej) => {
+      let artists: artist[] = [];
+      this._db.each(
+        `SELECT DISTINCT artist FROM albumdata ORDER BY LOWER(artist)`,
+        async (err, row: any) => {
+          if (err) console.error(err);
+
+          const artist = await this.artistDetails(row.artist);
+          artists.push(artist);
+        },
+        async (err, n) => {
+          if (err) console.error(err);
+          const interval = setInterval(() => {
+            if (artists.length === n) {
+              clearInterval(interval);
+              res(artists);
+            }
+          }, 50);
+        }
+      );
+    });
+
+  /**
+   * artistSongs()
+   *
+   * @param {string} artist Name of the artist
+   *
+   * Returns all songs by the given artist
+   */
+  artistSongs = (artist: string): Promise<song[]> =>
+    new Promise((res, rej) =>
+      this._db.all(
+        `SELECT * FROM songdata WHERE artist LIKE "${this._escape(
+          artist
+        )}" ORDER BY LOWER(title)`,
+        (err, songs: song[]) => {
+          if (err) console.error(err);
+          res(songs);
+        }
+      )
     );
 
   /**

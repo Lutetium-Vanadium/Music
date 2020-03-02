@@ -28,6 +28,9 @@ const store = new Store({
   }
 });
 
+// To many event listeners are added for the default
+ipcMain.setMaxListeners(20);
+
 const downloader = createDownloader(store.get("folderStored"));
 
 // Downloader settings
@@ -37,6 +40,7 @@ downloader.on("error", err => {
 });
 
 downloader.on("progress", ({ progress, videoId }) => {
+  debug.log(videoId + ":", progress.percentage);
   win.webContents.send("update:download-query", {
     progress: progress.percentage,
     id: videoId
