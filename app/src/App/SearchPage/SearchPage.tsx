@@ -41,12 +41,12 @@ function SearchPage({ results, download, success, loading }: SearchPageParams) {
             <li className="result" key={`song-${i}`}>
               <Song
                 song={song}
+                onClick={handleDownload}
                 After={() => (
                   <img
                     className="download"
                     src={downloadImg}
                     alt="download button"
-                    onClick={handleDownload}
                     data-index={i}
                   />
                 )}

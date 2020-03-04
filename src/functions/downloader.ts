@@ -3,9 +3,6 @@ import axios from "axios";
 import * as path from "path";
 import * as fs from "fs";
 import * as ffmpeg from "ffmpeg-cli";
-import debug from "../console";
-
-debug.log({ ffmpeg });
 
 // Started bugging out when it was gotten using import for some reason
 const Downloader = require("youtube-mp3-downloader");

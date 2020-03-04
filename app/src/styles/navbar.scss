@@ -56,7 +56,9 @@
   transition: 0.5s;
 
   &.show {
-    width: 0.8rem;
+    padding: 0.6rem;
+    width: 2.4rem;
+    height: 2.4rem;
     transform: translateX(0);
     margin-right: 0.8rem;
   }
