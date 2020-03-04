@@ -32,19 +32,6 @@ const initSetters = (
   });
 
   ipcMain.on(
-    "set:control-window",
-    (evt, value: boolean, playing: boolean, song: song) => {
-      debug.log({ value, playing, song });
-      store.set("controlWindow", value);
-      if (!remote && value && playing) {
-        setUpRemote(song);
-      } else if (remote && !value) {
-        remote.close();
-      }
-    }
-  );
-
-  ipcMain.on(
     "set:liked",
     async (evt, title: string) => await db.changeLiked(title)
   );

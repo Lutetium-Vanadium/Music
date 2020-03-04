@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useState, useEffect, useReducer } from "react";
-import { Switch, Route, useLocation } from "react-router-dom";
+import { Switch, Route, useHistory } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 import Navbar from "./Navbar";
@@ -31,7 +31,7 @@ function App() {
   // Used by SearchPage to show loader on initial search results
   const [loading, setLoading] = useState(true);
 
-  const location = useLocation();
+  const history = useHistory();
 
   const search = async (query: string) => {
     const result: searchResult = await ipcRenderer.invoke(
@@ -78,11 +78,14 @@ function App() {
       });
     });
     ipcRenderer.on("error:download-query", () => setDownloadError(true));
+
+    // Miscellaneous handlers
     ipcRenderer.on("reset-global-search", () => setLoading(true));
+    ipcRenderer.on("goto-link", (evt, url) => history.push(url));
   }, []);
 
   const showBack =
-    location.pathname.match(
+    history.location.pathname.match(
       /\/(albums\/alb\.[0-9]*|liked|search|artists\/[a-zA-Z0-9]*)/
     ) !== null;
 

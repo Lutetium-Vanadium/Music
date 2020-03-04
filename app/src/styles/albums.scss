@@ -17,6 +17,8 @@ $img-max: 150px;
 }
 
 .album {
+  @include flex-box($direction: column);
+
   margin: 2rem 3rem;
   flex: 1;
 }

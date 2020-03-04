@@ -2,7 +2,7 @@ import { ipcMain, app } from "electron";
 import * as path from "path";
 import * as fs from "fs";
 
-import getYoutubeId from "../functions/getYoutubeId";
+import getYoutubeDetails from "../functions/getYoutubeDetails";
 import addAlbum from "../functions/addAlbum";
 import db from "../functions/db_handler";
 import Store from "../functions/store";
@@ -12,7 +12,7 @@ import { Windows } from ".";
 const initMiscellaneous = (store: Store, { win }: Windows, downloader) => {
   // The download song port- Given an id, downloads the song
   ipcMain.handle("download-song", async (evt, songData: song) => {
-    const youtubeId = await getYoutubeId(songData);
+    const { id: youtubeId, length } = await getYoutubeDetails(songData);
 
     const fileName = songData.title + ".mp3";
     console.log("Downloading ", songData.title);
@@ -20,6 +20,9 @@ const initMiscellaneous = (store: Store, { win }: Windows, downloader) => {
     const albumId = songData.albumId;
     addAlbum(albumId, songData.artist);
 
+    console.log({ youtube: length, songData: songData.length });
+
+    songData.length = length;
     songData.thumbnail =
       "file://" +
       path.join(app.getPath("userData"), "album_images", `${albumId}.jpg`);

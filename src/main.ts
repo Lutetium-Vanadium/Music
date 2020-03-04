@@ -80,7 +80,6 @@ app.on("ready", () => {
     icon: path.join(app.getAppPath(), "src", "logo.png")
   });
 
-  // dev should be changed to false and frontend should be built for a proper app
   dev
     ? win.loadURL("http://localhost:1234/")
     : win.loadURL(
@@ -104,6 +103,17 @@ app.on("ready", () => {
   });
 
   win.on("close", () => app.quit());
+  win.webContents.on("new-window", (evt, url) => {
+    evt.preventDefault();
+    win.webContents.send(
+      "goto-link",
+      "/" +
+        url
+          .split("/")
+          .slice(3)
+          .join("/")
+    );
+  });
 });
 
 app.on("quit", () => {
@@ -134,9 +144,23 @@ const setUpRemote = (song: song) => {
   });
 };
 
-// Methods to handle the remote controller
-// NOTE they aren't placed in a seperate file, like other ipc functions in `/ipc`,
+// NOTE these aren't placed in a seperate file, like other ipc functions in `/ipc`,
 // as they require the updated `remote` variable to function
+
+ipcMain.on(
+  "set:control-window",
+  (evt, value: boolean, playing: boolean, song: song) => {
+    debug.log({ value, playing, song });
+    store.set("controlWindow", value);
+    if (!remote && value && playing) {
+      setUpRemote(song);
+    } else if (remote && !value) {
+      remote.close();
+    }
+  }
+);
+
+// Methods to handle the remote controller
 ipcMain.on("toggle-remote", (evt, song: song) => {
   if (!store.get("controlWindow")) return;
   if (song === null && remote) {

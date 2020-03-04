@@ -28,10 +28,16 @@ function Albums() {
           <p className="album-title">Liked</p>
         </Link>
         {albums.map(album => (
-          <Link to={`/albums/${album.id}`} key={album.id} className="album">
-            <img className="album-img" src={album.imagePath} alt="top-album" />
+          <div className="album">
+            <Link to={`/albums/${album.id}`} key={album.id}>
+              <img
+                className="album-img"
+                src={album.imagePath}
+                alt="top-album"
+              />
+            </Link>
             <p className="album-title">{album.name}</p>
-          </Link>
+          </div>
         ))}
       </div>
     </div>

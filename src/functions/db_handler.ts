@@ -299,7 +299,7 @@ class Database {
           (id, imagePath, name, artist, numSongs) VALUES
           ("${this._escape(id)}",
           "${this._escape(imagePath)}",
-          "${this._escape(name)}"
+          "${this._escape(name)}",
           "${this._escape(artist)}", 0)`,
         err => {
           if (err) console.error(err);
@@ -405,7 +405,7 @@ class Database {
           const interval = setInterval(() => {
             if (artists.length === n) {
               clearInterval(interval);
-              res(artists);
+              res(artists.sort((a, b) => (a.name > b.name ? 1 : -1)));
             }
           }, 50);
         }

@@ -52,25 +52,24 @@ function Home({ setCur, setQueue, setSongs }) {
       <h1 className="header">Top Albums</h1>
       <div className="top-list">
         {topAlbums.map(album => (
-          <Link
-            to={`/albums/${album.id}`}
-            key={album.id}
-            className="top-wrapper"
-          >
-            <img className="top" src={album.imagePath} alt="top-album" />
+          <div className="top-wrapper">
+            <Link to={`/albums/${album.id}`} key={album.id}>
+              <img className="top" src={album.imagePath} alt="top-album" />
+            </Link>
             <p className="top-title">{album.name}</p>
-          </Link>
+          </div>
         ))}
       </div>
       <h1 className="header">Most Heard Songs</h1>
       <div className={`top-list${showPrev ? "" : " last"}`}>
         {topSongs.map((song, i) => (
-          <div
-            key={song.filePath}
-            className="top-wrapper"
-            onClick={() => playSong(i)}
-          >
-            <img className="top" src={song.thumbnail} alt="top-song" />
+          <div key={song.filePath} className="top-wrapper">
+            <img
+              onClick={() => playSong(i)}
+              className="top"
+              src={song.thumbnail}
+              alt="top-song"
+            />
             <p className="top-title">{song.title}</p>
           </div>
         ))}

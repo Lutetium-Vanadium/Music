@@ -177,7 +177,7 @@ function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
           />
           <img
             src={song.liked ? songLiked : songNotLiked}
-            alt="liked"
+            alt={song.liked ? "liked" : "not liked"}
             className="control"
             onClick={toggleLiked}
           />

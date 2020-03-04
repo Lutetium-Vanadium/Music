@@ -9,6 +9,10 @@
   z-index: 1;
   background-color: $bg;
 
+  * {
+    user-select: none;
+  }
+
   .identifier {
     @include flex-box;
 
