@@ -86,9 +86,12 @@ app.on("ready", () => {
         "file://" + path.join(app.getAppPath(), "public", "index.html")
       );
 
+  // Initialize everything
   createMenu(win, store, dev);
   initIpc(store, { win, remote }, setUpRemote, downloader);
   checkSongs(store.get("folderStored"));
+
+  // Register media controls
   globalShortcut.register("MediaPlayPause", () =>
     win.webContents.send("pause-play", false)
   );

@@ -52,8 +52,8 @@ function Home({ setCur, setQueue, setSongs }) {
       <h1 className="header">Top Albums</h1>
       <div className="top-list">
         {topAlbums.map(album => (
-          <div className="top-wrapper">
-            <Link to={`/albums/${album.id}`} key={album.id}>
+          <div className="top-wrapper" key={album.id}>
+            <Link to={`/albums/${album.id}`}>
               <img className="top" src={album.imagePath} alt="top-album" />
             </Link>
             <p className="top-title">{album.name}</p>

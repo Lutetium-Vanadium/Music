@@ -115,11 +115,15 @@ function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
     );
     ipcRenderer.on("prev-track", () => prevSong());
     ipcRenderer.on("next-track", () => nextSong());
-    ipcRenderer.on("pause-play", (evt, isRemote) => pausePlay(true, isRemote));
+    ipcRenderer.on("pause-play", (evt, isRemote) => {
+      if (window.isFocused) return;
+      pausePlay(true, isRemote);
+    });
     ipcRenderer.send("toggle-remote", song);
 
     const handleKeydown = (e: KeyboardEvent) => {
       if (e.keyCode == 32 && !window.isFocused) {
+        console.log({ focused: window.isFocused });
         e.preventDefault();
         pausePlay(true);
       }
