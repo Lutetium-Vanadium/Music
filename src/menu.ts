@@ -35,6 +35,28 @@ const createMenu = (win: BrowserWindow, store: Store, dev: boolean) => {
           accelerator: "Space"
         },
         {
+          label: "Previous Track",
+          click: () => win.webContents.send("prev-track"),
+          accelerator: "CmdOrCtrl+Left"
+        },
+        {
+          label: "Next Track",
+          click: () => win.webContents.send("next-track"),
+          accelerator: "CmdOrCtrl+Right"
+        },
+        { type: "separator" },
+        {
+          label: "Increase Volume",
+          click: () => win.webContents.send("volume++"),
+          accelerator: "Up"
+        },
+        {
+          label: "Decrease Volume",
+          click: () => win.webContents.send("volume--"),
+          accelerator: "Down"
+        },
+        { type: "separator" },
+        {
           label: "Jump Backward",
           click: () => win.webContents.send("jump-back", store.get("jumpBack")),
           accelerator: "PageDown"
@@ -55,16 +77,6 @@ const createMenu = (win: BrowserWindow, store: Store, dev: boolean) => {
           click: () =>
             win.webContents.send("jump-ahead", store.get("jumpAhead")),
           accelerator: "PageUp"
-        },
-        {
-          label: "Previous Track",
-          click: () => win.webContents.send("prev-track"),
-          accelerator: "CmdOrCtrl+Left"
-        },
-        {
-          label: "Next Track",
-          click: () => win.webContents.send("next-track"),
-          accelerator: "CmdOrCtrl+Right"
         }
       ]
     },

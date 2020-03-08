@@ -11,6 +11,9 @@ $img-max: 150px;
 
 .content {
   @include flex-box(flex-start, flex-start);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax($img-size, 1fr));
+  gap: 4rem;
 
   width: 100%;
   flex-wrap: wrap;

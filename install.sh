@@ -1,5 +1,8 @@
 echo "Building Music..."
 
+# For a linux based system
+# Builds the project and then adds a .desktop file to the Desktop
+
 yarn deploy
 
 DIR=`pwd`

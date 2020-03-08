@@ -113,6 +113,8 @@ function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
       "jump-ahead",
       (evt, val: number) => (ref.current.currentTime += val)
     );
+    ipcRenderer.on("volume++", () => (ref.current.volume += 0.05));
+    ipcRenderer.on("volume--", () => (ref.current.volume -= 0.05));
     ipcRenderer.on("prev-track", () => prevSong());
     ipcRenderer.on("next-track", () => nextSong());
     ipcRenderer.on("pause-play", (evt, isRemote) => {
@@ -123,7 +125,6 @@ function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
 
     const handleKeydown = (e: KeyboardEvent) => {
       if (e.keyCode == 32 && !window.isFocused) {
-        console.log({ focused: window.isFocused });
         e.preventDefault();
         pausePlay(true);
       }
