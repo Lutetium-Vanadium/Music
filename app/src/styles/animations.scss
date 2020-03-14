@@ -1,0 +1,129 @@
+@import "./vars";
+
+$dur: 400ms;
+
+.transition-group {
+  position: absolute;
+  width: 100%;
+  max-height: 100%;
+}
+
+.main {
+  background-color: $bg;
+  min-height: 100%;
+
+  &-left {
+    &-enter {
+      animation: enter-left $dur cubic-bezier(0.215, 0.61, 0.355, 1);
+    }
+
+    &-leave {
+      animation: leave-left $dur cubic-bezier(0.215, 0.61, 0.355, 1);
+    }
+  }
+
+  &-right {
+    &-enter {
+      animation: enter-right $dur cubic-bezier(0.215, 0.61, 0.355, 1);
+    }
+
+    &-leave {
+      animation: leave-right $dur cubic-bezier(0.215, 0.61, 0.355, 1);
+    }
+  }
+
+  &-top {
+    &-enter {
+      animation: enter-top $dur cubic-bezier(0.215, 0.61, 0.355, 1);
+    }
+
+    &-leave {
+      animation: leave-top $dur cubic-bezier(0.215, 0.61, 0.355, 1);
+    }
+  }
+
+  &-bottom {
+    &-enter {
+      animation: enter-bottom $dur cubic-bezier(0.215, 0.61, 0.355, 1);
+    }
+
+    &-leave {
+      animation: leave-bottom $dur cubic-bezier(0.215, 0.61, 0.355, 1);
+    }
+  }
+}
+
+@keyframes enter-left {
+  from {
+    transform: translateX(-100vw);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+@keyframes leave-left {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(100vw);
+  }
+}
+
+@keyframes enter-right {
+  from {
+    transform: translateX(100vw);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+@keyframes leave-right {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-100vw);
+  }
+}
+
+@keyframes enter-top {
+  from {
+    transform: translateY(-100vh);
+  }
+
+  to {
+    transform: translateY(0);
+  }
+}
+@keyframes leave-top {
+  from {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(100vh);
+  }
+}
+@keyframes enter-bottom {
+  from {
+    transform: translateY(100vh);
+  }
+
+  to {
+    transform: translateY(0);
+  }
+}
+@keyframes leave-bottom {
+  from {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(-100vh);
+  }
+}

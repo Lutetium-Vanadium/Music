@@ -10,7 +10,7 @@ import debug from "./console";
 // Given a range of song names, this adds them to the database
 // Note, it is not in the database as this function handles the data formatting and only directly database
 // related line is `await db.addSong(songData)`
-const addRange = async (lst: string[], folderStored: string) => {
+const addRangeSong = async (lst: string[], folderStored: string) => {
   for (let i = 0; i < lst.length; i++) {
     const { song, status } = await getInfo(lst[i]);
 
@@ -25,9 +25,7 @@ const addRange = async (lst: string[], folderStored: string) => {
     debug.log({ albumId });
 
     const songData = {
-      thumbnail:
-        "file://" +
-        path.join(app.getPath("userData"), "album_images", `${albumId}.jpg`),
+      thumbnail: "file://" + path.join(app.getPath("userData"), "album_images", `${albumId}.jpg`),
       filePath: path.join(folderStored, fileName),
       artist: song.artist,
       length: song.length,
@@ -38,19 +36,33 @@ const addRange = async (lst: string[], folderStored: string) => {
     };
     await db.addSong(songData);
 
-    console.log(`${i}: ${lst[i]} finished succesfully`);
+    console.log(`${i}: ${lst[i]} added`);
   }
 };
 
-const deleteRange = async (lst: string[]) => {
+const addRangeAlbum = async (lst: any[]) => {
   for (let i = 0; i < lst.length; i++) {
-    await db.delete(lst[i]);
+    await addAlbum(lst[i].albumId, lst[i].artist);
+    console.log(`${i}: ${lst[i].albumId} by ${lst[i].artist} added`);
+  }
+};
+
+const deleteRangeSongs = async (lst: string[]) => {
+  for (let i = 0; i < lst.length; i++) {
+    await db.deleteSong(lst[i]);
     console.log("Deleted " + lst[i]);
   }
 };
 
-// Updates the db for songs which were not downloaded throught the app
-const checkSongs = async (folderStored: string) => {
+const deleteRangeAlbums = async (lst: string[]) => {
+  for (let i = 0; i < lst.length; i++) {
+    await db.deleteAlbum(lst[i]);
+    console.log("Deleted " + lst[i]);
+  }
+};
+
+// Updates the db for songs which were not downloaded through the app and albums which arent there in the albumdata db
+const checkDBs = async (folderStored: string) => {
   const allSongs = await db.all();
 
   let formattedAllSongs: string[] = [];
@@ -76,7 +88,7 @@ const checkSongs = async (folderStored: string) => {
   console.log(notAdded.length + " unknown songs detected.");
   if (notAdded.length) {
     console.log("Updating database...");
-    await addRange(notAdded, folderStored);
+    await addRangeSong(notAdded, folderStored);
     changed = true;
   }
 
@@ -91,14 +103,56 @@ const checkSongs = async (folderStored: string) => {
   console.log(deleted.length + " extra songs detected.");
   if (deleted.length) {
     console.log("Updating database...");
-    await deleteRange(deleted);
+    await deleteRangeSongs(deleted);
     changed = true;
+  }
+
+  const albumsFromSongData = await db.albumsFromSongs();
+  const albumsFromAlbumData = (await db.mostPopularAlbums(false)).sort((a, b) => (a.id > b.id ? 1 : -1));
+
+  let i = 0,
+    j = 0;
+  let albumsToDelete = [];
+  let albumsToAdd = [];
+
+  while (i < albumsFromSongData.length && j < albumsFromAlbumData.length) {
+    const albumCur = albumsFromAlbumData[j].id;
+    const songCur = albumsFromSongData[i].albumId;
+
+    if (albumCur === songCur) {
+      i++;
+      j++;
+    } else if (albumCur > songCur) {
+      albumsToAdd.push(albumsFromSongData[i]);
+      i++;
+    } else {
+      albumsToDelete.push(albumCur);
+      j++;
+    }
+  }
+
+  console.log();
+
+  for (i; i < albumsFromSongData.length; i++) albumsToAdd.push(albumsFromSongData[i]);
+
+  for (j; j < albumsFromAlbumData.length; j++) albumsToDelete.push(albumsFromAlbumData[j].id);
+
+  console.log(albumsToDelete.length + " extra albums detected.");
+  if (albumsToDelete.length) {
+    console.log("Updating database...");
+    deleteRangeAlbums(albumsToDelete);
+  }
+
+  console.log(albumsToAdd.length + " unknown albums detected.");
+  if (albumsToAdd.length) {
+    console.log("Updating database...");
+    addRangeAlbum(albumsToAdd);
   }
 
   if (changed) console.log("Completed database update");
 };
 
-export default checkSongs;
+export default checkDBs;
 
 // Helper function that provides a promise based fs.readdir
 const ls = (path: fs.PathLike): Promise<string[]> => {

@@ -9,7 +9,7 @@ process.chdir(app.getAppPath());
 import { createDownloader } from "./functions/downloader";
 import db from "./functions/db_handler";
 import Store from "./functions/store";
-import checkSongs from "./checkSongs";
+import checkDBs from "./checkDBs";
 import { song } from "./types";
 import debug from "./console";
 import createMenu from "./menu";
@@ -24,12 +24,10 @@ const store = new Store({
     seekAhead: 5,
     seekBack: 5,
     jumpBack: 15,
-    controlWindow: false
+    controlWindow: false,
+    animations: true
   }
 });
-
-// To many event listeners are added for the default
-ipcMain.setMaxListeners(20);
 
 const downloader = createDownloader(store.get("folderStored"));
 
@@ -59,7 +57,9 @@ downloader.on("finished", async (err, data) => {
 
 // check if image directory exists
 const album_images_path = path.join(app.getPath("userData"), "album_images");
-if (!fs.existsSync(album_images_path)) fs.mkdir(album_images_path, debug.log);
+fs.exists(album_images_path, exists => {
+  if (!exists) fs.mkdir(album_images_path, debug.log);
+});
 
 // needed variables
 let win: BrowserWindow = null;
@@ -80,27 +80,17 @@ app.on("ready", () => {
     icon: path.join(app.getAppPath(), "src", "logo.png")
   });
 
-  dev
-    ? win.loadURL("http://localhost:1234/")
-    : win.loadURL(
-        "file://" + path.join(app.getAppPath(), "public", "index.html")
-      );
+  dev ? win.loadURL("http://localhost:1234/") : win.loadURL("file://" + path.join(app.getAppPath(), "public", "index.html"));
 
   // Initialize everything
   createMenu(win, store, dev);
   initIpc(store, { win, remote }, setUpRemote, downloader);
-  checkSongs(store.get("folderStored"));
+  checkDBs(store.get("folderStored"));
 
   // Register media controls
-  globalShortcut.register("MediaPlayPause", () =>
-    win.webContents.send("pause-play", false)
-  );
-  globalShortcut.register("MediaNextTrack", () =>
-    win.webContents.send("next-track")
-  );
-  globalShortcut.register("MediaPreviousTrack", () =>
-    win.webContents.send("prev-track")
-  );
+  globalShortcut.register("MediaPlayPause", () => win.webContents.send("pause-play", false));
+  globalShortcut.register("MediaNextTrack", () => win.webContents.send("next-track"));
+  globalShortcut.register("MediaPreviousTrack", () => win.webContents.send("prev-track"));
   globalShortcut.register("MediaStop", () => {
     remote?.close();
   });
@@ -150,18 +140,15 @@ const setUpRemote = (song: song) => {
 // NOTE these aren't placed in a seperate file, like other ipc functions in `/ipc`,
 // as they require the updated `remote` variable to function
 
-ipcMain.on(
-  "set:control-window",
-  (evt, value: boolean, playing: boolean, song: song) => {
-    debug.log({ value, playing, song });
-    store.set("controlWindow", value);
-    if (!remote && value && playing) {
-      setUpRemote(song);
-    } else if (remote && !value) {
-      remote.close();
-    }
+ipcMain.on("set:control-window", (evt, value: boolean, playing: boolean, song: song) => {
+  debug.log({ value, playing, song });
+  store.set("controlWindow", value);
+  if (!remote && value && playing) {
+    setUpRemote(song);
+  } else if (remote && !value) {
+    remote.close();
   }
-);
+});
 
 // Methods to handle the remote controller
 ipcMain.on("toggle-remote", (evt, song: song) => {

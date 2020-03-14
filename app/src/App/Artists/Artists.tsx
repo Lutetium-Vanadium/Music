@@ -12,7 +12,6 @@ function Artists() {
   const [artists, setArtists] = useState(empty);
 
   useEffect(() => {
-    console.log("HELLO");
     ipcRenderer.invoke("get:artists").then((res: artist[]) => {
       console.log({ res });
       setArtists(res);
@@ -24,8 +23,8 @@ function Artists() {
       <h1 className="header">Artists</h1>
       <div className="content">
         {artists.map(artist => (
-          <div className="album">
-            <Link to={`/artists/${artist.name}`} key={artist.name}>
+          <div className="album" key={artist.name}>
+            <Link to={`/artists/${artist.name}`}>
               {artist.images.length === 4 ? (
                 <div className="album-img mozaic">
                   <img src={artist.images[0]} alt="image-0" />
@@ -34,11 +33,7 @@ function Artists() {
                   <img src={artist.images[3]} alt="image-3" />
                 </div>
               ) : (
-                <img
-                  className="album-img"
-                  src={artist.images[0]}
-                  alt="top-album"
-                />
+                <img className="album-img" src={artist.images[0]} alt="top-album" />
               )}
             </Link>
             <p className="album-title">{artist.name}</p>

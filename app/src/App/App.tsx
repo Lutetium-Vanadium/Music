@@ -12,32 +12,32 @@ import Albums from "./Albums";
 import Album from "./Album";
 import Artists from "./Artists";
 import Artist from "./Artist";
-import { song, searchResult } from "#root/types";
 import Player from "#shared/Player";
+import Transition from "#shared/Transition";
 import { reduxState } from "#root/reduxHandler";
+import { song, searchResult } from "#root/types";
 
 import logo from "#logos/logo.png";
+
 const { ipcRenderer } = window.require("electron");
 
 const empty: song[] = [];
 
 function App() {
   const [searchResults, setSearchResults] = useState(empty);
-  // TODO use searchSuccess
   const [searchSuccess, setSearchSuccess] = useState(true);
   const [downloadError, setDownloadError] = useState(false);
-  const [downloading, dispatch] = useReducer(reducer, {});
-  const queue = useSelector((state: reduxState) => state.queue);
+  const [animations, setAnimations] = useState(true);
+
   // Used by SearchPage to show loader on initial search results
   const [loading, setLoading] = useState(true);
 
+  const [downloading, dispatch] = useReducer(reducer, {});
+  const queue = useSelector((state: reduxState) => state.queue);
   const history = useHistory();
 
   const search = async (query: string) => {
-    const result: searchResult = await ipcRenderer.invoke(
-      "search:global",
-      query
-    );
+    const result: searchResult = await ipcRenderer.invoke("search:global", query);
     if (result.status) {
       setSearchResults(result.songs);
     }
@@ -62,6 +62,8 @@ function App() {
   };
 
   useEffect(() => {
+    ipcRenderer.invoke("get:animations").then(setAnimations);
+
     // Handles progress updates sent by electron for when a song is being downloaded
     ipcRenderer.on("update:download-query", (evt, { progress, id }) => {
       dispatch({
@@ -82,43 +84,37 @@ function App() {
     // Miscellaneous handlers
     ipcRenderer.on("reset-global-search", () => setLoading(true));
     ipcRenderer.on("goto-link", (evt, url) => history.push(url));
+    ipcRenderer.on("change:animations", (evt, animations) => setAnimations(animations));
   }, []);
 
-  const showBack =
-    history.location.pathname.match(
-      /\/(albums\/alb\.[0-9]*|liked|search|artists\/[a-zA-Z0-9]*)/
-    ) !== null;
+  const showBack = history.location.pathname.match(/\/(albums\/alb\.[0-9]*|liked|search|artists\/[a-zA-Z0-9]*)/) !== null;
 
   return (
     <div>
-      <Navbar
-        search={search}
-        downloading={downloading}
-        errored={downloadError}
-        showBack={showBack}
-        // backClick={handleBackClick}
-      />
+      <Navbar search={search} downloading={downloading} errored={downloadError} showBack={showBack} />
       <main>
-        <Switch>
-          <Route
-            path="/search"
-            render={() => (
-              <SearchPage
-                download={download}
-                results={searchResults}
-                loading={loading}
-                success={searchSuccess}
+        <Transition
+          grid={[[/\/search$/], [/\/$/, /\/settings$/, /\/artists/, /\/albums/, /\/music$/]]}
+          timeout={400}
+          classExtension="main"
+          animate={animations}
+        >
+          {location => (
+            <Switch location={location}>
+              <Route
+                path="/search"
+                render={() => <SearchPage download={download} results={searchResults} loading={loading} success={searchSuccess} />}
               />
-            )}
-          />
-          <Route path="/music" component={Music} />
-          <Route path="/albums/:id" component={Album} />
-          <Route path="/albums" component={Albums} />
-          <Route path="/artists/:name" component={Artist} />
-          <Route path="/artists" component={Artists} />
-          <Route path="/settings" component={Settings} />
-          <Route path="/" component={Home} />
-        </Switch>
+              <Route path="/music" component={Music} />
+              <Route path="/albums/:id" component={Album} />
+              <Route path="/albums" component={Albums} />
+              <Route path="/artists/:name" component={Artist} />
+              <Route path="/artists" component={Artists} />
+              <Route path="/settings" component={Settings} />
+              <Route path="/" component={Home} />
+            </Switch>
+          )}
+        </Transition>
       </main>
       {queue.length ? <Player /> : null}
     </div>
@@ -157,9 +153,7 @@ const reducer = (state: object, action: action) => {
       // `state` is not available in the useEffect
       const song: song = newState[action.id].song;
       new Notification(song.title, {
-        body: `Finished Downloading ${song.title} by ${
-          song.artist
-        }.\n It is stored in ${formatFilePath(action.payload)}`,
+        body: `Finished Downloading ${song.title} by ${song.artist}.\n It is stored in ${formatFilePath(action.payload)}`,
         badge: logo,
         icon: song.thumbnail
       });

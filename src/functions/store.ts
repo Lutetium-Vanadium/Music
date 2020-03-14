@@ -2,9 +2,13 @@ import { app } from "electron";
 import * as path from "path";
 import * as fs from "fs";
 
+interface Object {
+  [key: string]: any;
+}
+
 interface StoreParams {
   name: string;
-  defaults?: object;
+  defaults?: Object;
 }
 
 /**
@@ -12,12 +16,12 @@ interface StoreParams {
  *
  *   @param {string} name name of the file to be stored in
  *
- *   @param {object} defaults default values if the file has been corrupted or is being made for the first time
+ *   @param {Object} defaults default values if the file has been corrupted or is being made for the first time
  */
 
 class Store {
   private _path: string;
-  private _data: object;
+  private _data: Object;
 
   constructor({ name, defaults = {} }: StoreParams) {
     this._path = path.join(app.getPath("userData"), name + ".json");
@@ -28,10 +32,19 @@ class Store {
    * Store.get()
    *
    * @param {string} key The key of the property
+   *
+   * Gets a particular property
    */
   get = (key: string) => {
     return this._data[key];
   };
+
+  /**
+   * Store.getAll()
+   *
+   * Returns all the properties
+   */
+  getAll = () => this._data;
 
   /**
    * Store.set()
@@ -55,7 +68,7 @@ class Store {
    * Adds/replaces all values in the given object in the data file
    * WARNING: The data being sent has to be only what you want added. It does not perform any checks and just destructures it
    */
-  setAll = (obj: object) => {
+  setAll = (obj: Object) => {
     this._data = { ...this._data, ...obj };
     this._write();
   };
@@ -67,7 +80,7 @@ class Store {
    *
    * Reads the value of the store file, if it doesn't exist, returns the defaults
    */
-  private parseDataFile = (defaults: object) => {
+  private parseDataFile = (defaults: Object) => {
     try {
       const data = JSON.parse(fs.readFileSync(this._path).toString());
       // Makes sure if new properties have been introduced, they will be set to their defaults;

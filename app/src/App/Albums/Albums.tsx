@@ -14,9 +14,7 @@ function Albums() {
   const [albums, setAlbums] = useState(empty);
 
   useEffect(() => {
-    ipcRenderer
-      .invoke("get:top-albums", false)
-      .then((res: album[]) => setAlbums(res));
+    ipcRenderer.invoke("get:top-albums", false).then((res: album[]) => setAlbums(res));
   }, []);
 
   return (
@@ -28,13 +26,9 @@ function Albums() {
           <p className="album-title">Liked</p>
         </Link>
         {albums.map(album => (
-          <div className="album">
-            <Link to={`/albums/${album.id}`} key={album.id}>
-              <img
-                className="album-img"
-                src={album.imagePath}
-                alt="top-album"
-              />
+          <div className="album" key={album.id}>
+            <Link to={`/albums/${album.id}`}>
+              <img className="album-img" src={album.imagePath} alt="top-album" />
             </Link>
             <p className="album-title">{album.name}</p>
           </div>

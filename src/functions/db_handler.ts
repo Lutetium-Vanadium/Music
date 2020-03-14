@@ -39,9 +39,7 @@ class Database {
       filePath TEXT, title TEXT, thumbnail TEXT, artist TEXT, length INT, numListens INT, liked BOOLEAN, albumId TEXT
     )`
     );
-    this._db.run(
-      `CREATE TABLE IF NOT EXISTS albumdata (id TEXT, imagePath TEXT, name TEXT, numSongs INT, artist TEXT)`
-    );
+    this._db.run(`CREATE TABLE IF NOT EXISTS albumdata (id TEXT, imagePath TEXT, name TEXT, numSongs INT, artist TEXT)`);
   };
 
   /**
@@ -74,14 +72,7 @@ class Database {
    *
    * Songs which are downloaded are added to the db for additional information
    */
-  addSong = ({
-    filePath,
-    title,
-    thumbnail,
-    artist,
-    length,
-    albumId
-  }: song): Promise<void> => {
+  addSong = ({ filePath, title, thumbnail, artist, length, albumId }: song): Promise<void> => {
     return new Promise((res, rej) => {
       this._db.run(
         `INSERT INTO songdata
@@ -103,21 +94,18 @@ class Database {
   };
 
   /**
-   * delete()
+   * deleteSong()
    *
    * @param {string} title Song to delete
    *
    * Delete all instances of songs with title=`title`
    */
-  delete = (title: string): Promise<void> => {
+  deleteSong = (title: string): Promise<void> => {
     return new Promise((res, rej) => {
-      this._db.run(
-        `DELETE FROM songdata WHERE title LIKE "${this._escape(title)}"`,
-        err => {
-          if (err) console.error(err);
-          res();
-        }
-      );
+      this._db.run(`DELETE FROM songdata WHERE title LIKE "${this._escape(title)}"`, err => {
+        if (err) console.error(err);
+        res();
+      });
     });
   };
 
@@ -132,9 +120,7 @@ class Database {
 
     return new Promise((res, rej) =>
       this._db.all(
-        `SELECT * FROM songdata WHERE title LIKE "${this._escape(
-          songTitle
-        )}" ORDER BY LOWER(title), title`,
+        `SELECT * FROM songdata WHERE title LIKE "${this._escape(songTitle)}" ORDER BY LOWER(title), title`,
         (err, data: song[]) => res(data)
       )
     );
@@ -149,13 +135,10 @@ class Database {
    */
   albumSongs = (albumId: string): Promise<song[]> =>
     new Promise((res, rej) =>
-      this._db.all(
-        `SELECT * FROM songdata WHERE albumId LIKE "${this._escape(albumId)}"`,
-        (err, songs: song[]) => {
-          if (err) console.error(err);
-          res(songs);
-        }
-      )
+      this._db.all(`SELECT * FROM songdata WHERE albumId LIKE "${this._escape(albumId)}"`, (err, songs: song[]) => {
+        if (err) console.error(err);
+        res(songs);
+      })
     );
 
   /**
@@ -165,13 +148,23 @@ class Database {
    */
   all = (): Promise<song[]> =>
     new Promise((res, rej) =>
-      this._db.all(
-        `SELECT * FROM songdata ORDER BY LOWER(title), title`,
-        (err, data: song[]) => {
-          if (err) console.error(err);
-          res(data);
-        }
-      )
+      this._db.all(`SELECT * FROM songdata ORDER BY LOWER(title), title`, (err, data: song[]) => {
+        if (err) console.error(err);
+        res(data);
+      })
+    );
+
+  /**
+   * albumsFromSongs()
+   *
+   * returns all albums from songdata, used in database checks
+   */
+  albumsFromSongs = (): Promise<any[]> =>
+    new Promise((res, rej) =>
+      this._db.all(`SELECT distinct albumId, artist FROM songdata ORDER BY albumId`, (err, data) => {
+        if (err) console.error(err);
+        res(data);
+      })
     );
 
   /**
@@ -212,15 +205,10 @@ class Database {
    */
   mostPopularSongs = (limit: boolean): Promise<song[]> =>
     new Promise((res, rej) =>
-      this._db.all(
-        `SELECT * FROM songdata ORDER BY numListens DESC${
-          limit ? ` LIMIT ${this._n}` : ""
-        }`,
-        (err, songs: song[]) => {
-          if (err) console.error(err);
-          res(songs);
-        }
-      )
+      this._db.all(`SELECT * FROM songdata ORDER BY numListens DESC${limit ? ` LIMIT ${this._n}` : ""}`, (err, songs: song[]) => {
+        if (err) console.error(err);
+        res(songs);
+      })
     );
 
   /**
@@ -230,13 +218,10 @@ class Database {
    */
   liked = (): Promise<song[]> =>
     new Promise((res, rej) =>
-      this._db.all(
-        `SELECT * FROM songdata WHERE liked ORDER BY LOWER(title), title`,
-        (err, songs: song[]) => {
-          if (err) console.error(err);
-          res(songs);
-        }
-      )
+      this._db.all(`SELECT * FROM songdata WHERE liked ORDER BY LOWER(title), title`, (err, songs: song[]) => {
+        if (err) console.error(err);
+        res(songs);
+      })
     );
 
   /**
@@ -247,11 +232,7 @@ class Database {
    * Updates a particular songs times listened by one
    */
   incrementNumListens = (filePath: string) =>
-    this._db.run(
-      `UPDATE songdata SET numListens = numListens + 1 WHERE filePath LIKE "${this._escape(
-        filePath
-      )}"`
-    );
+    this._db.run(`UPDATE songdata SET numListens = numListens + 1 WHERE filePath LIKE "${this._escape(filePath)}"`);
 
   /**
    * changeLiked()
@@ -260,12 +241,7 @@ class Database {
    *
    * Inverts the liked value of the song - works as both dislike and like
    */
-  changeLiked = (title: string) =>
-    this._db.run(
-      `UPDATE songdata SET liked = NOT liked WHERE title LIKE "${this._escape(
-        title
-      )}"`
-    );
+  changeLiked = (title: string) => this._db.run(`UPDATE songdata SET liked = NOT liked WHERE title LIKE "${this._escape(title)}"`);
 
   /**
    * exists()
@@ -276,13 +252,11 @@ class Database {
    */
   exists = (albumId: string): Promise<boolean> =>
     new Promise((res, rej) =>
-      this._db.all(
-        `SELECT * FROM albumdata WHERE id like "${this._escape(albumId)}"`,
-        (err, data) => {
-          if (err) console.error(err);
-          res(data.length > 0);
-        }
-      )
+      this._db.all(`SELECT * FROM albumdata WHERE id like "${this._escape(albumId)}"`, (err, data) => {
+        if (err) console.error(err);
+        debug.log({ data });
+        res(data.length > 0);
+      })
     );
 
   /**
@@ -317,13 +291,10 @@ class Database {
    */
   albumDetails = (id: string): Promise<album> =>
     new Promise((res, rej) =>
-      this._db.get(
-        `SELECT * FROM albumdata where id LIKE "${this._escape(id)}"`,
-        (err, row: album) => {
-          if (err) console.error(err);
-          res(row);
-        }
-      )
+      this._db.get(`SELECT * FROM albumdata where id LIKE "${this._escape(id)}"`, (err, row: album) => {
+        if (err) console.error(err);
+        res(row);
+      })
     );
 
   /**
@@ -334,11 +305,7 @@ class Database {
    * Increments the number of songs for the given albumId
    */
   incrementNumSongs = (albumId: string) =>
-    this._db.run(
-      `UPDATE albumdata SET numSongs = numSongs + 1 WHERE id LIKE "${this._escape(
-        albumId
-      )}"`
-    );
+    this._db.run(`UPDATE albumdata SET numSongs = numSongs + 1 WHERE id LIKE "${this._escape(albumId)}"`);
 
   /**
    * decrementNumSongs()
@@ -349,13 +316,24 @@ class Database {
    * Image Path is used because the api is used only while deleteing songs, which does not have albumId as of now
    */
   decrementNumSongs = (albumId: string) => {
-    this._db.run(
-      `UPDATE albumdata SET numSongs = numSongs - 1 WHERE id LIKE "${this._escape(
-        albumId
-      )}"`
-    );
+    this._db.run(`UPDATE albumdata SET numSongs = numSongs - 1 WHERE id LIKE "${this._escape(albumId)}"`);
     this._db.run(`DELETE FROM albumdata WHERE numSongs < 1`);
   };
+
+  /**
+   * deleteAlbum()
+   *
+   * @param {string} albumId ID of album to delete
+   *
+   * Deletes the album with the id given
+   */
+  deleteAlbum = async (albumId: string): Promise<void> =>
+    new Promise((res, rej) =>
+      this._db.run(`DELETE FROM albumdata WHERE id LIKE ${this._escape(albumId)}`, err => {
+        if (err) console.error(err);
+        res();
+      })
+    );
 
   /**
    * artistDetails()
@@ -367,9 +345,7 @@ class Database {
   artistDetails = (name: string): Promise<artist> =>
     new Promise((res, rej) =>
       this._db.all(
-        `SELECT imagePath FROM albumdata WHERE artist LIKE "${this._escape(
-          name
-        )}" ORDER BY numSongs DESC LIMIT 4`,
+        `SELECT imagePath FROM albumdata WHERE artist LIKE "${this._escape(name)}" ORDER BY numSongs DESC LIMIT 4`,
         (err, albums: album[]) => {
           if (err) console.error(err);
 
@@ -393,7 +369,7 @@ class Database {
     new Promise((res, rej) => {
       let artists: artist[] = [];
       this._db.each(
-        `SELECT DISTINCT artist FROM albumdata ORDER BY LOWER(artist)`,
+        `SELECT DISTINCT artist FROM songdata ORDER BY LOWER(artist)`,
         async (err, row: any) => {
           if (err) console.error(err);
 
@@ -421,15 +397,10 @@ class Database {
    */
   artistSongs = (artist: string): Promise<song[]> =>
     new Promise((res, rej) =>
-      this._db.all(
-        `SELECT * FROM songdata WHERE artist LIKE "${this._escape(
-          artist
-        )}" ORDER BY LOWER(title)`,
-        (err, songs: song[]) => {
-          if (err) console.error(err);
-          res(songs);
-        }
-      )
+      this._db.all(`SELECT * FROM songdata WHERE artist LIKE "${this._escape(artist)}" ORDER BY LOWER(title)`, (err, songs: song[]) => {
+        if (err) console.error(err);
+        res(songs);
+      })
     );
 
   /**

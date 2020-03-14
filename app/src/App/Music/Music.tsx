@@ -18,6 +18,8 @@ function Music() {
       setSongs(songs);
       setAllSongs(songs);
     });
+
+    console.log("RENDER");
   }, []);
 
   const search = async (value: string) => {
@@ -29,18 +31,9 @@ function Music() {
     <div className="music">
       <div className="header-wrapper">
         <h1 className="header">My Music</h1>
-        <Search
-          handleChange={search}
-          handleSubmit={search}
-          placeholder="Filter"
-        />
+        <Search handleChange={search} handleSubmit={search} placeholder="Filter" />
       </div>
-      <SongView
-        setSongs={setSongs}
-        setAllSongs={setAllSongs}
-        songs={songs}
-        allSongs={allSongs}
-      />
+      <SongView setSongs={setSongs} setAllSongs={setAllSongs} songs={songs} allSongs={allSongs} />
     </div>
   );
 }

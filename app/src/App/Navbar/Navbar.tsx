@@ -1,5 +1,5 @@
 import * as React from "react";
-import { NavLink, useHistory } from "react-router-dom";
+import { NavLink, Link, useHistory } from "react-router-dom";
 
 import Search from "#shared/Search";
 import ProgressBar from "#shared/ProgressBar";
@@ -18,7 +18,7 @@ function Navbar({ downloading, errored, search, showBack }: NavbarParams) {
 
   const handleChange = (value: string) => {
     if ((value.length + 1) % 2 == 0) {
-      history.push("/search");
+      if (history.location.pathname !== "/search") history.push("/search");
       search(value);
     }
   };
@@ -33,19 +33,14 @@ function Navbar({ downloading, errored, search, showBack }: NavbarParams) {
 
   return (
     <div className="navbar">
-      <div className="identifier">
+      <Link to="/" className="identifier">
         <Back show={showBack} onClick={backClick} />
         <img className="logo" src={logo} alt="logo" />
         <h2>Music</h2>
         {Object.keys(downloading).map(key => (
-          <ProgressBar
-            key={key}
-            progress={downloading[key].progress}
-            song={downloading[key].song}
-            errored={errored}
-          />
+          <ProgressBar key={key} progress={downloading[key].progress} song={downloading[key].song} errored={errored} />
         ))}
-      </div>
+      </Link>
       <div className="routes">
         <NavLink to="/" exact activeClassName="active" className="link">
           Home
@@ -62,11 +57,7 @@ function Navbar({ downloading, errored, search, showBack }: NavbarParams) {
         <NavLink to="/music" activeClassName="active" className="link">
           My Music
         </NavLink>
-        <Search
-          handleChange={handleChange}
-          handleSubmit={handleSubmit}
-          placeholder="Download"
-        />
+        <Search handleChange={handleChange} handleSubmit={handleSubmit} placeholder="Download" />
       </div>
     </div>
   );
@@ -81,17 +72,8 @@ interface BackProps {
 
 function Back({ show, onClick }: BackProps) {
   return (
-    <svg
-      viewBox="0 0 50 100"
-      onClick={onClick}
-      className={`back${show ? " show" : ""}`}
-    >
-      <path
-        d="M50 0 L0 50 L50 100"
-        fill="transparent"
-        stroke="white"
-        strokeWidth="10"
-      />
+    <svg viewBox="0 0 50 100" onClick={onClick} className={`back${show ? " show" : ""}`}>
+      <path d="M50 0 L0 50 L50 100" fill="transparent" stroke="white" strokeWidth="10" />
     </svg>
   );
 }

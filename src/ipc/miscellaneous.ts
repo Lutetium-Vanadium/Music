@@ -23,9 +23,7 @@ const initMiscellaneous = (store: Store, { win }: Windows, downloader) => {
     console.log({ youtube: length, songData: songData.length });
 
     songData.length = length;
-    songData.thumbnail =
-      "file://" +
-      path.join(app.getPath("userData"), "album_images", `${albumId}.jpg`);
+    songData.thumbnail = "file://" + path.join(app.getPath("userData"), "album_images", `${albumId}.jpg`);
     songData.filePath = path.join(store.get("folderStored"), fileName);
     db.addSong(songData);
 
@@ -35,7 +33,7 @@ const initMiscellaneous = (store: Store, { win }: Windows, downloader) => {
   ipcMain.handle("delete:song", async (evt, song: song) => {
     try {
       console.log("Deleting", song.title);
-      const dbSongPromise = db.delete(song.title);
+      const dbSongPromise = db.deleteSong(song.title);
       const dbAlbumPromise = db.decrementNumSongs(song.albumId);
       const fsPromise = rm(song.filePath);
 

@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 
 import NumberSelection from "./NumberSelection";
+import Setting from "./Setting";
 import Toggle from "./Toggle";
 import { reduxState } from "#root/reduxHandler";
 
@@ -19,6 +20,7 @@ function Settings() {
   const [seekAhead, setSeekAhead] = useState(min);
   const [jumpAhead, setJumpAhead] = useState(min * 2);
   const [controls, setControls] = useState(false);
+  const [animations, setAnimations] = useState(false);
 
   const { queue, cur } = useSelector((state: reduxState) => state);
 
@@ -26,9 +28,7 @@ function Settings() {
     ipcRenderer.invoke("set:music-dir").then((res: string) => setDir(res));
   };
 
-  const generateFunctions = (
-    func: React.Dispatch<React.SetStateAction<number>>
-  ) => ({
+  const generateFunctions = (func: React.Dispatch<React.SetStateAction<number>>) => ({
     prev: (num: number) => func(((num - 1 + dthresh - min) % dthresh) + min),
     next: (num: number) => func(((num + 1 - min) % dthresh) + min)
   });
@@ -45,13 +45,13 @@ function Settings() {
   const toggleControlWindow = () => {
     const isPlaying: boolean = queue.length > 0;
 
-    ipcRenderer.send(
-      "set:control-window",
-      !controls,
-      isPlaying,
-      isPlaying ? queue[cur] : null
-    );
+    ipcRenderer.send("set:control-window", !controls, isPlaying, isPlaying ? queue[cur] : null);
     setControls(!controls);
+  };
+
+  const toggleAnimations = () => {
+    ipcRenderer.send("set:animations", !animations);
+    setAnimations(!animations);
   };
 
   useEffect(() => {
@@ -62,6 +62,7 @@ function Settings() {
       setSeekAhead(info.seekAhead);
       setJumpAhead(info.jumpAhead);
       setControls(info.controlWindow);
+      setAnimations(info.animations);
     });
   }, []);
 
@@ -78,32 +79,28 @@ function Settings() {
         </button>
       </div>
       <hr />
-      <div className="setting">
-        <p className="name">Jump Backward timer: </p>
+      <Setting name="Jump Backward timer: ">
         <NumberSelection num={jumpBack} {...generateFunctions(setJumpBack)} />
-      </div>
-      <div className="setting">
-        <p className="name">Seek Backward timer: </p>
+      </Setting>
+      <Setting name="Seek Backward timer: ">
         <NumberSelection num={seekBack} {...generateFunctions(setSeekBack)} />
-      </div>
-      <div className="setting">
-        <p className="name">Seek Forward timer: </p>
+      </Setting>
+      <Setting name="Seek Forward timer: ">
         <NumberSelection num={seekAhead} {...generateFunctions(setSeekAhead)} />
-      </div>
-      <div className="setting">
-        <p className="name">Jump Forward timer: </p>
+      </Setting>
+      <Setting name="Jump Forward timer: ">
         <NumberSelection num={jumpAhead} {...generateFunctions(setJumpAhead)} />
-      </div>
+      </Setting>
       <button className="change center" onClick={applyChanges}>
         Change
       </button>
       <hr />
-      <div className="setting">
-        <p className="name">
-          Open Secondary Control Window when music is playing?
-        </p>
+      <Setting name="Open Secondary Control Window when music is playing?">
         <Toggle toggled={controls} toggle={toggleControlWindow} />
-      </div>
+      </Setting>
+      <Setting name="Animate between pages">
+        <Toggle toggled={animations} toggle={toggleAnimations} />
+      </Setting>
     </div>
   );
 }
