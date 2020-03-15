@@ -33,14 +33,16 @@ function Navbar({ downloading, errored, search, showBack }: NavbarParams) {
 
   return (
     <div className="navbar">
-      <Link to="/" className="identifier">
+      <div className="identifier">
         <Back show={showBack} onClick={backClick} />
-        <img className="logo" src={logo} alt="logo" />
-        <h2>Music</h2>
+        <Link to="/" className="identifier">
+          <img className="logo" src={logo} alt="logo" />
+          <h2>Music</h2>
+        </Link>
         {Object.keys(downloading).map(key => (
           <ProgressBar key={key} progress={downloading[key].progress} song={downloading[key].song} errored={errored} />
         ))}
-      </Link>
+      </div>
       <div className="routes">
         <NavLink to="/" exact activeClassName="active" className="link">
           Home

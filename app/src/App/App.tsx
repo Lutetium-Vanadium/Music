@@ -21,6 +21,12 @@ import logo from "#logos/logo.png";
 
 const { ipcRenderer } = window.require("electron");
 
+interface Place {
+  regex: RegExp;
+  left: string;
+  right: string;
+}
+
 const empty: song[] = [];
 
 function App() {
@@ -85,6 +91,38 @@ function App() {
     ipcRenderer.on("reset-global-search", () => setLoading(true));
     ipcRenderer.on("goto-link", (evt, url) => history.push(url));
     ipcRenderer.on("change:animations", (evt, animations) => setAnimations(animations));
+
+    const handleKeydown = (evt: KeyboardEvent) => {
+      const places: Place[] = [
+        { regex: /\/$/, right: "/settings", left: "/music" },
+        { regex: /\/settings$/, right: "/artists", left: "/" },
+        { regex: /\/artists/, right: "/albums", left: "/settings" },
+        { regex: /\/albums/, right: "/music", left: "/artists" },
+        { regex: /\/music$/, right: "/", left: "/albums" }
+      ];
+
+      if (evt.altKey) {
+        if (evt.key === "ArrowLeft") {
+          for (const place of places) {
+            if (place.regex.test(history.location.pathname)) {
+              // console.log(place.regex, history.location.pathname);
+              history.push(place.left);
+              break;
+            }
+          }
+        } else if (evt.key === "ArrowRight") {
+          for (const place of places) {
+            if (place.regex.test(history.location.pathname)) {
+              history.push(place.right);
+              break;
+              // console.log(place.regex, history.location.pathname);
+            }
+          }
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeydown);
   }, []);
 
   const showBack = history.location.pathname.match(/\/(albums\/alb\.[0-9]*|liked|search|artists\/[a-zA-Z0-9]*)/) !== null;
