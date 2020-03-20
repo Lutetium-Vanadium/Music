@@ -13,13 +13,8 @@ interface SearchProps {
   handleSubmit?: (value: string) => void;
 }
 
-function Search({
-  handleChange,
-  handleSubmit,
-  placeholder = "Search"
-}: SearchProps) {
+function Search({ handleChange, handleSubmit, placeholder = "Search" }: SearchProps) {
   const [value, setValue] = useState("");
-  const input = useRef(empty);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setValue(e.target.value);
@@ -35,13 +30,6 @@ function Search({
 
   useEffect(() => {
     ipcRenderer.on("reset-search-box", () => setValue(""));
-    input.current.addEventListener("focusin", () => {
-      window.isFocused = true;
-    });
-
-    input.current.addEventListener("focusout", () => {
-      window.isFocused = false;
-    });
   }, []);
 
   return (
@@ -53,15 +41,7 @@ function Search({
         src={search_icon}
         alt="search_icon"
       />
-      <input
-        onChange={onChange}
-        onKeyDown={handleKeyDown}
-        className="search-box"
-        type="search"
-        value={value}
-        placeholder={placeholder}
-        ref={input}
-      />
+      <input onChange={onChange} onKeyDown={handleKeyDown} className="search-box" type="search" value={value} placeholder={placeholder} />
     </div>
   );
 }

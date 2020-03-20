@@ -13,12 +13,13 @@ import songNotLiked from "./song-not-liked.png";
 
 const { ipcRenderer } = window.require("electron");
 
-let empty: HTMLAudioElement;
+let emptyAudio: HTMLAudioElement;
+let emptyAnimate: AnimationElement;
 
 function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
   const song: song = queue[cur];
 
-  const ref = useRef(empty);
+  const ref = useRef(emptyAudio);
   const [timeStamp, setTimeStamp] = useState(0);
   const [paused, setPaused] = useState(false);
   const [loop, setLoop] = useState(false);
@@ -27,16 +28,21 @@ function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
   const [shuffle, setShuffle] = useState(true);
   const [exit, setExit] = useState(false);
 
+  const box1Play = useRef(emptyAnimate);
+  const box1Pause = useRef(emptyAnimate);
+  const box2Play = useRef(emptyAnimate);
+  const box2Pause = useRef(emptyAnimate);
+
   const pausePlay = (override = false, isRemote = false) => {
     if (!(loaded || override)) return;
     if (ref.current.paused) {
       ref.current.play();
-      document.getElementById("box1-play").beginElement();
-      document.getElementById("box2-play").beginElement();
+      box1Play.current?.beginElement();
+      box2Play.current?.beginElement();
     } else {
       ref.current.pause();
-      document.getElementById("box1-pause").beginElement();
-      document.getElementById("box2-pause").beginElement();
+      box1Pause.current?.beginElement();
+      box2Pause.current?.beginElement();
     }
 
     if (!isRemote) {
@@ -97,34 +103,22 @@ function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
   }, [song]);
 
   useEffect(() => {
-    ipcRenderer.on(
-      "jump-back",
-      (evt, val: number) => (ref.current.currentTime -= val)
-    );
-    ipcRenderer.on(
-      "seek-back",
-      (evt, val: number) => (ref.current.currentTime -= val)
-    );
-    ipcRenderer.on(
-      "seek-ahead",
-      (evt, val: number) => (ref.current.currentTime += val)
-    );
-    ipcRenderer.on(
-      "jump-ahead",
-      (evt, val: number) => (ref.current.currentTime += val)
-    );
+    ipcRenderer.on("jump-back", (evt, val: number) => (ref.current.currentTime -= val));
+    ipcRenderer.on("seek-back", (evt, val: number) => (ref.current.currentTime -= val));
+    ipcRenderer.on("seek-ahead", (evt, val: number) => (ref.current.currentTime += val));
+    ipcRenderer.on("jump-ahead", (evt, val: number) => (ref.current.currentTime += val));
     ipcRenderer.on("volume++", () => (ref.current.volume += 0.05));
     ipcRenderer.on("volume--", () => (ref.current.volume -= 0.05));
     ipcRenderer.on("prev-track", () => prevSong());
     ipcRenderer.on("next-track", () => nextSong());
     ipcRenderer.on("pause-play", (evt, isRemote) => {
-      if (window.isFocused) return;
+      if (document.activeElement.tagName === "INPUT") return;
       pausePlay(true, isRemote);
     });
     ipcRenderer.send("toggle-remote", song);
 
     const handleKeydown = (e: KeyboardEvent) => {
-      if (e.keyCode == 32 && !window.isFocused) {
+      if (e.keyCode == 32 && document.activeElement.tagName !== "INPUT") {
         e.preventDefault();
         pausePlay(true);
       }
@@ -137,10 +131,7 @@ function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
     };
   }, []);
 
-  const [formattedTime, formattedTotalTime] = formatLength(
-    timeStamp,
-    song.length
-  );
+  const [formattedTime, formattedTotalTime] = formatLength(timeStamp, song.length);
 
   return (
     <div className={`player-wrapper${exit ? " closed" : ""}`}>
@@ -160,7 +151,7 @@ function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
             <DoubleArrow reversed disabled={cur === 0} />
           </button>
           <button onClick={() => pausePlay()}>
-            {loaded ? <PlayPause paused={paused} /> : "Loading"}
+            {loaded ? <PlayPause paused={paused} refs={{ box1Play, box1Pause, box2Play, box2Pause }} /> : "Loading"}
           </button>
           <button onClick={cur === songs.length - 1 ? null : nextSong}>
             <DoubleArrow disabled={cur === song.length - 1} />
@@ -170,16 +161,8 @@ function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
           <p className="time">
             {formattedTime} / {formattedTotalTime}
           </p>
-          <Loop
-            className="control"
-            enabled={loop}
-            onClick={() => setLoop(!loop)}
-          />
-          <Shuffle
-            className="control"
-            enabled={shuffle}
-            onClick={shuffleSongs}
-          />
+          <Loop className="control" enabled={loop} onClick={() => setLoop(!loop)} />
+          <Shuffle className="control" enabled={shuffle} onClick={shuffleSongs} />
           <img
             src={song.liked ? songLiked : songNotLiked}
             alt={song.liked ? "liked" : "not liked"}
@@ -198,15 +181,7 @@ function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
           autoPlay={!paused}
         ></audio>
       </div>
-      <input
-        type="range"
-        name="timeline"
-        className="timeline"
-        value={timeStamp}
-        min={0}
-        max={song.length}
-        onChange={handleChange}
-      />
+      <input type="range" name="timeline" className="timeline" value={timeStamp} min={0} max={song.length} onChange={handleChange} />
     </div>
   );
 }

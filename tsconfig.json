@@ -1,9 +1,16 @@
 {
   "compilerOptions": {
     "moduleResolution": "node",
-    "baseUrl": "./src",
-    "rootDir": "src",
-    "experimentalDecorators": true
+    "baseUrl": ".",
+    "rootDir": ".",
+    "experimentalDecorators": true,
+    "allowJs": true,
+    "jsx": "react",
+    "esModuleInterop": true,
+    "paths": {
+      "~*": ["./src/*", "./app/src/*"]
+    }
   },
-  "include": ["./src/**/*", "global.d.ts"]
+  "include": ["./src/**/*.ts", "./app/src/**/*.tsx", "./app/src/**/*.ts", "global.d.ts"],
+  "exclude": ["./node_modules", "./src/node_modules"]
 }

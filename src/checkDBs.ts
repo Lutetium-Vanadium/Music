@@ -11,15 +11,15 @@ import debug from "./console";
 // Note, it is not in the database as this function handles the data formatting and only directly database
 // related line is `await db.addSong(songData)`
 const addRangeSong = async (lst: string[], folderStored: string) => {
-  for (let i = 0; i < lst.length; i++) {
-    const { song, status } = await getInfo(lst[i]);
+  lst.forEach(async (songName, i) => {
+    const { song, status } = await getInfo(songName);
 
     if (status === 0) {
-      console.error("Failed: " + lst[i]);
-      continue;
+      console.error("Failed: " + songName);
+      return;
     }
 
-    const fileName = lst[i] + ".mp3";
+    const fileName = songName + ".mp3";
     const albumId = song.thumbnail.split("/")[6];
     addAlbum(albumId, song.artist);
     debug.log({ albumId });
@@ -29,7 +29,7 @@ const addRangeSong = async (lst: string[], folderStored: string) => {
       filePath: path.join(folderStored, fileName),
       artist: song.artist,
       length: song.length,
-      title: lst[i],
+      title: songName,
       numListens: 0,
       albumId,
       liked: false
@@ -37,28 +37,28 @@ const addRangeSong = async (lst: string[], folderStored: string) => {
     await db.addSong(songData);
 
     console.log(`${i}: ${lst[i]} added`);
-  }
+  });
 };
 
 const addRangeAlbum = async (lst: any[]) => {
-  for (let i = 0; i < lst.length; i++) {
-    await addAlbum(lst[i].albumId, lst[i].artist);
-    console.log(`${i}: ${lst[i].albumId} by ${lst[i].artist} added`);
-  }
+  lst.forEach(async (item, i) => {
+    await addAlbum(item.albumId, item.artist);
+    console.log(`${i}: ${item.albumId} by ${item.artist} added`);
+  });
 };
 
 const deleteRangeSongs = async (lst: string[]) => {
-  for (let i = 0; i < lst.length; i++) {
-    await db.deleteSong(lst[i]);
-    console.log("Deleted " + lst[i]);
-  }
+  lst.forEach(async songName => {
+    await db.deleteSong(songName);
+    console.log("Deleted " + songName);
+  });
 };
 
 const deleteRangeAlbums = async (lst: string[]) => {
-  for (let i = 0; i < lst.length; i++) {
-    await db.deleteAlbum(lst[i]);
-    console.log("Deleted " + lst[i]);
-  }
+  lst.forEach(async item => {
+    await db.deleteAlbum(item);
+    console.log("Deleted " + item);
+  });
 };
 
 // Updates the db for songs which were not downloaded through the app and albums which arent there in the albumdata db

@@ -13,7 +13,7 @@ const formatLength = (length: number, total?: number) => {
   }
 
   if (onlyOne) {
-    return `${total_mins}:${total_secs}`;
+    return [`${total_mins}:${total_secs}`];
   }
 
   let secs = (length % 60).toString();

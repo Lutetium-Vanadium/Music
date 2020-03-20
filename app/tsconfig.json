@@ -7,9 +7,12 @@
     "esModuleInterop": true,
     "rootDir": "./src",
     "paths": {
-      "~*": ["./src/*"]
+      "~*": ["./src/*"],
+      "#root/*": ["./src/*"],
+      "#logos/*": ["./src/logos/*"],
+      "#shared/*": ["./src/shared/*"]
     }
   },
-  "include": ["global.d.ts", "./declarations.d.ts"],
+  "include": ["./**/*.ts", "./**/*.tsx", "global.d.ts", "./declarations.d.ts"],
   "exclude": ["node_modules"]
 }
