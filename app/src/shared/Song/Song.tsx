@@ -11,15 +11,10 @@ interface SongProps {
   onClick?: () => void;
   After?: (props: any) => JSX.Element;
   afterProps?: object;
+  id?: string;
 }
 
-function Song({
-  song: { title, thumbnail, artist, length },
-  After,
-  onClick,
-  className = "",
-  afterProps = {}
-}: SongProps) {
+function Song({ song: { title, thumbnail, artist, length }, After, onClick, className = "", afterProps = {}, id = "" }: SongProps) {
   const [src, setSrc] = useState(thumbnail);
 
   useEffect(() => {
@@ -27,13 +22,8 @@ function Song({
   }, [thumbnail]);
 
   return (
-    <div className={"song " + className} onClick={onClick}>
-      <img
-        className="thumbnail"
-        onError={() => setSrc(backup)}
-        src={src}
-        alt="thumbnail"
-      />
+    <div className={"song " + className} onClick={onClick} id={id}>
+      <img className="thumbnail" onError={() => setSrc(backup)} src={src} alt="thumbnail" />
       <div className="details">
         <h3>{title}</h3>
         <p>{artist}</p>

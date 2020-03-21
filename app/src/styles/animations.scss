@@ -1,11 +1,13 @@
 @import "./vars";
 
 $dur: 400ms;
+$curve: cubic-bezier(0.215, 0.61, 0.355, 1);
 
 .transition-group {
   position: absolute;
   width: 100%;
   max-height: 100%;
+  padding-top: 2rem;
 }
 
 .main {
@@ -14,41 +16,62 @@ $dur: 400ms;
 
   &-left {
     &-enter {
-      animation: enter-left $dur cubic-bezier(0.215, 0.61, 0.355, 1);
+      animation: enter-left $dur $curve;
     }
 
     &-leave {
-      animation: leave-left $dur cubic-bezier(0.215, 0.61, 0.355, 1);
+      animation: leave-left $dur $curve;
     }
   }
 
   &-right {
     &-enter {
-      animation: enter-right $dur cubic-bezier(0.215, 0.61, 0.355, 1);
+      animation: enter-right $dur $curve;
     }
 
     &-leave {
-      animation: leave-right $dur cubic-bezier(0.215, 0.61, 0.355, 1);
+      animation: leave-right $dur $curve;
     }
   }
 
   &-top {
     &-enter {
-      animation: enter-top $dur cubic-bezier(0.215, 0.61, 0.355, 1);
+      animation: enter-top $dur $curve;
     }
 
     &-leave {
-      animation: leave-top $dur cubic-bezier(0.215, 0.61, 0.355, 1);
+      animation: leave-top $dur $curve;
     }
   }
 
   &-bottom {
     &-enter {
-      animation: enter-bottom $dur cubic-bezier(0.215, 0.61, 0.355, 1);
+      animation: enter-bottom $dur $curve;
     }
 
     &-leave {
-      animation: leave-bottom $dur cubic-bezier(0.215, 0.61, 0.355, 1);
+      animation: leave-bottom $dur $curve;
+    }
+  }
+
+  &-same-forward {
+    &-enter {
+      animation: zoom1 $dur/2 $curve forwards;
+    }
+
+    &-leave {
+      animation: zoom2 $dur/2 $curve forwards;
+    }
+  }
+
+  &-same-backward {
+    &-enter {
+      animation: zoom2 $dur/2 $curve reverse forwards;
+    }
+
+    &-leave {
+      animation: zoom1 $dur/2 $curve reverse forwards;
+      z-index: 2;
     }
   }
 }
@@ -125,5 +148,24 @@ $dur: 400ms;
 
   to {
     transform: translateY(-100vh);
+  }
+}
+
+@keyframes zoom1 {
+  from {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+@keyframes zoom2 {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.1);
   }
 }

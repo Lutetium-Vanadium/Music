@@ -27,6 +27,14 @@
     }
   }
 
+  &.-highlight {
+    background-color: $bgm;
+
+    &:hover {
+      background-color: lighten($color: $bglo, $amount: 10%);
+    }
+  }
+
   &:hover {
     background-color: $bglo;
   }

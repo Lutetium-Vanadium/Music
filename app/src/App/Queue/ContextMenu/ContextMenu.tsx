@@ -49,7 +49,7 @@ function ContextMenu({ pos, reset, play, del, liked, toggleLiked }: ContextMenuP
         {liked ? "Unlike" : "Like"}
       </div>
       <div className="delete" onClick={del}>
-        Delete
+        Remove
       </div>
     </div>
   );

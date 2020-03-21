@@ -15,7 +15,7 @@ if (app.isPackaged) {
   });
   process.stderr.write = errorLogs.write.bind(errorLogs);
 
-  const { log, error } = { ...console };
+  const { log, error } = console;
 
   console.log = (message: any, ...optionalParams: any[]) => {
     const time = `[${new Date().toLocaleString()}]`;
@@ -30,11 +30,7 @@ if (app.isPackaged) {
   };
 } else {
   console.error = (message: any, ...optionalParams: any[]) => {
-    console.log(
-      "\x1b[31m" + message,
-      ...optionalParams,
-      "\t@" + getPos() + "\x1b[0m"
-    );
+    console.log("\x1b[31m" + message, ...optionalParams, "\t@" + getPos() + "\x1b[0m");
   };
 }
 

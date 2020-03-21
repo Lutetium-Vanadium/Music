@@ -20,17 +20,10 @@ interface SongViewProps {
   setQueue: (songs: song[]) => void;
   reduxSetSongs: (songs: song[]) => void;
   setCur: (num: number) => void;
+  showButtons?: boolean;
 }
 
-function SongView({
-  reduxSetSongs,
-  setQueue,
-  setSongs,
-  setAllSongs,
-  setCur,
-  allSongs,
-  songs
-}: SongViewProps) {
+function SongView({ reduxSetSongs, setQueue, setSongs, setAllSongs, setCur, allSongs, songs, showButtons = true }: SongViewProps) {
   const [pos, setPos] = useState([-200, -200]);
   const [index, setIndex] = useState(-1);
 
@@ -64,28 +57,16 @@ function SongView({
   const del = async () => {
     const song = songs[index];
 
-    const confirmed = confirm(
-      `Are you sure you want to delete ${song.title} by ${song.artist}?`
-    );
+    const confirmed = confirm(`Are you sure you want to delete ${song.title} by ${song.artist}?`);
     setPos([-200, -200]);
     if (!confirmed) return;
 
-    setSongs([
-      ...songs.slice(0, index),
-      ...songs.slice(index + 1, songs.length)
-    ]);
-    const allSongsIndex = allSongs.findIndex(
-      value => value.title === song.title
-    );
-    setAllSongs([
-      ...allSongs.slice(0, allSongsIndex),
-      ...allSongs.slice(allSongsIndex + 1, allSongs.length)
-    ]);
+    setSongs([...songs.slice(0, index), ...songs.slice(index + 1, songs.length)]);
+    const allSongsIndex = allSongs.findIndex(value => value.title === song.title);
+    setAllSongs([...allSongs.slice(0, allSongsIndex), ...allSongs.slice(allSongsIndex + 1, allSongs.length)]);
     setIndex(index - 1);
     const success = await ipcRenderer.invoke("delete:song", song);
-    let body = success
-      ? `Succesfully deleted ${song.title} by ${song.artist}`
-      : `Couldn't delete ${song.title} by ${song.artist}`;
+    let body = success ? `Succesfully deleted ${song.title} by ${song.artist}` : `Couldn't delete ${song.title} by ${song.artist}`;
 
     new Notification(`${song.title}`, {
       body,
@@ -96,14 +77,16 @@ function SongView({
 
   return (
     <>
-      <div className="buttons">
-        <button className="begin" onClick={() => _play(0)}>
-          Play First Song
-        </button>
-        <button className="random" onClick={() => _play(randint(songs.length))}>
-          Play Random Song
-        </button>
-      </div>
+      {showButtons && (
+        <div className="buttons">
+          <button className="begin" onClick={() => _play(0)}>
+            Play First Song
+          </button>
+          <button className="random" onClick={() => _play(randint(songs.length))}>
+            Play Random Song
+          </button>
+        </div>
+      )}
       <ContextMenu
         pos={pos}
         reset={() => setPos([-200, -200])}
@@ -149,12 +132,7 @@ interface TripleDotProps {
 
 function TripleDot({ onClick, ...props }: TripleDotProps) {
   return (
-    <svg
-      {...props}
-      viewBox="-30 -80 150 180"
-      className="dot3"
-      onClick={onClick}
-    >
+    <svg {...props} viewBox="-30 -80 150 180" className="dot3" onClick={onClick}>
       <circle cx="10" cy="10" r="10" fill="white" />
       <circle cx="45" cy="10" r="10" fill="white" />
       <circle cx="80" cy="10" r="10" fill="white" />

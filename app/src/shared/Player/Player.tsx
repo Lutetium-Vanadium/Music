@@ -2,8 +2,9 @@ import * as React from "react";
 import { useState, useRef, useEffect } from "react";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
+import { useHistory } from "react-router-dom";
 
-import { DoubleArrow, Loop, PlayPause, Shuffle, randOrder } from "./helpers";
+import { DoubleArrow, Loop, PlayPause, Shuffle, randOrder, VolumeControl } from "./helpers";
 import { song } from "#root/types";
 import { reduxState, create } from "#root/reduxHandler";
 import formatLength from "#shared/formatLength";
@@ -16,22 +17,24 @@ const { ipcRenderer } = window.require("electron");
 let emptyAudio: HTMLAudioElement;
 let emptyAnimate: AnimationElement;
 
-function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
+function Player({ songs, queue, cur, nextSong: _nextSong, prevSong: _prevSong, setQueue, setCur }) {
   const song: song = queue[cur];
 
-  const ref = useRef(emptyAudio);
   const [timeStamp, setTimeStamp] = useState(0);
-  const [paused, setPaused] = useState(false);
+  const [paused, setPaused] = useState(true);
   const [loop, setLoop] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [songData, setSongData] = useState();
   const [shuffle, setShuffle] = useState(true);
   const [exit, setExit] = useState(false);
 
+  const ref = useRef(emptyAudio);
   const box1Play = useRef(emptyAnimate);
   const box1Pause = useRef(emptyAnimate);
   const box2Play = useRef(emptyAnimate);
   const box2Pause = useRef(emptyAnimate);
+
+  const history = useHistory();
 
   const pausePlay = (override = false, isRemote = false) => {
     if (!(loaded || override)) return;
@@ -51,6 +54,16 @@ function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
     setPaused(ref.current.paused);
   };
 
+  const prevSong = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.stopPropagation();
+    _prevSong();
+  };
+
+  const nextSong = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.stopPropagation();
+    _nextSong();
+  };
+
   const updateTimeStamp = e => {
     const newTime = Math.round(e.target.currentTime);
     setTimeStamp(newTime);
@@ -66,7 +79,9 @@ function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
     }
   };
 
-  const shuffleSongs = () => {
+  const shuffleSongs = (e: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
+    e.stopPropagation();
+
     if (shuffle) {
       const index = songs.findIndex(_song => _song === song);
       setQueue(songs);
@@ -86,14 +101,27 @@ function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
     ref.current.currentTime = e.target.valueAsNumber;
   };
 
-  const close = () => {
+  const close = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.stopPropagation();
     setExit(true);
+    if (history.location.pathname === "/queue") history.goBack();
     setTimeout(() => setQueue([]), 301);
   };
 
-  const toggleLiked = async () => {
+  const toggleLiked = async (e: React.MouseEvent<HTMLImageElement, MouseEvent>) => {
+    e.stopPropagation();
     song.liked = !song.liked;
     await ipcRenderer.send("set:liked", song.title);
+  };
+
+  const toggleLoop = (e: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
+    e.stopPropagation();
+    setLoop(!loop);
+  };
+
+  const openQueue = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    if (history.location.pathname === "/queue") return;
+    history.push("/queue");
   };
 
   useEffect(() => {
@@ -109,8 +137,8 @@ function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
     ipcRenderer.on("jump-ahead", (evt, val: number) => (ref.current.currentTime += val));
     ipcRenderer.on("volume++", () => (ref.current.volume += 0.05));
     ipcRenderer.on("volume--", () => (ref.current.volume -= 0.05));
-    ipcRenderer.on("prev-track", () => prevSong());
-    ipcRenderer.on("next-track", () => nextSong());
+    ipcRenderer.on("prev-track", () => _prevSong());
+    ipcRenderer.on("next-track", () => _nextSong());
     ipcRenderer.on("pause-play", (evt, isRemote) => {
       if (document.activeElement.tagName === "INPUT") return;
       pausePlay(true, isRemote);
@@ -134,7 +162,7 @@ function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
   const [formattedTime, formattedTotalTime] = formatLength(timeStamp, song.length);
 
   return (
-    <div className={`player-wrapper${exit ? " closed" : ""}`}>
+    <div className={`player-wrapper${exit ? " closed" : ""}`} id="player-wrapper" onClick={openQueue}>
       <button onClick={close} className="close">
         <span>&#215;</span>
       </button>
@@ -150,7 +178,12 @@ function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
           <button onClick={cur === 0 ? null : prevSong}>
             <DoubleArrow reversed disabled={cur === 0} />
           </button>
-          <button onClick={() => pausePlay()}>
+          <button
+            onClick={e => {
+              e.stopPropagation();
+              pausePlay();
+            }}
+          >
             {loaded ? <PlayPause paused={paused} refs={{ box1Play, box1Pause, box2Play, box2Pause }} /> : "Loading"}
           </button>
           <button onClick={cur === songs.length - 1 ? null : nextSong}>
@@ -161,7 +194,7 @@ function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
           <p className="time">
             {formattedTime} / {formattedTotalTime}
           </p>
-          <Loop className="control" enabled={loop} onClick={() => setLoop(!loop)} />
+          <Loop className="control" enabled={loop} onClick={toggleLoop} />
           <Shuffle className="control" enabled={shuffle} onClick={shuffleSongs} />
           <img
             src={song.liked ? songLiked : songNotLiked}
@@ -169,6 +202,7 @@ function Player({ songs, queue, cur, nextSong, prevSong, setQueue, setCur }) {
             className="control"
             onClick={toggleLiked}
           />
+          <VolumeControl className="control" audio={ref.current} />
         </div>
         <audio
           onLoad={() => setLoaded(true)}

@@ -41,8 +41,7 @@ const reducer = (oldState = initialState, action: reduxAction) => {
       setNum("cur", action.payload);
       break;
     case "update:cur":
-      state.cur =
-        (action.payload + state.cur + state.queue.length) % state.queue.length;
+      state.cur = (action.payload + state.cur + state.queue.length) % state.queue.length;
       setNum("cur", state.cur);
       break;
     default:

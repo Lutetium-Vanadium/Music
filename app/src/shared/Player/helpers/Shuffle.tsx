@@ -3,7 +3,7 @@ import * as React from "react";
 interface ShuffleProps {
   enabled: boolean;
   className: string;
-  onClick: () => void;
+  onClick: (event: React.MouseEvent<SVGSVGElement, MouseEvent>) => void;
 }
 
 function Shuffle({ enabled, onClick, className }: ShuffleProps) {

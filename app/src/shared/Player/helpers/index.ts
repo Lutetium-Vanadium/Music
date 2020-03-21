@@ -1,8 +1,7 @@
-import DoubleArrow from "./DoubleArrow";
-import Loop from "./Loop";
-import PlayPause from "./PlayPause";
-import Shuffle from "./Shuffle";
+export { default as DoubleArrow } from "./DoubleArrow";
+export { default as Loop } from "./Loop";
+export { default as PlayPause } from "./PlayPause";
+export { default as Shuffle } from "./Shuffle";
+export { default as VolumeControl } from "./VolumeControl";
 
-import randOrder from "./randOrder";
-
-export { DoubleArrow, Loop, PlayPause, Shuffle, randOrder };
+export { default as randOrder } from "./randOrder";

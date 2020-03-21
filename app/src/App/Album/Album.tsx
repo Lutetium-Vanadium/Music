@@ -12,7 +12,8 @@ const emptyAlbum: album = {
   id: "id",
   imagePath: "file:///path/to/image",
   name: "album",
-  numSongs: 0
+  numSongs: 0,
+  artist: "artist"
 };
 
 function Album({
@@ -31,15 +32,14 @@ function Album({
           id: "liked",
           imagePath: liked,
           name: "Liked",
-          numSongs: songs.length
+          numSongs: songs.length,
+          artist: "You"
         });
       });
     } else {
       ipcRenderer.invoke("get:album", id).then((res: album) => setAlbum(res));
 
-      ipcRenderer
-        .invoke("get:album-songs", id)
-        .then((res: song[]) => setSongs(res));
+      ipcRenderer.invoke("get:album-songs", id).then((res: song[]) => setSongs(res));
     }
   }, []);
 
@@ -49,12 +49,7 @@ function Album({
         <img className="album-img" src={album.imagePath} alt="album-picture" />
         <h1 className="header">{album.name}</h1>
       </div>
-      <SongView
-        setSongs={setSongs}
-        setAllSongs={setSongs}
-        songs={songs}
-        allSongs={songs}
-      />
+      <SongView setSongs={setSongs} setAllSongs={setSongs} songs={songs} allSongs={songs} />
     </div>
   );
 }

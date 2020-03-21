@@ -13,17 +13,12 @@ $img-max: 150px;
   @include flex-box(flex-start, flex-start);
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax($img-size, 1fr));
-  gap: 4rem;
-
+  gap: 8rem;
   width: 100%;
-  flex-wrap: wrap;
 }
 
 .album {
   @include flex-box($direction: column);
-
-  margin: 2rem 3rem;
-  flex: 1;
 }
 
 .album-img {

@@ -7,7 +7,7 @@ interface TransitionProps {
   grid: RegExp[][];
   timeout: number;
   classExtension: string;
-  animate: boolean;
+  animate?: boolean;
 }
 
 interface Location {
@@ -34,15 +34,17 @@ const empty: Location[] = [];
  *   `done`- When the previous component is unmounted.
  *   `leave`- When this component is going to be unmounted.
  *
- * There are four directions - `top`, `bottom`, `left` and `right` which all refer to the direction the next component is in
+ * There are four directions - `top`, `bottom`, `left` and `right`, as well as `same-forward` and `same-backward`
+ * These all refer to the direction the next component is in where same means same position in the grid, and
+ * forward means further down the url tree
  *
  * The classes are of the form `classExtension-direction-classState`
  * eg. pages-left-done
  *  `pages` The name supplied to the Transition component
  *  `left` The current component was to the left of the previous component
- *  `done` The previous component has been unmounted
+ *  `done` The previous component has been unmounted and backward means behind in the url tree
  */
-function Transition({ children, grid, timeout, classExtension, animate }: TransitionProps) {
+function Transition({ children, grid, timeout, classExtension, animate = true }: TransitionProps) {
   const [locations, setLocations] = useState(empty);
 
   const history = useHistory();
@@ -121,5 +123,8 @@ const getDir = (pathname: string, prevpath: string, grid: RegExp[][]) => {
   if (pathnameIndex[0] < prevpathIndex[0]) return "left";
   if (pathnameIndex[0] > prevpathIndex[0]) return "right";
 
-  return "nothing";
+  if (pathname.split("/").length > prevpath.split("/").length) return "same-forward";
+  if (pathname.split("/").length < prevpath.split("/").length) return "same-backward";
+
+  return "same";
 };

@@ -12,6 +12,8 @@ import Albums from "./Albums";
 import Album from "./Album";
 import Artists from "./Artists";
 import Artist from "./Artist";
+import Queue from "./Queue";
+
 import Player from "#shared/Player";
 import Transition from "#shared/Transition";
 import { reduxState } from "#root/reduxHandler";
@@ -132,7 +134,7 @@ function App() {
       <Navbar search={search} downloading={downloading} errored={downloadError} showBack={showBack} />
       <main>
         <Transition
-          grid={[[/\/search$/], [/\/$/, /\/settings$/, /\/artists/, /\/albums/, /\/music$/]]}
+          grid={[[/\/search$/], [/\/$/, /\/settings$/, /\/artists/, /\/albums/, /\/music$/], [/\/queue$/]]}
           timeout={400}
           classExtension="main"
           animate={animations}
@@ -149,6 +151,7 @@ function App() {
               <Route path="/artists/:name" component={Artist} />
               <Route path="/artists" component={Artists} />
               <Route path="/settings" component={Settings} />
+              <Route path="/queue" component={Queue} />
               <Route path="/" component={Home} />
             </Switch>
           )}

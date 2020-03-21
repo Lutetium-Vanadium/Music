@@ -17,6 +17,7 @@
   box-sizing: border-box;
   color: white;
   font-family: Raleway;
+  // overflow-x: hidden;
 
   &:focus {
     outline: none;
@@ -42,7 +43,8 @@
 
 html,
 body,
-#root {
+#root,
+main {
   min-height: 100vh;
   background: $bg;
   overflow: hidden;
@@ -52,6 +54,10 @@ body,
   font-size: 3.2rem;
   margin-left: 15%;
   margin-bottom: 3rem;
+  padding: 1rem 2rem;
+  max-width: 70%;
+  border-radius: 1.2rem;
+  box-shadow: 0.25rem 0.3rem 10px 0.2rem rgba(0, 0, 0, 0.32), -0.25rem -0.3rem 10px 0.2rem rgba(255, 255, 255, 0.04);
 }
 
 .no-results {
@@ -59,12 +65,13 @@ body,
   margin: 2rem;
 }
 
-main {
+main > div {
   position: relative;
-  top: 6rem;
-  height: calc(100vh - 5rem);
-  overflow: auto;
+  top: 4rem;
+  // padding-top: 2rem;
+  height: calc(100vh - 4rem);
   transition: 0.2s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+  overflow-y: auto;
 }
 
 img {
