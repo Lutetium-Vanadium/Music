@@ -140,21 +140,12 @@ function Player({ songs, queue, cur, nextSong: _nextSong, prevSong: _prevSong, s
     ipcRenderer.on("prev-track", () => _prevSong());
     ipcRenderer.on("next-track", () => _nextSong());
     ipcRenderer.on("pause-play", (evt, isRemote) => {
-      if (document.activeElement.tagName === "INPUT") return;
+      if (document.activeElement.tagName === "INPUT" && !isRemote) return;
       pausePlay(true, isRemote);
     });
     ipcRenderer.send("toggle-remote", song);
 
-    const handleKeydown = (e: KeyboardEvent) => {
-      if (e.keyCode == 32 && document.activeElement.tagName !== "INPUT") {
-        e.preventDefault();
-        pausePlay(true);
-      }
-    };
-
-    window.addEventListener("keydown", handleKeydown);
     return () => {
-      window.removeEventListener("keydown", handleKeydown);
       ipcRenderer.send("toggle-remote", null);
     };
   }, []);
