@@ -6,8 +6,9 @@ $curve: cubic-bezier(0.215, 0.61, 0.355, 1);
 .transition-group {
   position: absolute;
   width: 100%;
-  max-height: 100%;
+  max-height: calc(100vh - 4rem);
   padding-top: 2rem;
+  overflow-y: auto;
 }
 
 .main {
@@ -61,6 +62,7 @@ $curve: cubic-bezier(0.215, 0.61, 0.355, 1);
 
     &-leave {
       animation: zoom2 $dur/2 $curve forwards;
+      overflow-y: hidden !important;
     }
   }
 
@@ -71,6 +73,7 @@ $curve: cubic-bezier(0.215, 0.61, 0.355, 1);
 
     &-leave {
       animation: zoom1 $dur/2 $curve reverse forwards;
+      overflow-y: hidden !important;
       z-index: 2;
     }
   }

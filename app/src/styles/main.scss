@@ -17,7 +17,6 @@
   box-sizing: border-box;
   color: white;
   font-family: Raleway;
-  // overflow-x: hidden;
 
   &:focus {
     outline: none;
@@ -68,10 +67,9 @@ main {
 main > div {
   position: relative;
   top: 4rem;
-  // padding-top: 2rem;
   height: calc(100vh - 4rem);
   transition: 0.2s cubic-bezier(0.785, 0.135, 0.15, 0.86);
-  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 img {
