@@ -40,15 +40,6 @@
   background-color: $bgl;
 }
 
-html,
-body,
-#root,
-main {
-  min-height: 100vh;
-  background: $bg;
-  overflow: hidden;
-}
-
 .header {
   font-size: 3.2rem;
   margin-left: 15%;

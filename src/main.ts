@@ -25,14 +25,14 @@ const store = new Store({
     seekBack: 5,
     jumpBack: 15,
     controlWindow: false,
-    animations: true
-  }
+    animations: true,
+  },
 });
 
 const downloader = createDownloader(store.get("folderStored"));
 
 // Downloader settings
-downloader.on("error", err => {
+downloader.on("error", (err) => {
   console.error(err);
   win.webContents.send("error:download-query", err);
 });
@@ -41,7 +41,7 @@ downloader.on("progress", ({ progress, videoId }) => {
   debug.log(videoId + ":", progress.percentage);
   win.webContents.send("update:download-query", {
     progress: progress.percentage,
-    id: videoId
+    id: videoId,
   });
 });
 
@@ -49,7 +49,7 @@ downloader.on("finished", async (err, data) => {
   console.log(`Finished Downloading:  ${data.title} by ${data.artist}`);
   win.webContents.send("finished:download-query", {
     id: data.videoId,
-    filePath: data.file
+    filePath: data.file,
   });
 });
 
@@ -57,7 +57,7 @@ downloader.on("finished", async (err, data) => {
 
 // check if image directory exists
 const album_images_path = path.join(app.getPath("userData"), "album_images");
-fs.exists(album_images_path, exists => {
+fs.exists(album_images_path, (exists) => {
   if (!exists) fs.mkdir(album_images_path, debug.log);
 });
 
@@ -75,12 +75,16 @@ app.on("ready", () => {
     height: 840,
     webPreferences: {
       nodeIntegration: true,
-      webSecurity: !dev
+      webSecurity: !dev,
     },
-    icon: path.join(app.getAppPath(), "src", "logo.png")
+    icon: path.join(app.getAppPath(), "src", "logo.png"),
   });
 
-  dev ? win.loadURL("http://localhost:1234/") : win.loadURL("file://" + path.join(app.getAppPath(), "public", "index.html"));
+  if (dev) {
+    win.loadURL("http://localhost:1234/");
+  } else {
+    win.loadURL("file://" + path.join(app.getAppPath(), "public", "index.html"));
+  }
 
   // Initialize everything
   createMenu(win, store, dev);
@@ -98,14 +102,7 @@ app.on("ready", () => {
   win.on("close", () => app.quit());
   win.webContents.on("new-window", (evt, url) => {
     evt.preventDefault();
-    win.webContents.send(
-      "goto-link",
-      "/" +
-        url
-          .split("/")
-          .slice(3)
-          .join("/")
-    );
+    win.webContents.send("goto-link", "/" + url.split("/").slice(3).join("/"));
   });
 });
 
@@ -121,11 +118,11 @@ const setUpRemote = (song: song) => {
     height: 105,
     webPreferences: {
       nodeIntegration: true,
-      webSecurity: !dev
+      webSecurity: !dev,
     },
     resizable: false,
     alwaysOnTop: true,
-    icon: path.join(app.getAppPath(), "app", "src", "logos", "logo.png")
+    icon: path.join(app.getAppPath(), "app", "src", "logos", "logo.png"),
   });
 
   remote.on("close", () => (remote = null));

@@ -3,17 +3,18 @@
   "author": "Lutetium-Vanadium",
   "type": "module",
   "version": "1.2.0",
-  "main": "./index.js",
+  "main": "./build/main.js",
   "license": "MIT",
   "scripts": {
-    "watch": "concurrently \"cd app && yarn watch\" \"wait-on http://localhost:1234 && yarn start\"",
-    "start": "electron .",
+    "start": "yarn build && electron .",
+    "build": "tsc",
     "build-react": "cd app && yarn build",
-    "deploy": "yarn build-react && electron-packager . --overwrite",
-    "deploy-l": "yarn build-react && electron-packager . --overwrite --platform=linux --out=\"Music(linux)\"",
-    "deploy-m": "yarn build-react && electron-packager . --overwrite --platform=darwin --out=\"Music(MacOS)\"",
-    "deploy-w": "yarn build-react && electron-packager . --overwrite --platform=win32 --out=\"Music(Windows)\"",
-    "fix-sqlite3": "./node_modules/.bin/electron-rebuild -w sqlite3 -p"
+    "deploy": "yarn build-react && yarn build && electron-packager . --overwrite",
+    "deploy-l": "yarn build-react && yarn build && electron-packager . --overwrite --platform=linux --out=\"Music(linux)\"",
+    "deploy-m": "yarn build-react && yarn build && electron-packager . --overwrite --platform=darwin --out=\"Music(MacOS)\"",
+    "deploy-w": "yarn build-react && yarn build && electron-packager . --overwrite --platform=win32 --out=\"Music(Windows)\"",
+    "fix-sqlite3": "./node_modules/.bin/electron-rebuild -w sqlite3 -p",
+    "temp": "tsc --version"
   },
   "dependencies": {
     "axios": "^0.19.2",
@@ -22,20 +23,17 @@
     "ffmpeg-cli": "^2.3.0",
     "request": "^2.88.0",
     "request-promise": "^4.2.5",
-    "shell-path": "^2.1.0",
     "sqlite3": "^4.1.1",
-    "ts-node": "^8.6.2",
-    "typescript": "^3.8.2",
     "youtube-mp3-downloader": "^0.6.5"
   },
   "devDependencies": {
     "@types/electron": "^1.6.10",
+    "@types/node": "12",
     "@types/react-redux": "^7.1.7",
     "@types/sqlite3": "^3.1.6",
-    "concurrently": "^5.1.0",
     "electron": "^8.0.1",
     "electron-packager": "^14.1.1",
     "electron-rebuild": "^1.10.0",
-    "wait-on": "^4.0.1"
+    "typescript": "^3.8.3"
   }
 }

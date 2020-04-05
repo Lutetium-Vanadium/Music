@@ -3,6 +3,18 @@
   <head>
     <meta charset="UTF-8" />
     <title>Music</title>
+    <!-- Makes sure doesnt open to white screen, instead opens with coloured screen -->
+    <style>
+      html,
+      body,
+      #root,
+      main {
+        min-height: 100vh;
+        min-width: 100vw;
+        background: rgb(27, 27, 27);
+        overflow: hidden;
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
