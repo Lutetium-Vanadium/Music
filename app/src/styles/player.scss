@@ -88,6 +88,8 @@
 
     .time {
       @include flex-box(flex-start, $direction: row-reverse);
+
+      width: 9ch;
     }
 
     .control {

@@ -64,7 +64,7 @@ function Player({ songs, queue, cur, nextSong: _nextSong, prevSong: _prevSong, s
     _nextSong();
   };
 
-  const updateTimeStamp = e => {
+  const updateTimeStamp = (e) => {
     const newTime = Math.round(e.target.currentTime);
     setTimeStamp(newTime);
   };
@@ -83,7 +83,7 @@ function Player({ songs, queue, cur, nextSong: _nextSong, prevSong: _prevSong, s
     e.stopPropagation();
 
     if (shuffle) {
-      const index = songs.findIndex(_song => _song === song);
+      const index = songs.findIndex((_song) => _song === song);
       setQueue(songs);
       setCur(index);
     } else {
@@ -139,11 +139,19 @@ function Player({ songs, queue, cur, nextSong: _nextSong, prevSong: _prevSong, s
     ipcRenderer.on("volume--", () => (ref.current.volume -= 0.05));
     ipcRenderer.on("prev-track", () => _prevSong());
     ipcRenderer.on("next-track", () => _nextSong());
-    ipcRenderer.on("pause-play", (evt, isRemote) => {
+    ipcRenderer.on("pause-play", (evt, isRemote: boolean) => {
       if (document.activeElement.tagName === "INPUT" && !isRemote) return;
       pausePlay(true, isRemote);
     });
     ipcRenderer.send("toggle-remote", song);
+
+    window.onkeydown = (e: KeyboardEvent) => {
+      if (document.activeElement.tagName === "INPUT") return;
+      if (e.code === "Space") {
+        e.preventDefault();
+        pausePlay(true, false);
+      }
+    };
 
     return () => {
       ipcRenderer.send("toggle-remote", null);
@@ -170,7 +178,7 @@ function Player({ songs, queue, cur, nextSong: _nextSong, prevSong: _prevSong, s
             <DoubleArrow reversed disabled={cur === 0} />
           </button>
           <button
-            onClick={e => {
+            onClick={(e) => {
               e.stopPropagation();
               pausePlay();
             }}
@@ -220,7 +228,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
     nextSong: create.nextSong(dispatch),
     prevSong: create.prevSong(dispatch),
     setQueue: create.setQueue(dispatch),
-    setCur: create.setCur(dispatch)
+    setCur: create.setCur(dispatch),
   };
 };
 

@@ -1,11 +1,34 @@
-echo "Building Music..."
-
 # For a linux based system
 # Builds the project and then adds a .desktop file to the Desktop
 
+DIR=`pwd`
+
+if [[ ! -f "$DIR/.env" ]]
+then
+  echo "Setting up env variables..."
+  read -p "Napsters Api key: " napster
+  read -p "Google's Youtube Data Api key: " google
+  echo
+
+  echo "NAPSTER_API_KEY = $napster
+GOOGLE_API_KEY = $google" > .env
+fi
+
+echo "Instaling dependencies..."
+cd app
+yarn
+cd ..
+echo "  This will take some time."
+yarn
+
+yarn fix-sqlite3
+
+echo
+echo "Building Music..."
 yarn deploy
 
-DIR=`pwd`
+echo
+echo "Installing Desktop Entry..."
 
 echo "[Desktop Entry]
 Name=Music
