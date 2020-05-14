@@ -8,7 +8,7 @@ import backup from "./backup.png";
 interface SongProps {
   song: song;
   className?: string;
-  onClick?: () => void;
+  onClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
   After?: (props: any) => JSX.Element;
   afterProps?: object;
   id?: string;

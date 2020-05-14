@@ -36,7 +36,7 @@ const addAlbum = async (albumId: string, artist: string) => {
     name,
     imagePath,
     numSongs: 0,
-    artist
+    artist,
   };
 
   db.addAlbum(album);

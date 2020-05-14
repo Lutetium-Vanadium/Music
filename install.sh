@@ -14,14 +14,27 @@ then
 GOOGLE_API_KEY = $google" > .env
 fi
 
-echo "Instaling dependencies..."
-cd app
-yarn
-cd ..
-echo "  This will take some time."
-yarn
+installed_prompt=0
 
-yarn fix-sqlite3
+if [[ -f "$DIR/app/node_modules" ]]
+then
+  installed_prompt=1
+  echo "Installing dependencies..."
+  cd app
+  yarn
+  cd ..
+fi
+
+if [[ -f "$DIR/node_modules"]]
+then
+  if [ $installed_prompt = 0 ]
+  then
+    echo "Installing dependencies..."
+  fi
+  yarn
+  yarn fix-sqlite3
+fi
+
 
 echo
 echo "Building Music..."

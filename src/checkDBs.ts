@@ -2,17 +2,18 @@ import { app } from "electron";
 import * as path from "path";
 import * as fs from "fs";
 
-import { getInfo } from "./functions/napster";
+import { getSongInfo } from "./functions/napster";
 import addAlbum from "./functions/addAlbum";
 import db from "./functions/db_handler";
 import debug from "./console";
+import { song } from "./types";
 
 // Given a range of song names, this adds them to the database
 // Note, it is not in the database as this function handles the data formatting and only directly database
 // related line is `await db.addSong(songData)`
 const addRangeSong = async (lst: string[], folderStored: string) => {
   lst.forEach(async (songName, i) => {
-    const { song, status } = await getInfo(songName);
+    const { song, status } = await getSongInfo(songName);
 
     if (status === 0) {
       console.error("Failed: " + songName);
@@ -24,7 +25,7 @@ const addRangeSong = async (lst: string[], folderStored: string) => {
     addAlbum(albumId, song.artist);
     debug.log({ albumId });
 
-    const songData = {
+    const songData: song = {
       thumbnail: "file://" + path.join(app.getPath("userData"), "album_images", `${albumId}.jpg`),
       filePath: path.join(folderStored, fileName),
       artist: song.artist,
@@ -32,7 +33,7 @@ const addRangeSong = async (lst: string[], folderStored: string) => {
       title: songName,
       numListens: 0,
       albumId,
-      liked: false
+      liked: false,
     };
     await db.addSong(songData);
 
@@ -48,14 +49,14 @@ const addRangeAlbum = async (lst: any[]) => {
 };
 
 const deleteRangeSongs = async (lst: string[]) => {
-  lst.forEach(async songName => {
+  lst.forEach(async (songName) => {
     await db.deleteSong(songName);
     console.log("Deleted " + songName);
   });
 };
 
 const deleteRangeAlbums = async (lst: string[]) => {
-  lst.forEach(async item => {
+  lst.forEach(async (item) => {
     await db.deleteAlbum(item);
     console.log("Deleted " + item);
   });
@@ -73,7 +74,14 @@ const checkDBs = async (folderStored: string) => {
     formattedAllSongs.push(pathArray[pathArray.length - 1]);
   }
 
-  const dir = await ls(folderStored);
+  let dir: string[] = [];
+
+  try {
+    dir = await ls(folderStored);
+  } catch (err) {
+    console.error(err);
+    return;
+  }
 
   let notAdded: string[] = [];
 
@@ -141,12 +149,14 @@ const checkDBs = async (folderStored: string) => {
   if (albumsToDelete.length) {
     console.log("Updating database...");
     deleteRangeAlbums(albumsToDelete);
+    changed = true;
   }
 
   console.log(albumsToAdd.length + " unknown albums detected.");
   if (albumsToAdd.length) {
     console.log("Updating database...");
     addRangeAlbum(albumsToAdd);
+    changed = true;
   }
 
   if (changed) console.log("Completed database update");

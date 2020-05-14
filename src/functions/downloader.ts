@@ -16,7 +16,7 @@ const createDownloader = (path: string) => {
     outputPath: path,
     youtubeVideoQuality: "highest",
     progressTimeout: 100,
-    queueParallelism: 2
+    queueParallelism: 2,
   };
 
   return new Downloader(options);
@@ -29,25 +29,26 @@ const createDownloader = (path: string) => {
  * Downloads the Album cover from the id as per the napster API
  */
 const downloadImage = async (id: string) => {
-  const download_path = path.join(
-    app.getPath("userData"),
-    "album_images",
-    id + ".jpg"
-  );
+  try {
+    const download_path = path.join(app.getPath("userData"), "album_images", id + ".jpg");
 
-  if (fs.existsSync(download_path)) return;
+    if (fs.existsSync(download_path)) return;
 
-  const url = `https://api.napster.com/imageserver/v2/albums/${id}/images/500x500.jpg`;
-  const writer = fs.createWriteStream(download_path);
+    const url = `https://api.napster.com/imageserver/v2/albums/${id}/images/500x500.jpg`;
+    const writer = fs.createWriteStream(download_path);
 
-  const response = await axios.get(url, { responseType: "stream" });
+    const response = await axios.get(url, { responseType: "stream" });
 
-  response.data.pipe(writer);
+    response.data.pipe(writer);
 
-  return new Promise((res, rej) => {
-    writer.on("finish", res);
-    writer.on("error", rej);
-  });
+    return new Promise((res, rej) => {
+      writer.on("finish", res);
+      writer.on("error", rej);
+    });
+  } catch (err) {
+    console.error(err);
+    return;
+  }
 };
 
 export { createDownloader, downloadImage };

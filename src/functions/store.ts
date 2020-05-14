@@ -2,9 +2,9 @@ import { app } from "electron";
 import * as path from "path";
 import * as fs from "fs";
 
-interface Object {
+type Object = {
   [key: string]: any;
-}
+};
 
 interface StoreParams {
   name: string;
@@ -86,7 +86,7 @@ class Store {
       // Makes sure if new properties have been introduced, they will be set to their defaults;
       this._data = {
         ...defaults,
-        ...data
+        ...data,
       };
     } catch (error) {
       this._data = defaults;

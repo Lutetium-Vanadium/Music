@@ -1,6 +1,5 @@
 import axios from "axios";
 import * as dotenv from "dotenv";
-import { album } from "../types";
 
 dotenv.config();
 
@@ -9,7 +8,7 @@ dotenv.config();
  *   They all return objects of the schema
  *   {
  *      status: (int),
- *      ...return params
+ *      ...(return params)
  *   }
  *
  * There are 2 main types of return which can be found out from the status
@@ -46,14 +45,11 @@ dotenv.config();
  */
 const getAlbumInfo = async (albumId: string) => {
   try {
-    const response = await axios.get(
-      `https://api.napster.com/v2.2/albums/${albumId}`,
-      {
-        params: {
-          apikey: process.env.NAPSTER_API_KEY
-        }
-      }
-    );
+    const response = await axios.get(`https://api.napster.com/v2.2/albums/${albumId}`, {
+      params: {
+        apikey: process.env.NAPSTER_API_KEY,
+      },
+    });
 
     if (response.status !== 200) throw response.headers.status;
 
@@ -62,32 +58,32 @@ const getAlbumInfo = async (albumId: string) => {
     console.error(error);
     return {
       id: "",
-      name: ""
+      name: "",
     };
   }
 };
 
 /**
- * getInfo()
+ * getSongInfo()
  *
  * @param {string} query The search term
  *
- * Gets the info for only one particular son, and downloads the thumbnail for it
+ * Gets the info for only one particular song, and downloads the thumbnail for it
  *
  * succes return schema {
  *   success: 1,
  *   song: Song
  * }
  */
-const getInfo = async (query: string) => {
+const getSongInfo = async (query: string) => {
   try {
     const response = await axios.get("https://api.napster.com/v2.2/search", {
       params: {
         apikey: process.env.NAPSTER_API_KEY,
         type: "track",
         per_type_limit: 1,
-        query
-      }
+        query,
+      },
     });
     if (response.status !== 200) throw response.headers.status;
 
@@ -98,7 +94,7 @@ const getInfo = async (query: string) => {
 
     return {
       status: 1,
-      song: formatTrackData(track)
+      song: formatTrackData(track),
     };
   } catch (error) {
     console.error(error);
@@ -124,9 +120,9 @@ const search = async (query: string) => {
       params: {
         apikey: process.env.NAPSTER_API_KEY,
         type: "track",
-        per_type_limit: 5,
-        query
-      }
+        per_type_limit: 10,
+        query,
+      },
     });
 
     if (response.status !== 200) throw response.headers.status;
@@ -139,7 +135,7 @@ const search = async (query: string) => {
 
     return {
       status: 1,
-      songs
+      songs,
     };
   } catch (error) {
     // console.error(error);
@@ -147,7 +143,7 @@ const search = async (query: string) => {
   }
 };
 
-export { getAlbumInfo, getInfo, search };
+export { getAlbumInfo, getSongInfo, search };
 
 /**
  * formatAlbumData()
@@ -158,7 +154,7 @@ export { getAlbumInfo, getInfo, search };
  */
 const formatAlbumData = ({ id, name }) => ({
   id,
-  name
+  name,
 });
 
 /**
@@ -168,10 +164,10 @@ const formatAlbumData = ({ id, name }) => ({
  *
  * Returns a `Song` Object
  */
-const formatTrackData = track => ({
+const formatTrackData = (track) => ({
   artist: track.artistName,
   title: track.name,
   length: track.playbackSeconds,
   thumbnail: `https://api.napster.com/imageserver/v2/albums/${track.albumId}/images/200x200.jpg`,
-  albumId: track.albumId
+  albumId: track.albumId,
 });

@@ -10,6 +10,7 @@ import { createDownloader } from "./functions/downloader";
 import db from "./functions/db_handler";
 import Store from "./functions/store";
 import checkDBs from "./checkDBs";
+import checkVersion from "./checkVersion";
 import { song } from "./types";
 import debug from "./console";
 import createMenu from "./menu";
@@ -89,7 +90,10 @@ app.on("ready", () => {
   // Initialize everything
   createMenu(win, store, dev);
   initIpc(store, { win, remote }, setUpRemote, downloader);
+
+  // Perform Checks
   checkDBs(store.get("folderStored"));
+  checkVersion();
 
   // Register media controls
   globalShortcut.register("MediaPlayPause", () => win.webContents.send("pause-play", false));

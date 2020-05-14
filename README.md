@@ -12,6 +12,12 @@ If `dev === true`: <br>
 Else: <br>
 &emsp;&ensp; The html file will be shown.
 
+## Installation
+
+To install in linux, run the `install.sh`. If API key credentials are not already present, it will prompt you to enter them and then build all the files.
+<br>
+Then it will write a `[Desktop Entry]` to `~/Desktop`;
+
 ## Available Scripts
 
 ### In the `/` Directory
@@ -32,21 +38,14 @@ yarn build-react
 > This can also be done by going into the `app` folder and run `yarn build`
 
 <br>
-To build and run the project:
-
-```sh
-yarn build-start
-```
-
-> It is equivalent to running `yarn build` and then `yarn start`
-
-<br>
 
 To build the app into an exectuable one:
 
 ```sh
 yarn deploy
 ```
+
+> You can run `deploy-l` specifically for Linux, `deploy-m` specifically for MacOS, and `deploy-w` specifically for Windows.
 
 <br>
 Rebuild sqlite3:
@@ -85,7 +84,7 @@ Error: Cannot find module '/path/to/project/node_modules/sqlite3/lib/binding/ele
 If so run the following command:
 
 ```sh
-./node_modules/.bin/electron-rebuild -w sqlite3 -p
+yarn fix-sqlite3
 ```
 
 Wait some time and sqlite3 will be rebuilt.

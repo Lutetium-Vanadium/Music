@@ -16,34 +16,39 @@ export interface youtubeDetails {
  *
  * Returns the first result's youtube id from a search query
  */
-const getYoutubeDetails = async (song: song): Promise<youtubeDetails> => {
-  // Makes sure to get the right video
-  let query = `${song.title} ${song.artist} official music video`;
+const getYoutubeDetails = async (song: song): Promise<youtubeDetails | null> => {
+  try {
+    // Makes sure to get the right video
+    let query = `${song.title} ${song.artist} official music video`;
 
-  query = query.replace(" ", "+");
+    query = query.replace(" ", "+");
 
-  const result = await axios.get(urlSearch, {
-    params: {
-      key: process.env.GOOGLE_API_KEY,
-      q: query,
-      part: "snippet"
-    }
-  });
+    const result = await axios.get(urlSearch, {
+      params: {
+        key: process.env.GOOGLE_API_KEY,
+        q: query,
+        part: "snippet",
+      },
+    });
 
-  const id = result.data.items[0].id.videoId;
+    const id = result.data.items[0].id.videoId;
 
-  const response = await axios.get(urlDetails, {
-    params: {
-      key: process.env.GOOGLE_API_KEY,
-      part: "contentDetails",
-      id
-    }
-  });
+    const response = await axios.get(urlDetails, {
+      params: {
+        key: process.env.GOOGLE_API_KEY,
+        part: "contentDetails",
+        id,
+      },
+    });
 
-  return {
-    id,
-    length: parseDuration(response.data.items[0].contentDetails.duration)
-  };
+    return {
+      id,
+      length: parseDuration(response.data.items[0].contentDetails.duration),
+    };
+  } catch (err) {
+    console.error(err);
+    return;
+  }
 };
 
 export default getYoutubeDetails;

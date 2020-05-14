@@ -18,8 +18,8 @@ interface SearchPageParams {
 }
 
 function SearchPage({ results, download, success, loading }: SearchPageParams) {
-  const handleDownload = e => {
-    const song = results[+e.target.dataset.index];
+  const handleDownload = (index: number) => {
+    const song = results[index];
     download(song);
   };
 
@@ -41,15 +41,8 @@ function SearchPage({ results, download, success, loading }: SearchPageParams) {
             <li className="result" key={`song-${i}`}>
               <Song
                 song={song}
-                onClick={handleDownload}
-                After={() => (
-                  <img
-                    className="download"
-                    src={downloadImg}
-                    alt="download button"
-                    data-index={i}
-                  />
-                )}
+                onClick={() => handleDownload(i)}
+                After={() => <img className="download" src={downloadImg} alt="download button" />}
               />
             </li>
           ))}
