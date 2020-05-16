@@ -15,9 +15,10 @@ interface QueueProps {
   cur: number;
   setCur: (num: number) => void;
   setQueue: (songs: song[]) => void;
+  likeSong: (song: song) => void;
 }
 
-function Queue({ cur, queue, setCur, setQueue }: QueueProps) {
+function Queue({ cur, queue, setCur, setQueue, likeSong }: QueueProps) {
   const [pos, setPos] = useState([-200, -200]);
   const [index, setIndex] = useState(-1);
 
@@ -37,7 +38,8 @@ function Queue({ cur, queue, setCur, setQueue }: QueueProps) {
   };
 
   const toggleLiked = async () => {
-    await ipcRenderer.send("set:liked", queue[index].title);
+    likeSong(queue[index]);
+    // await ipcRenderer.send("set:liked", queue[index].title);
     setPos([-200, -200]);
   };
 
@@ -71,7 +73,7 @@ function Queue({ cur, queue, setCur, setQueue }: QueueProps) {
             After={TripleDot}
             afterProps={{
               onClick: handleDotClick,
-              "data-index": i
+              "data-index": i,
             }}
             id={`queue-song-${i}`}
           />
@@ -87,7 +89,8 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
   nextSong: create.nextSong(dispatch),
   prevSong: create.prevSong(dispatch),
   setQueue: create.setQueue(dispatch),
-  setCur: create.setCur(dispatch)
+  setCur: create.setCur(dispatch),
+  likeSong: create.likeSong(dispatch),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Queue);

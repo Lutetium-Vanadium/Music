@@ -20,10 +20,21 @@ interface SongViewProps {
   setQueue: (songs: song[]) => void;
   reduxSetSongs: (songs: song[]) => void;
   setCur: (num: number) => void;
+  likeSong: (song: song) => void;
   showButtons?: boolean;
 }
 
-function SongView({ reduxSetSongs, setQueue, setSongs, setAllSongs, setCur, allSongs, songs, showButtons = true }: SongViewProps) {
+function SongView({
+  reduxSetSongs,
+  setQueue,
+  setSongs,
+  setAllSongs,
+  setCur,
+  likeSong,
+  allSongs,
+  songs,
+  showButtons = true,
+}: SongViewProps) {
   const [pos, setPos] = useState([-200, -200]);
   const [index, setIndex] = useState(-1);
 
@@ -39,7 +50,7 @@ function SongView({ reduxSetSongs, setQueue, setSongs, setAllSongs, setCur, allS
   };
 
   const playSong = (song: song) => {
-    const index = allSongs.findIndex(_song => _song.title === song.title);
+    const index = allSongs.findIndex((_song) => _song.title === song.title);
     _play(index);
   };
 
@@ -50,7 +61,8 @@ function SongView({ reduxSetSongs, setQueue, setSongs, setAllSongs, setCur, allS
   };
 
   const toggleLiked = async () => {
-    await ipcRenderer.send("set:liked", songs[index].title);
+    // await ipcRenderer.send("set:liked", songs[index].title);
+    likeSong(songs[index]);
     setPos([-200, -200]);
   };
 
@@ -62,7 +74,7 @@ function SongView({ reduxSetSongs, setQueue, setSongs, setAllSongs, setCur, allS
     if (!confirmed) return;
 
     setSongs([...songs.slice(0, index), ...songs.slice(index + 1, songs.length)]);
-    const allSongsIndex = allSongs.findIndex(value => value.title === song.title);
+    const allSongsIndex = allSongs.findIndex((value) => value.title === song.title);
     setAllSongs([...allSongs.slice(0, allSongsIndex), ...allSongs.slice(allSongsIndex + 1, allSongs.length)]);
     setIndex(index - 1);
     const success = await ipcRenderer.invoke("delete:song", song);
@@ -71,7 +83,7 @@ function SongView({ reduxSetSongs, setQueue, setSongs, setAllSongs, setCur, allS
     new Notification(`${song.title}`, {
       body,
       badge: logo,
-      icon: song.thumbnail
+      icon: song.thumbnail,
     });
   };
 
@@ -106,7 +118,7 @@ function SongView({ reduxSetSongs, setQueue, setSongs, setAllSongs, setCur, allS
               After={TripleDot}
               afterProps={{
                 onClick: handleDotClick,
-                "data-index": i
+                "data-index": i,
               }}
             />
           ))
@@ -121,7 +133,8 @@ function SongView({ reduxSetSongs, setQueue, setSongs, setAllSongs, setCur, allS
 const mapDispatchToProps = (dispatch: Dispatch) => ({
   setQueue: create.setQueue(dispatch),
   reduxSetSongs: create.setSongs(dispatch),
-  setCur: create.setCur(dispatch)
+  setCur: create.setCur(dispatch),
+  likeSong: create.likeSong(dispatch),
 });
 
 export default connect(null, mapDispatchToProps)(SongView);

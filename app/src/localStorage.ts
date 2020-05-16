@@ -17,7 +17,7 @@ export const getArr = (key: string): [] => {
 
 export const getNum = (key: string): number => +localStorage.getItem(key);
 
-export const setArr = (key: string, value: []): void => {
+export const setArr = (key: string, value: any[]): void => {
   localStorage.setItem(key, JSON.stringify(value));
 };
 

@@ -17,7 +17,7 @@ const { ipcRenderer } = window.require("electron");
 let emptyAudio: HTMLAudioElement;
 let emptyAnimate: AnimationElement;
 
-function Player({ songs, queue, cur, nextSong: _nextSong, prevSong: _prevSong, setQueue, setCur }) {
+function Player({ songs, queue, cur, nextSong: _nextSong, prevSong: _prevSong, setQueue, setCur, likeSong }) {
   const song: song = queue[cur];
 
   const [timeStamp, setTimeStamp] = useState(0);
@@ -110,8 +110,8 @@ function Player({ songs, queue, cur, nextSong: _nextSong, prevSong: _prevSong, s
 
   const toggleLiked = async (e: React.MouseEvent<HTMLImageElement, MouseEvent>) => {
     e.stopPropagation();
-    song.liked = !song.liked;
-    await ipcRenderer.send("set:liked", song.title);
+    // await ipcRenderer.send("set:liked", song.title);
+    likeSong(song);
   };
 
   const toggleLoop = (e: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
@@ -128,7 +128,7 @@ function Player({ songs, queue, cur, nextSong: _nextSong, prevSong: _prevSong, s
     setPaused(false);
     getSong(song.filePath);
     ipcRenderer.send("main-song-update", song);
-  }, [song]);
+  }, [song.title]);
 
   useEffect(() => {
     ipcRenderer.on("jump-back", (evt, val: number) => (ref.current.currentTime -= val));
@@ -229,6 +229,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
     prevSong: create.prevSong(dispatch),
     setQueue: create.setQueue(dispatch),
     setCur: create.setCur(dispatch),
+    likeSong: create.likeSong(dispatch),
   };
 };
 

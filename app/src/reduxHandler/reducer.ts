@@ -22,14 +22,27 @@ export interface reduxAction {
 const initialState: reduxState = {
   queue: [],
   songs: [],
-  cur: -1
+  cur: -1,
 };
 
 const reducer = (oldState = initialState, action: reduxAction) => {
   let state = { ...oldState };
 
   switch (action.type) {
+    case "toggle:liked":
+      const songsIndex = state.songs.indexOf(action.payload);
+      if (songsIndex >= 0) {
+        state.songs[songsIndex].liked = !state.songs[songsIndex].liked;
+      }
+
+      const queueIndex = state.queue.indexOf(action.payload);
+      if (queueIndex >= 0) {
+        state.queue[queueIndex].liked = !state.queue[queueIndex].liked;
+      }
+      setArr("queue", state.queue);
+      break;
     case "set:songs":
+      console.log({ action });
       state.songs = action.payload;
       break;
     case "set:queue":
@@ -43,8 +56,6 @@ const reducer = (oldState = initialState, action: reduxAction) => {
     case "update:cur":
       state.cur = (action.payload + state.cur + state.queue.length) % state.queue.length;
       setNum("cur", state.cur);
-      break;
-    default:
       break;
   }
 
