@@ -1,7 +1,7 @@
 import { app, Menu, MenuItemConstructorOptions, BrowserWindow } from "electron";
 import Store from "./functions/store";
 
-const createMenu = (win: BrowserWindow, store: Store, dev: boolean) => {
+const createMenu = (win: BrowserWindow, store: Store, dev: boolean, toggleHelp: () => void) => {
   const isMac = process.platform === "darwin";
 
   let viewSubmenu: MenuItemConstructorOptions[] = [
@@ -76,6 +76,11 @@ const createMenu = (win: BrowserWindow, store: Store, dev: boolean) => {
     {
       label: "View",
       submenu: viewSubmenu,
+    },
+    {
+      label: "Help",
+      accelerator: "CmdOrCtrl+h",
+      click: toggleHelp,
     },
   ];
 

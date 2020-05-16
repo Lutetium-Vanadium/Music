@@ -65,6 +65,7 @@ fs.exists(album_images_path, (exists) => {
 // needed variables
 let win: BrowserWindow = null;
 let remote: BrowserWindow = null;
+let help: BrowserWindow = null;
 const dev = !app.isPackaged;
 
 app.allowRendererProcessReuse = true;
@@ -88,7 +89,7 @@ app.on("ready", () => {
   }
 
   // Initialize everything
-  createMenu(win, store, dev);
+  createMenu(win, store, dev, toggleHelp);
   initIpc(store, { win, remote }, setUpRemote, downloader);
 
   // Perform Checks
@@ -115,6 +116,22 @@ app.on("quit", () => {
   globalShortcut.unregisterAll();
   app.quit();
 });
+
+const toggleHelp = () => {
+  if (help === null) {
+    help = new BrowserWindow({
+      width: 1000,
+      height: 800,
+      icon: path.join(app.getAppPath(), "src", "logo.png"),
+    });
+
+    help.on("close", () => (help = null));
+
+    help.loadURL("file://" + path.join(app.getAppPath(), "src", "help.html"));
+  } else {
+    help.close();
+  }
+};
 
 const setUpRemote = (song: song) => {
   remote = new BrowserWindow({
