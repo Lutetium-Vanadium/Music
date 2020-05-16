@@ -85,7 +85,7 @@ class Database {
           ${length}, 0, false,
           "${this._escape(albumId)}")
       `,
-        err => {
+        (err) => {
           if (err) console.error(err);
           res();
         }
@@ -102,7 +102,7 @@ class Database {
    */
   deleteSong = (title: string): Promise<void> => {
     return new Promise((res, rej) => {
-      this._db.run(`DELETE FROM songdata WHERE title LIKE "${this._escape(title)}"`, err => {
+      this._db.run(`DELETE FROM songdata WHERE title LIKE "${this._escape(title)}"`, (err) => {
         if (err) console.error(err);
         res();
       });
@@ -254,7 +254,6 @@ class Database {
     new Promise((res, rej) =>
       this._db.all(`SELECT * FROM albumdata WHERE id like "${this._escape(albumId)}"`, (err, data) => {
         if (err) console.error(err);
-        debug.log({ data });
         res(data.length > 0);
       })
     );
@@ -275,7 +274,7 @@ class Database {
           "${this._escape(imagePath)}",
           "${this._escape(name)}",
           "${this._escape(artist)}", 0)`,
-        err => {
+        (err) => {
           if (err) console.error(err);
           res();
         }
@@ -329,7 +328,7 @@ class Database {
    */
   deleteAlbum = async (albumId: string): Promise<void> =>
     new Promise((res, rej) =>
-      this._db.run(`DELETE FROM albumdata WHERE id LIKE ${this._escape(albumId)}`, err => {
+      this._db.run(`DELETE FROM albumdata WHERE id LIKE ${this._escape(albumId)}`, (err) => {
         if (err) console.error(err);
         res();
       })
@@ -443,5 +442,5 @@ export default new Database();
 
 enum Quotes {
   Double,
-  Single
+  Single,
 }

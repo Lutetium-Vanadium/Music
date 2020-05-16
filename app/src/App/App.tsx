@@ -60,12 +60,12 @@ function App() {
     dispatch({
       type: "start:download",
       id,
-      payload: song
+      payload: song,
     });
     new Notification(song.title, {
       body: `Downloading ${song.title} by ${song.artist}.`,
       badge: logo,
-      icon: song.thumbnail
+      icon: song.thumbnail,
     });
   };
 
@@ -77,14 +77,14 @@ function App() {
       dispatch({
         type: "update:download",
         id,
-        payload: progress
+        payload: progress,
       });
     });
     ipcRenderer.on("finished:download-query", (evt, { id, filePath }) => {
       dispatch({
         type: "finish:download",
         id,
-        payload: filePath
+        payload: filePath,
       });
     });
     ipcRenderer.on("error:download-query", () => setDownloadError(true));
@@ -100,7 +100,7 @@ function App() {
         { regex: /\/settings$/, right: "/artists", left: "/" },
         { regex: /\/artists/, right: "/albums", left: "/settings" },
         { regex: /\/albums/, right: "/music", left: "/artists" },
-        { regex: /\/music$/, right: "/", left: "/albums" }
+        { regex: /\/music$/, right: "/", left: "/albums" },
       ];
 
       if (evt.altKey) {
@@ -139,7 +139,7 @@ function App() {
           classExtension="main"
           animate={animations}
         >
-          {location => (
+          {(location) => (
             <Switch location={location}>
               <Route
                 path="/search"
@@ -183,7 +183,7 @@ const reducer = (state: object, action: action) => {
     case "start:download":
       newState[action.id] = {
         progress: 0,
-        song: action.payload
+        song: action.payload,
       };
       break;
     case "update:download":
@@ -196,7 +196,7 @@ const reducer = (state: object, action: action) => {
       new Notification(song.title, {
         body: `Finished Downloading ${song.title} by ${song.artist}.\n It is stored in ${formatFilePath(action.payload)}`,
         badge: logo,
-        icon: song.thumbnail
+        icon: song.thumbnail,
       });
       delete newState[action.id];
       break;

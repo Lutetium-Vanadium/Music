@@ -127,6 +127,7 @@ const setUpRemote = (song: song) => {
     resizable: false,
     alwaysOnTop: true,
     icon: path.join(app.getAppPath(), "app", "src", "logos", "logo.png"),
+    frame: false,
   });
 
   remote.on("close", () => (remote = null));
@@ -142,7 +143,6 @@ const setUpRemote = (song: song) => {
 // as they require the updated `remote` variable to function
 
 ipcMain.on("set:control-window", (evt, value: boolean, playing: boolean, song: song) => {
-  debug.log({ value, playing, song });
   store.set("controlWindow", value);
   if (!remote && value && playing) {
     setUpRemote(song);

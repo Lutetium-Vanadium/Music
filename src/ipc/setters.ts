@@ -12,7 +12,7 @@ const initSetters = (store: Store, { win, remote }: Windows, setUpRemote: (song:
     const { canceled, filePaths } = await dialog.showOpenDialog(win, {
       properties: ["openDirectory"],
       title: "Choose Music Directory",
-      defaultPath: store.get("folderStored")
+      defaultPath: store.get("folderStored"),
     });
 
     if (!canceled) {
@@ -31,7 +31,7 @@ const initSetters = (store: Store, { win, remote }: Windows, setUpRemote: (song:
     store.setAll(info);
   });
 
-  ipcMain.on("set:liked", async (evt, title: string) => await db.changeLiked(title));
+  ipcMain.on("set:liked", (evt, title: string) => db.changeLiked(title));
 };
 
 export default initSetters;

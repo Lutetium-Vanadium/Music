@@ -9,22 +9,17 @@ const createMenu = (win: BrowserWindow, store: Store, dev: boolean) => {
     { role: "zoomIn" },
     { role: "zoomOut" },
     { type: "separator" },
-    { role: "togglefullscreen" }
+    { role: "togglefullscreen" },
   ];
 
   if (dev) {
-    viewSubmenu.unshift(
-      { role: "reload" },
-      { role: "forceReload" },
-      { role: "toggleDevTools" },
-      { type: "separator" }
-    );
+    viewSubmenu.unshift({ role: "reload" }, { role: "forceReload" }, { role: "toggleDevTools" }, { type: "separator" });
   }
 
   let template: MenuItemConstructorOptions[] = [
     {
       label: "Window",
-      submenu: [{ role: "minimize" }, { role: "close" }, { role: "quit" }]
+      submenu: [{ role: "minimize" }, { role: "close" }, { role: "quit" }],
     },
     {
       label: "Controls",
@@ -32,58 +27,56 @@ const createMenu = (win: BrowserWindow, store: Store, dev: boolean) => {
         {
           label: "Pause/Play",
           click: () => win.webContents.send("pause-play", false),
-          accelerator: "Space"
+          accelerator: "Space",
         },
         {
           label: "Previous Track",
           click: () => win.webContents.send("prev-track"),
-          accelerator: "CmdOrCtrl+Left"
+          accelerator: "CmdOrCtrl+Left",
         },
         {
           label: "Next Track",
           click: () => win.webContents.send("next-track"),
-          accelerator: "CmdOrCtrl+Right"
+          accelerator: "CmdOrCtrl+Right",
         },
         { type: "separator" },
         {
           label: "Increase Volume",
           click: () => win.webContents.send("volume++"),
-          accelerator: "Up"
+          accelerator: "Up",
         },
         {
           label: "Decrease Volume",
           click: () => win.webContents.send("volume--"),
-          accelerator: "Down"
+          accelerator: "Down",
         },
         { type: "separator" },
         {
           label: "Jump Backward",
           click: () => win.webContents.send("jump-back", store.get("jumpBack")),
-          accelerator: "PageDown"
+          accelerator: "PageDown",
         },
         {
           label: "Seek Backward",
           click: () => win.webContents.send("seek-back", store.get("seekBack")),
-          accelerator: "Left"
+          accelerator: "Left",
         },
         {
           label: "Seek Forward",
-          click: () =>
-            win.webContents.send("seek-ahead", store.get("seekAhead")),
-          accelerator: "Right"
+          click: () => win.webContents.send("seek-ahead", store.get("seekAhead")),
+          accelerator: "Right",
         },
         {
           label: "Jump Forward",
-          click: () =>
-            win.webContents.send("jump-ahead", store.get("jumpAhead")),
-          accelerator: "PageUp"
-        }
-      ]
+          click: () => win.webContents.send("jump-ahead", store.get("jumpAhead")),
+          accelerator: "PageUp",
+        },
+      ],
     },
     {
       label: "View",
-      submenu: viewSubmenu
-    }
+      submenu: viewSubmenu,
+    },
   ];
 
   if (isMac) {
@@ -98,8 +91,8 @@ const createMenu = (win: BrowserWindow, store: Store, dev: boolean) => {
         { role: "hideOthers" },
         { role: "unhide" },
         { type: "separator" },
-        { role: "quit" }
-      ]
+        { role: "quit" },
+      ],
     });
   }
 
