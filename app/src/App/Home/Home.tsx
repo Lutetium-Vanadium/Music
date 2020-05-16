@@ -49,31 +49,39 @@ function Home({ setCur, setQueue, setSongs }) {
 
   return (
     <div className="home">
-      <h1 className="header">Top Albums</h1>
-      <div className="top-list">
-        {topAlbums.map(album => (
-          <div className="top-wrapper" key={album.id}>
-            <Link to={`/albums/${album.id}`}>
-              <img className="top" src={album.imagePath} alt="top-album" />
-            </Link>
-            <p className="top-title">{album.name}</p>
+      {topAlbums.length ? (
+        <>
+          <h1 className="header">Top Albums</h1>
+          <div className="top-list">
+            {topAlbums.map((album) => (
+              <div className="top-wrapper" key={album.id}>
+                <Link to={`/albums/${album.id}`}>
+                  <img className="top" src={album.imagePath} alt="top-album" />
+                </Link>
+                <p className="top-title">{album.name}</p>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
-      <h1 className="header">Most Heard Songs</h1>
-      <div className={`top-list${showPrev ? "" : " last"}`}>
-        {topSongs.map((song, i) => (
-          <div key={song.filePath} className="top-wrapper">
-            <img
-              onClick={() => playSong(i)}
-              className="top"
-              src={song.thumbnail}
-              alt="top-song"
-            />
-            <p className="top-title">{song.title}</p>
+        </>
+      ) : null}
+      {topSongs.length ? (
+        <>
+          <h1 className="header">Most Heard Songs</h1>
+          <div className={`top-list${showPrev ? "" : " last"}`}>
+            {topSongs.map((song, i) => (
+              <div key={song.filePath} className="top-wrapper">
+                <img
+                  onClick={() => playSong(i)}
+                  className="top"
+                  src={song.thumbnail}
+                  alt="top-song"
+                />
+                <p className="top-title">{song.title}</p>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </>
+      ) : null}
       {showPrev ? (
         <>
           <h1 className="header">Pickup Where You Left Off</h1>
@@ -97,7 +105,7 @@ function Home({ setCur, setQueue, setSongs }) {
 const mapDispatchToProps = (dispatch: Dispatch) => ({
   setCur: create.setCur(dispatch),
   setQueue: create.setQueue(dispatch),
-  setSongs: create.setSongs(dispatch)
+  setSongs: create.setSongs(dispatch),
 });
 
 export default connect(null, mapDispatchToProps)(Home);
