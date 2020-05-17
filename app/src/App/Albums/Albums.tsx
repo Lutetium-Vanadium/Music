@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
@@ -25,7 +25,7 @@ function Albums() {
           <img className="album-img" src={likedImg} alt="top-album" />
           <p className="album-title">Liked</p>
         </Link>
-        {albums.map(album => (
+        {albums.map((album) => (
           <div className="album" key={album.id}>
             <Link to={`/albums/${album.id}`}>
               <img className="album-img" src={album.imagePath} alt="top-album" />

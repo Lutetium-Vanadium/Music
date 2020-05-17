@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
@@ -22,7 +22,7 @@ function Artists() {
     <div className="albums">
       <h1 className="header">Artists</h1>
       <div className="content">
-        {artists.map(artist => (
+        {artists.map((artist) => (
           <div className="album" key={artist.name}>
             <Link to={`/artists/${artist.name}`}>
               {artist.images.length === 4 ? (

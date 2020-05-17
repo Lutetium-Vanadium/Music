@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { useHistory } from "react-router-dom";
 import { useState, useEffect } from "react";
 
@@ -50,8 +50,8 @@ function Transition({ children, grid, timeout, classExtension, animate = true }:
   const history = useHistory();
 
   useEffect(() => {
-    const unlisten = history.listen(location => {
-      setLocations(locations => {
+    const unlisten = history.listen((location) => {
+      setLocations((locations) => {
         const dir = getDir(location.pathname, locations[locations.length - 1].location.pathname, grid);
 
         // if (dir === "nothing") return locations;
@@ -61,7 +61,7 @@ function Transition({ children, grid, timeout, classExtension, animate = true }:
         locations[locations.length - 1].className = className + "-leave";
 
         setTimeout(() => {
-          setLocations(locations => {
+          setLocations((locations) => {
             locations[1].className = classExtension + "-done";
 
             return locations.slice(1);
@@ -75,8 +75,8 @@ function Transition({ children, grid, timeout, classExtension, animate = true }:
     setLocations([
       {
         location: history.location,
-        className: ""
-      }
+        className: "",
+      },
     ]);
 
     return unlisten;

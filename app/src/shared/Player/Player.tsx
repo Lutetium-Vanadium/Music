@@ -1,13 +1,15 @@
-import * as React from "react";
+import React from "react";
 import { useState, useRef, useEffect } from "react";
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 import { Dispatch } from "redux";
 import { useHistory } from "react-router-dom";
 
-import { DoubleArrow, Loop, PlayPause, Shuffle, randOrder, VolumeControl } from "./helpers";
+import useAction from "#root/useAction";
+import { ReduxState, create } from "#root/reduxHandler";
 import { song } from "#root/types";
-import { reduxState, create } from "#root/reduxHandler";
 import formatLength from "#shared/formatLength";
+
+import { DoubleArrow, Loop, PlayPause, Shuffle, randOrder, VolumeControl } from "./helpers";
 
 import songLiked from "./song-liked.png";
 import songNotLiked from "./song-not-liked.png";
@@ -17,13 +19,22 @@ const { ipcRenderer } = window.require("electron");
 let emptyAudio: HTMLAudioElement;
 let emptyAnimate: AnimationElement;
 
-function Player({ songs, queue, cur, nextSong: _nextSong, prevSong: _prevSong, setQueue, setCur, likeSong }) {
+function Player() {
+  const { songs, queue, cur } = useSelector((state: ReduxState) => state);
+
+  const { _nextSong, _prevSong, setQueue, setCur, likeSong } = useAction((dispatch: Dispatch) => ({
+    _nextSong: create.nextSong(dispatch),
+    _prevSong: create.prevSong(dispatch),
+    setQueue: create.setQueue(dispatch),
+    setCur: create.setCur(dispatch),
+    likeSong: create.likeSong(dispatch),
+  }));
+
   const song: song = queue[cur];
 
   const [timeStamp, setTimeStamp] = useState(0);
-  const [paused, setPaused] = useState(true);
+  const [paused, setPaused] = useState(false);
   const [loop, setLoop] = useState(false);
-  const [loaded, setLoaded] = useState(false);
   const [shuffle, setShuffle] = useState(true);
   const [exit, setExit] = useState(false);
 
@@ -35,8 +46,7 @@ function Player({ songs, queue, cur, nextSong: _nextSong, prevSong: _prevSong, s
 
   const history = useHistory();
 
-  const pausePlay = (override = false, isRemote = false) => {
-    if (!(loaded || override)) return;
+  const pausePlay = (isRemote = false) => {
     if (ref.current.paused) {
       ref.current.play();
       box1Play.current?.beginElement();
@@ -128,7 +138,7 @@ function Player({ songs, queue, cur, nextSong: _nextSong, prevSong: _prevSong, s
     ipcRenderer.on("next-track", () => _nextSong());
     ipcRenderer.on("pause-play", (evt, isRemote: boolean) => {
       if (document.activeElement.tagName === "INPUT" && !isRemote) return;
-      pausePlay(true, isRemote);
+      pausePlay(isRemote);
     });
     ipcRenderer.send("toggle-remote", song);
 
@@ -136,7 +146,7 @@ function Player({ songs, queue, cur, nextSong: _nextSong, prevSong: _prevSong, s
       if (document.activeElement.tagName === "INPUT") return;
       if (e.code === "Space") {
         e.preventDefault();
-        pausePlay(true, false);
+        pausePlay(false);
       }
     };
 
@@ -170,7 +180,7 @@ function Player({ songs, queue, cur, nextSong: _nextSong, prevSong: _prevSong, s
               pausePlay();
             }}
           >
-            {loaded ? <PlayPause paused={paused} refs={{ box1Play, box1Pause, box2Play, box2Pause }} /> : "Loading"}
+            <PlayPause paused={paused} refs={{ box1Play, box1Pause, box2Play, box2Pause }} />
           </button>
           <button onClick={cur === songs.length - 1 ? null : nextSong}>
             <DoubleArrow disabled={cur === song.length - 1} />
@@ -191,7 +201,7 @@ function Player({ songs, queue, cur, nextSong: _nextSong, prevSong: _prevSong, s
           <VolumeControl className="control" audio={ref.current} />
         </div>
         <audio onEnded={handleEnded} loop={loop} ref={ref} onTimeUpdate={updateTimeStamp} onError={console.error} autoPlay={!paused}>
-          <source src={`file://${song.filePath}`} type="audio/mpeg" onLoad={() => setLoaded(true)} />
+          <source src={`file://${song.filePath}`} type="audio/mpeg" />
         </audio>
       </div>
       <input type="range" name="timeline" className="timeline" value={timeStamp} min={0} max={song.length} onChange={handleChange} />
@@ -199,18 +209,4 @@ function Player({ songs, queue, cur, nextSong: _nextSong, prevSong: _prevSong, s
   );
 }
 
-const mapStateToProps = (state: reduxState) => {
-  return { ...state };
-};
-
-const mapDispatchToProps = (dispatch: Dispatch) => {
-  return {
-    nextSong: create.nextSong(dispatch),
-    prevSong: create.prevSong(dispatch),
-    setQueue: create.setQueue(dispatch),
-    setCur: create.setCur(dispatch),
-    likeSong: create.likeSong(dispatch),
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(Player);
+export default Player;

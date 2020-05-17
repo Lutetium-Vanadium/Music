@@ -1,9 +1,9 @@
-import * as React from "react";
+import React from "react";
 import { useState, useEffect } from "react";
-import { connect } from "react-redux";
 import { Dispatch } from "redux";
 import { Link } from "react-router-dom";
 
+import useAction from "#root/useAction";
 import { create } from "#root/reduxHandler";
 import { song, album } from "#root/types";
 import { getArr, getNum } from "#root/localStorage";
@@ -19,9 +19,15 @@ const reposition = (arr: any[], index: number) => {
 
 const lastQueue: song[] = reposition(getArr("queue"), getNum("cur"));
 
-function Home({ setCur, setQueue, setSongs }) {
+function Home() {
   const [topAlbums, setTopAlbums] = useState(emptyAlbum);
   const [topSongs, setTopSongs] = useState(emptySong);
+
+  const { setCur, setQueue, setSongs } = useAction((dispatch: Dispatch) => ({
+    setCur: create.setCur(dispatch),
+    setQueue: create.setQueue(dispatch),
+    setSongs: create.setSongs(dispatch),
+  }));
 
   const playSong = async (index: number) => {
     const songs: song[] = await ipcRenderer.invoke("get:top-songs", false);
@@ -70,12 +76,7 @@ function Home({ setCur, setQueue, setSongs }) {
           <div className={`top-list${showPrev ? "" : " last"}`}>
             {topSongs.map((song, i) => (
               <div key={song.filePath} className="top-wrapper">
-                <img
-                  onClick={() => playSong(i)}
-                  className="top"
-                  src={song.thumbnail}
-                  alt="top-song"
-                />
+                <img onClick={() => playSong(i)} className="top" src={song.thumbnail} alt="top-song" />
                 <p className="top-title">{song.title}</p>
               </div>
             ))}
@@ -87,11 +88,7 @@ function Home({ setCur, setQueue, setSongs }) {
           <h1 className="header">Pickup Where You Left Off</h1>
           <div className="top-list last">
             {lastQueue.slice(0, 5).map((song, i) => (
-              <div
-                key={song.filePath}
-                className="top-wrapper"
-                onClick={() => playLastQueue(i)}
-              >
+              <div key={song.filePath} className="top-wrapper" onClick={() => playLastQueue(i)}>
                 <img className="top" src={song.thumbnail} alt="top-song" />
                 <p className="top-title">{song.title}</p>
               </div>
@@ -102,10 +99,5 @@ function Home({ setCur, setQueue, setSongs }) {
     </div>
   );
 }
-const mapDispatchToProps = (dispatch: Dispatch) => ({
-  setCur: create.setCur(dispatch),
-  setQueue: create.setQueue(dispatch),
-  setSongs: create.setSongs(dispatch),
-});
 
-export default connect(null, mapDispatchToProps)(Home);
+export default Home;

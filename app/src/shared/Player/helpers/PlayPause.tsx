@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { RefObject } from "react";
 
 const playBox1 = "0,0 25,0 25,100 0,100";

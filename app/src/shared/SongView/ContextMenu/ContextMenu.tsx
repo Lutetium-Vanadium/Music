@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { useState } from "react";
 
 interface ContextMenuProps {
@@ -37,7 +37,7 @@ function ContextMenu({ pos, reset, play, del, liked, toggleLiked }: ContextMenuP
       className="context-menu"
       style={{
         left: pos[0],
-        top: pos[1]
+        top: pos[1],
       }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}

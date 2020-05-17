@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 
 interface LoopProps {
   enabled: boolean;
@@ -17,7 +17,7 @@ function Loop({ enabled, onClick, className }: LoopProps) {
           stroke: enabled ? "rgb(71, 135, 231)" : "#dddddd",
           strokeWidth: 2,
           strokeLinecap: "butt",
-          strokeLinejoin: "miter"
+          strokeLinejoin: "miter",
         }}
       ></path>
       <path
@@ -27,7 +27,7 @@ function Loop({ enabled, onClick, className }: LoopProps) {
           stroke: enabled ? "rgb(71, 135, 231)" : "#dddddd",
           strokeWidth: 2,
           strokeLinecap: "butt",
-          strokeLinejoin: "miter"
+          strokeLinejoin: "miter",
         }}
       ></path>
     </svg>

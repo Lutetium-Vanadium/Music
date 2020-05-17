@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { useState, useEffect, useRef } from "react";
 
 import search_icon from "./search_icon.jpg";

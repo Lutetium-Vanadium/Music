@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 
 interface NumberSelectionProps {
   num: number;
@@ -20,11 +20,7 @@ export default NumberSelection;
 
 function Arrow({ onClick, reversed = false }) {
   return (
-    <svg
-      onClick={onClick}
-      viewBox="0 0 86.6 100"
-      className={reversed ? "rev" : ""}
-    >
+    <svg onClick={onClick} viewBox="0 0 86.6 100" className={reversed ? "rev" : ""}>
       <path
         d={reversed ? "M0 0 L86.6 50 L0 100" : "M86.6 100 L0 50 L86.6 0"}
         style={{
@@ -32,7 +28,7 @@ function Arrow({ onClick, reversed = false }) {
           stroke: "white",
           strokeWidth: 10,
           strokeLinecap: "butt",
-          strokeLinejoin: "miter"
+          strokeLinejoin: "miter",
         }}
       />
     </svg>

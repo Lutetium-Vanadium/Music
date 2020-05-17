@@ -8,24 +8,24 @@ import { setArr, setNum } from "#root/localStorage";
  * songs: the list of all songs in the queue; (it exists because of shuffle)
  * cur: the index of the song playing in the queue;
  */
-export interface reduxState {
+export interface ReduxState {
   queue: song[];
   songs: song[];
   cur: number;
 }
 
-export interface reduxAction {
+export interface ReduxAction {
   type: string;
   payload: any;
 }
 
-const initialState: reduxState = {
+const initialState: ReduxState = {
   queue: [],
   songs: [],
   cur: -1,
 };
 
-const reducer = (oldState = initialState, action: reduxAction) => {
+const reducer = (oldState = initialState, action: ReduxAction) => {
   let state = { ...oldState };
 
   switch (action.type) {

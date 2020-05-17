@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { useState, useEffect } from "react";
 import { song } from "#root/types";
 import formatLength from "#shared/formatLength";

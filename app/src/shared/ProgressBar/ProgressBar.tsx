@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { song } from "#root/types";
 
 export interface ProgressBarProps {
@@ -19,10 +19,7 @@ function ProgressBar({ progress, song, errored }: ProgressBarProps) {
   const strokeDashoffset = circumference - (progress / 100) * circumference;
 
   return (
-    <div
-      className="progressbar-wrapper"
-      title={`${song.title} by ${song.artist}`}
-    >
+    <div className="progressbar-wrapper" title={`${song.title} by ${song.artist}`}>
       <svg height={radius * 2} width={radius * 2}>
         <circle
           fill="transparent"
@@ -31,8 +28,7 @@ function ProgressBar({ progress, song, errored }: ProgressBarProps) {
           style={{
             strokeDashoffset,
             stroke: errored ? "red" : "rgb(5, 79, 190)",
-            transition:
-              "all 1s cubic-bezier(0.215, 0.610, 0.355, 1), stroke 250ms linear"
+            transition: "all 1s cubic-bezier(0.215, 0.610, 0.355, 1), stroke 250ms linear",
           }}
           r={normalizedRadius}
           cx={radius}

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 
 interface DoubleArrowProps {
   reversed?: boolean;
@@ -10,7 +10,7 @@ function DoubleArrow({ reversed = false, disabled = false }: DoubleArrowProps) {
     <svg
       style={{
         transform: reversed ? "rotate(180deg)" : "auto",
-        opacity: disabled ? 0.5 : 1
+        opacity: disabled ? 0.5 : 1,
       }}
       viewBox="0 0 120 100"
     >

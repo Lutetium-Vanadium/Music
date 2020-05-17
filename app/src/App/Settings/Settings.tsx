@@ -1,11 +1,11 @@
-import * as React from "react";
+import React from "react";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 
 import NumberSelection from "./NumberSelection";
 import Setting from "./Setting";
 import Toggle from "./Toggle";
-import { reduxState } from "#root/reduxHandler";
+import { ReduxState } from "#root/reduxHandler";
 
 const { ipcRenderer } = window.require("electron");
 
@@ -22,7 +22,7 @@ function Settings() {
   const [controls, setControls] = useState(false);
   const [animations, setAnimations] = useState(false);
 
-  const { queue, cur } = useSelector((state: reduxState) => state);
+  const { queue, cur } = useSelector((state: ReduxState) => state);
 
   const changeDirectory = () => {
     ipcRenderer.invoke("set:music-dir").then((res: string) => setDir(res));
@@ -30,7 +30,7 @@ function Settings() {
 
   const generateFunctions = (func: React.Dispatch<React.SetStateAction<number>>) => ({
     prev: (num: number) => func(((num - 1 + dthresh - min) % dthresh) + min),
-    next: (num: number) => func(((num + 1 - min) % dthresh) + min)
+    next: (num: number) => func(((num + 1 - min) % dthresh) + min),
   });
 
   const applyChanges = () => {
@@ -38,7 +38,7 @@ function Settings() {
       jumpBack,
       seekBack,
       seekAhead,
-      jumpAhead
+      jumpAhead,
     });
   };
 
@@ -55,7 +55,7 @@ function Settings() {
   };
 
   useEffect(() => {
-    ipcRenderer.invoke("get:info").then(info => {
+    ipcRenderer.invoke("get:info").then((info) => {
       setDir(info.dir);
       setJumpBack(info.jumpBack);
       setSeekBack(info.seekBack);

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { useState, useEffect } from "react";
 
 import SongView from "#shared/SongView";
@@ -40,9 +40,7 @@ function Album({
     } else {
       ipcRenderer.invoke("get:album", id).then((res: album) => setAlbum(res));
 
-      ipcRenderer
-        .invoke("get:album-songs", id)
-        .then((res: song[]) => setSongs(res));
+      ipcRenderer.invoke("get:album-songs", id).then((res: song[]) => setSongs(res));
     }
   }, []);
 
@@ -52,12 +50,7 @@ function Album({
         <img className="album-img" src={album.imagePath} alt="album-picture" />
         <h1 className="header">{album.name}</h1>
       </div>
-      <SongView
-        setSongs={setSongs}
-        setAllSongs={setSongs}
-        songs={songs}
-        allSongs={songs}
-      />
+      <SongView setSongs={setSongs} setAllSongs={setSongs} songs={songs} allSongs={songs} />
     </div>
   );
 }

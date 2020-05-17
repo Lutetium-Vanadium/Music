@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { useState, useEffect } from "react";
 
 import SongView from "#shared/SongView";
@@ -22,13 +22,9 @@ function Artist({
   const [artist, setArtist] = useState(emptyArtist);
 
   useEffect(() => {
-    ipcRenderer
-      .invoke("get:artist", name)
-      .then((res: artist) => setArtist(res));
+    ipcRenderer.invoke("get:artist", name).then((res: artist) => setArtist(res));
 
-    ipcRenderer
-      .invoke("get:artist-songs", name)
-      .then((res: song[]) => setSongs(res));
+    ipcRenderer.invoke("get:artist-songs", name).then((res: song[]) => setSongs(res));
   }, []);
 
   return (
@@ -46,12 +42,7 @@ function Artist({
         )}
         <h1 className="header">{artist.name}</h1>
       </div>
-      <SongView
-        setSongs={setSongs}
-        setAllSongs={setSongs}
-        songs={songs}
-        allSongs={songs}
-      />
+      <SongView setSongs={setSongs} setAllSongs={setSongs} songs={songs} allSongs={songs} />
     </div>
   );
 }

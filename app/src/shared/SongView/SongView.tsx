@@ -1,12 +1,13 @@
-import * as React from "react";
+import React from "react";
 import { useState } from "react";
-import { connect } from "react-redux";
 import { Dispatch } from "redux";
 
-import ContextMenu from "./ContextMenu";
+import useAction from "#root/useAction";
+import { create } from "#root/reduxHandler";
 import { song } from "#root/types";
 import Song from "#shared/Song";
-import { create } from "#root/reduxHandler";
+
+import ContextMenu from "./ContextMenu";
 
 import logo from "#logos/logo.png";
 
@@ -17,26 +18,19 @@ interface SongViewProps {
   allSongs: song[];
   setSongs: React.Dispatch<React.SetStateAction<song[]>>;
   setAllSongs: React.Dispatch<React.SetStateAction<song[]>>;
-  setQueue: (songs: song[]) => void;
-  reduxSetSongs: (songs: song[]) => void;
-  setCur: (num: number) => void;
-  likeSong: (song: song) => void;
   showButtons?: boolean;
 }
 
-function SongView({
-  reduxSetSongs,
-  setQueue,
-  setSongs,
-  setAllSongs,
-  setCur,
-  likeSong,
-  allSongs,
-  songs,
-  showButtons = true,
-}: SongViewProps) {
+function SongView({ setSongs, setAllSongs, allSongs, songs, showButtons = true }: SongViewProps) {
   const [pos, setPos] = useState([-200, -200]);
   const [index, setIndex] = useState(-1);
+
+  const { setCur, setQueue, reduxSetSongs, likeSong } = useAction((dispatch: Dispatch) => ({
+    setQueue: create.setQueue(dispatch),
+    reduxSetSongs: create.setSongs(dispatch),
+    setCur: create.setCur(dispatch),
+    likeSong: create.likeSong(dispatch),
+  }));
 
   const _play = (index: number) => {
     reduxSetSongs(allSongs);
@@ -61,7 +55,6 @@ function SongView({
   };
 
   const toggleLiked = async () => {
-    // await ipcRenderer.send("set:liked", songs[index].title);
     likeSong(songs[index]);
     setPos([-200, -200]);
   };
@@ -130,14 +123,7 @@ function SongView({
   );
 }
 
-const mapDispatchToProps = (dispatch: Dispatch) => ({
-  setQueue: create.setQueue(dispatch),
-  reduxSetSongs: create.setSongs(dispatch),
-  setCur: create.setCur(dispatch),
-  likeSong: create.likeSong(dispatch),
-});
-
-export default connect(null, mapDispatchToProps)(SongView);
+export default SongView;
 
 interface TripleDotProps {
   onClick?: (event: React.MouseEvent<SVGSVGElement, MouseEvent>) => void;

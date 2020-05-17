@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { useState, useEffect, useReducer } from "react";
 import { Switch, Route, useHistory } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -16,7 +16,7 @@ import Queue from "./Queue";
 
 import Player from "#shared/Player";
 import Transition from "#shared/Transition";
-import { reduxState } from "#root/reduxHandler";
+import { ReduxState } from "#root/reduxHandler";
 import { song, searchResult } from "#root/types";
 
 import logo from "#logos/logo.png";
@@ -41,7 +41,7 @@ function App() {
   const [loading, setLoading] = useState(true);
 
   const [downloading, dispatch] = useReducer(reducer, {});
-  const queue = useSelector((state: reduxState) => state.queue);
+  const queue = useSelector((state: ReduxState) => state.queue);
   const history = useHistory();
 
   const search = async (query: string) => {

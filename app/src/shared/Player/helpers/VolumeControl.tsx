@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { ChangeEvent, useState, useRef } from "react";
 
 interface VolumeControlProps {
@@ -29,7 +29,7 @@ function VolumeControl({ className, audio }: VolumeControlProps) {
   const volume = audio?.volume ?? 1;
 
   return (
-    <div className={className} style={{ position: "relative", height: "4rem" }} onClick={e => e.stopPropagation()}>
+    <div className={className} style={{ position: "relative", height: "4rem" }} onClick={(e) => e.stopPropagation()}>
       <VolumeButton volume={volume} className={`${className}-volume`} onClick={onClick} />
       <div className={`${className}-slider-wrapper`}>
         <input className={`${className}-slider`} type="range" min={0} max={1} value={volume} onChange={onChange} step={0.001} />
@@ -65,7 +65,7 @@ function VolumeButton({ volume, className, onClick }: VolumeButtonProps) {
           strokeWidth: 1,
           strokeLinecap: "butt",
           strokeLinejoin: "miter",
-          strokeOpacity: 1
+          strokeOpacity: 1,
         }}
       />
       {volume > 0 && (
@@ -78,7 +78,7 @@ function VolumeButton({ volume, className, onClick }: VolumeButtonProps) {
             strokeWidth: 3,
             strokeLinecap: "butt",
             strokeLinejoin: "miter",
-            strokeOpacity: 1
+            strokeOpacity: 1,
           }}
         />
       )}
@@ -92,7 +92,7 @@ function VolumeButton({ volume, className, onClick }: VolumeButtonProps) {
             strokeWidth: 3,
             strokeLinecap: "butt",
             strokeLinejoin: "miter",
-            strokeOpacity: 1
+            strokeOpacity: 1,
           }}
         />
       )}
@@ -108,7 +108,7 @@ function VolumeButton({ volume, className, onClick }: VolumeButtonProps) {
             strokeLinejoin: "miter",
             strokeMiterlimit: 4,
             strokeDasharray: "none",
-            strokeOpacity: 1
+            strokeOpacity: 1,
           }}
         />
       )}
@@ -124,7 +124,7 @@ function VolumeButton({ volume, className, onClick }: VolumeButtonProps) {
               strokeLinejoin: "miter",
               strokeMiterlimit: 4,
               strokeDasharray: "none",
-              strokeOpacity: 1
+              strokeOpacity: 1,
             }}
           />
           <path
@@ -137,7 +137,7 @@ function VolumeButton({ volume, className, onClick }: VolumeButtonProps) {
               strokeLinejoin: "miter",
               strokeMiterlimit: 4,
               strokeDasharray: "none",
-              strokeOpacity: 1
+              strokeOpacity: 1,
             }}
           />
         </>
