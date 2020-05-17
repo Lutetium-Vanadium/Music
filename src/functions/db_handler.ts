@@ -1,7 +1,7 @@
 import { app } from "electron";
 import * as sqlite3 from "sqlite3";
 import * as path from "path";
-import { song, album, artist } from "../types";
+import { Song, Album, Artist } from "../types";
 import debug from "../console";
 
 // This file provides the Database class which is a wrapper around the `song_info.db` database
@@ -23,8 +23,8 @@ class Database {
   private _n = 5;
 
   constructor() {
-    const db_path = path.join(app.getPath("userData"), "song_info.db");
-    this._db = new sqlite3.Database(db_path);
+    const dbPath = path.join(app.getPath("userData"), "song_info.db");
+    this._db = new sqlite3.Database(dbPath);
     this._init();
   }
 
@@ -68,11 +68,11 @@ class Database {
   /**
    * addSong()
    *
-   * @param {song} song The song to be added
+   * @param {Song} song The song to be added
    *
    * Songs which are downloaded are added to the db for additional information
    */
-  addSong = ({ filePath, title, thumbnail, artist, length, albumId }: song): Promise<void> => {
+  addSong = ({ filePath, title, thumbnail, artist, length, albumId }: Song): Promise<void> => {
     return new Promise((res, rej) => {
       this._db.run(
         `INSERT INTO songdata
@@ -115,13 +115,13 @@ class Database {
    *
    * the search queries the database for all songs whose titles contains the search query
    */
-  search = (songTitle: string): Promise<song[]> => {
+  search = (songTitle: string): Promise<Song[]> => {
     songTitle = "%" + songTitle.split("").join("%") + "%";
 
     return new Promise((res, rej) =>
       this._db.all(
         `SELECT * FROM songdata WHERE title LIKE "${this._escape(songTitle)}" ORDER BY LOWER(title), title`,
-        (err, data: song[]) => res(data)
+        (err, data: Song[]) => res(data)
       )
     );
   };
@@ -133,9 +133,9 @@ class Database {
    *
    * Returns all songs which have the same albumId
    */
-  albumSongs = (albumId: string): Promise<song[]> =>
+  albumSongs = (albumId: string): Promise<Song[]> =>
     new Promise((res, rej) =>
-      this._db.all(`SELECT * FROM songdata WHERE albumId LIKE "${this._escape(albumId)}"`, (err, songs: song[]) => {
+      this._db.all(`SELECT * FROM songdata WHERE albumId LIKE "${this._escape(albumId)}"`, (err, songs: Song[]) => {
         if (err) console.error(err);
         res(songs);
       })
@@ -146,9 +146,9 @@ class Database {
    *
    * Returns every song in the database
    */
-  all = (): Promise<song[]> =>
+  all = (): Promise<Song[]> =>
     new Promise((res, rej) =>
-      this._db.all(`SELECT * FROM songdata ORDER BY LOWER(title), title`, (err, data: song[]) => {
+      this._db.all(`SELECT * FROM songdata ORDER BY LOWER(title), title`, (err, data: Song[]) => {
         if (err) console.error(err);
         res(data);
       })
@@ -179,13 +179,13 @@ class Database {
    *   ~ note this may be wrong if multiple songs from the same album are there, but they use different
    *     album id according to the napster result
    */
-  mostPopularAlbums = (limit: boolean): Promise<album[]> =>
+  mostPopularAlbums = (limit: boolean): Promise<Album[]> =>
     new Promise((res, rej) =>
       this._db.all(
-        `SELECT * FROM albumdata 
+        `SELECT * FROM albumdata
         ORDER BY numSongs DESC
         ${limit ? `LIMIT ${this._n}` : ""}`,
-        (err, albums: album[]) => {
+        (err, albums: Album[]) => {
           if (err) console.error(err);
           res(albums);
         }
@@ -203,9 +203,9 @@ class Database {
    *   if a song is played multiple times within a minute if the user hit forward backward
    *   continously will be picked up as seperate times
    */
-  mostPopularSongs = (limit: boolean): Promise<song[]> =>
+  mostPopularSongs = (limit: boolean): Promise<Song[]> =>
     new Promise((res, rej) =>
-      this._db.all(`SELECT * FROM songdata ORDER BY numListens DESC${limit ? ` LIMIT ${this._n}` : ""}`, (err, songs: song[]) => {
+      this._db.all(`SELECT * FROM songdata ORDER BY numListens DESC${limit ? ` LIMIT ${this._n}` : ""}`, (err, songs: Song[]) => {
         if (err) console.error(err);
         res(songs);
       })
@@ -216,9 +216,9 @@ class Database {
    *
    * Returns all the liked songs
    */
-  liked = (): Promise<song[]> =>
+  liked = (): Promise<Song[]> =>
     new Promise((res, rej) =>
-      this._db.all(`SELECT * FROM songdata WHERE liked ORDER BY LOWER(title), title`, (err, songs: song[]) => {
+      this._db.all(`SELECT * FROM songdata WHERE liked ORDER BY LOWER(title), title`, (err, songs: Song[]) => {
         if (err) console.error(err);
         res(songs);
       })
@@ -261,11 +261,11 @@ class Database {
   /**
    * addAlbum()
    *
-   * @param {album} album The album to add
+   * @param {Album} album The album to add
    *
    * Adds an album to the albumdata table
    */
-  addAlbum = ({ id, imagePath, name, artist }: album): Promise<void> =>
+  addAlbum = ({ id, imagePath, name, artist }: Album): Promise<void> =>
     new Promise((res, rej) =>
       this._db.run(
         `INSERT INTO albumdata
@@ -288,9 +288,9 @@ class Database {
    *
    * Returns the details of the album id
    */
-  albumDetails = (id: string): Promise<album> =>
+  albumDetails = (id: string): Promise<Album> =>
     new Promise((res, rej) =>
-      this._db.get(`SELECT * FROM albumdata where id LIKE "${this._escape(id)}"`, (err, row: album) => {
+      this._db.get(`SELECT * FROM albumdata where id LIKE "${this._escape(id)}"`, (err, row: Album) => {
         if (err) console.error(err);
         res(row);
       })
@@ -341,14 +341,14 @@ class Database {
    *
    * Returns the details of the artist
    */
-  artistDetails = (name: string): Promise<artist> =>
+  artistDetails = (name: string): Promise<Artist> =>
     new Promise((res, rej) =>
       this._db.all(
         `SELECT imagePath FROM albumdata WHERE artist LIKE "${this._escape(name)}" ORDER BY numSongs DESC LIMIT 4`,
-        (err, albums: album[]) => {
+        (err, albums: Album[]) => {
           if (err) console.error(err);
 
-          let images: string[] = [];
+          const images: string[] = [];
 
           albums.forEach(({ imagePath }) => {
             images.push(imagePath);
@@ -364,9 +364,9 @@ class Database {
    *
    * Gets all the artists and the top four most heard albums by them (For the image)
    */
-  getArtists = (): Promise<artist[]> =>
+  getArtists = (): Promise<Artist[]> =>
     new Promise((res, rej) => {
-      let artists: artist[] = [];
+      const artists: Artist[] = [];
       this._db.each(
         `SELECT DISTINCT artist FROM songdata ORDER BY LOWER(artist)`,
         async (err, row: any) => {
@@ -394,9 +394,9 @@ class Database {
    *
    * Returns all songs by the given artist
    */
-  artistSongs = (artist: string): Promise<song[]> =>
+  artistSongs = (artist: string): Promise<Song[]> =>
     new Promise((res, rej) =>
-      this._db.all(`SELECT * FROM songdata WHERE artist LIKE "${this._escape(artist)}" ORDER BY LOWER(title)`, (err, songs: song[]) => {
+      this._db.all(`SELECT * FROM songdata WHERE artist LIKE "${this._escape(artist)}" ORDER BY LOWER(title)`, (err, songs: Song[]) => {
         if (err) console.error(err);
         res(songs);
       })

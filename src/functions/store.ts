@@ -2,13 +2,13 @@ import { app } from "electron";
 import * as path from "path";
 import * as fs from "fs";
 
-type Object = {
+type obj = {
   [key: string]: any;
 };
 
-interface StoreParams {
+interface StoreParams<T> {
   name: string;
-  defaults?: Object;
+  defaults?: Partial<T>;
 }
 
 /**
@@ -16,16 +16,26 @@ interface StoreParams {
  *
  *   @param {string} name name of the file to be stored in
  *
- *   @param {Object} defaults default values if the file has been corrupted or is being made for the first time
+ *   @param {object} defaults default values if the file has been corrupted or is being made for the first time
  */
 
-class Store {
+class Store<T, K extends keyof T> {
   private _path: string;
-  private _data: Object;
+  private _data: T;
 
-  constructor({ name, defaults = {} }: StoreParams) {
+  constructor({ name, defaults = {} }: StoreParams<T>) {
     this._path = path.join(app.getPath("userData"), name + ".json");
-    this.parseDataFile(defaults);
+    try {
+      const data = JSON.parse(fs.readFileSync(this._path).toString());
+      // Makes sure if new properties have been introduced, they will be set to their defaults;
+      this._data = {
+        ...defaults,
+        ...data,
+      };
+    } catch (error) {
+      this._data = defaults as T;
+    }
+    this._write();
   }
 
   /**
@@ -35,7 +45,7 @@ class Store {
    *
    * Gets a particular property
    */
-  get = (key: string) => {
+  get = (key: K): any => {
     return this._data[key];
   };
 
@@ -55,7 +65,7 @@ class Store {
    *
    * Stores the value for a key in the store file
    */
-  set = (key: string, val: any) => {
+  set = (key: K, val: any) => {
     this._data[key] = val;
     this._write();
   };
@@ -68,29 +78,8 @@ class Store {
    * Adds/replaces all values in the given object in the data file
    * WARNING: The data being sent has to be only what you want added. It does not perform any checks and just destructures it
    */
-  setAll = (obj: Object) => {
+  setAll = (obj: T) => {
     this._data = { ...this._data, ...obj };
-    this._write();
-  };
-
-  /**
-   * Store.parseDataFile()
-   *
-   * @param {object} defaults The JSON to store if the file doesn't exist
-   *
-   * Reads the value of the store file, if it doesn't exist, returns the defaults
-   */
-  private parseDataFile = (defaults: Object) => {
-    try {
-      const data = JSON.parse(fs.readFileSync(this._path).toString());
-      // Makes sure if new properties have been introduced, they will be set to their defaults;
-      this._data = {
-        ...defaults,
-        ...data,
-      };
-    } catch (error) {
-      this._data = defaults;
-    }
     this._write();
   };
 

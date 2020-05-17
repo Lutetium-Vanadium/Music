@@ -1,10 +1,10 @@
 import axios from "axios";
-import { song } from "../types";
+import { Song } from "../types";
 
 const urlSearch = "https://www.googleapis.com/youtube/v3/search";
 const urlDetails = "https://www.googleapis.com/youtube/v3/videos";
 
-export interface youtubeDetails {
+export interface YoutubeDetails {
   id: string;
   length: number;
 }
@@ -16,7 +16,7 @@ export interface youtubeDetails {
  *
  * Returns the first result's youtube id from a search query
  */
-const getYoutubeDetails = async (song: song): Promise<youtubeDetails | null> => {
+const getYoutubeDetails = async (song: Song): Promise<YoutubeDetails | null> => {
   try {
     // Makes sure to get the right video
     let query = `${song.title} ${song.artist} official music video`;
@@ -47,7 +47,7 @@ const getYoutubeDetails = async (song: song): Promise<youtubeDetails | null> => 
     };
   } catch (err) {
     console.error(err);
-    return;
+    return null;
   }
 };
 

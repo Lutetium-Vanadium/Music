@@ -1,0 +1,17 @@
+{
+  "defaultSeverity": "error",
+  "extends": ["tslint:recommended"],
+  "rules": {
+    "max-line-length": {
+      "options": [140]
+    },
+    "no-shadowed-variable": false,
+    "no-console": false,
+    "member-ordering": false,
+    "no-consecutive-blank-lines": false,
+    "object-literal-sort-keys": false,
+    "ordered-imports": false,
+    "quotemark": [true, "double", "backtick"],
+    "variable-name": [true, "allow-leading-underscore"]
+  }
+}

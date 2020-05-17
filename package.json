@@ -7,13 +7,16 @@
   "license": "MIT",
   "scripts": {
     "start": "yarn build && electron .",
-    "build": "tsc",
-    "build-react": "cd app && yarn build",
+    "build": "yarn lint:electron && tsc",
+    "build-react": "yarn lint:react && cd app && yarn build",
     "deploy": "yarn build-react && yarn build && electron-packager . --overwrite",
     "deploy-l": "yarn build-react && yarn build && electron-packager . --overwrite --platform=linux --out=\"Music(linux)\"",
     "deploy-m": "yarn build-react && yarn build && electron-packager . --overwrite --platform=darwin --out=\"Music(MacOS)\"",
     "deploy-w": "yarn build-react && yarn build && electron-packager . --overwrite --platform=win32 --out=\"Music(Windows)\"",
-    "fix-sqlite3": "./node_modules/.bin/electron-rebuild -w sqlite3 -p"
+    "fix-sqlite3": "./node_modules/.bin/electron-rebuild -w sqlite3 -p",
+    "lint:react": "tslint -c ./tslint.json './app/src/**/*.ts*'",
+    "lint:electron": "tslint -c ./tslint.json './src/**/*.ts'",
+    "lint": "yarn lint:react && yarn lint:electron"
   },
   "dependencies": {
     "axios": "^0.19.2",
@@ -33,6 +36,7 @@
     "electron": "^8.0.1",
     "electron-packager": "^14.1.1",
     "electron-rebuild": "^1.10.0",
+    "tslint": "^6.1.2",
     "typescript": "^3.8.3"
   }
 }

@@ -1,9 +1,10 @@
 import { ipcMain } from "electron";
 import Store from "../functions/store";
 import db from "../functions/db_handler";
+import { Settings } from "../types";
 // Get methods
 
-const initGetters = (store: Store) => {
+const initGetters = (store: Store<Settings, SettingsKeys>) => {
   // gets the configured music directory
   ipcMain.handle("get:info", (evt, val) => {
     return new Promise((res, rej) => {

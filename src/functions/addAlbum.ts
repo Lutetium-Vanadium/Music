@@ -4,7 +4,7 @@ import { getAlbumInfo } from "./napster";
 
 import { downloadImage } from "./downloader";
 import db from "./db_handler";
-import { album } from "../types";
+import { Album } from "../types";
 
 /**
  * addAlbum()
@@ -31,7 +31,7 @@ const addAlbum = async (albumId: string, artist: string) => {
 
   console.log(`Adding album ${name}.`);
 
-  const album: album = {
+  const album: Album = {
     id,
     name,
     imagePath,

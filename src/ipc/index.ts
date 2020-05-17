@@ -5,22 +5,13 @@ import initMiscellaneous from "./miscellaneous";
 import initSearch from "./search";
 import initSetters from "./setters";
 import Store from "../functions/store";
-import { song } from "../types";
+import { Song, Settings } from "../types";
 
-export interface Windows {
-  [key: string]: BrowserWindow;
-}
-
-const initIpc = (
-  store: Store,
-  windows: Windows,
-  setUpRemote: (song: song) => void,
-  downloader
-) => {
+const initIpc = (store: Store<Settings, SettingsKeys>, win: BrowserWindow, downloader: YoutubeMp3Downloader) => {
   initGetters(store);
-  initMiscellaneous(store, windows, downloader);
+  initMiscellaneous(store, win, downloader);
   initSearch();
-  initSetters(store, windows, setUpRemote);
+  initSetters(store, win);
 };
 
 export default initIpc;

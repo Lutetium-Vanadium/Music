@@ -13,6 +13,6 @@
     },
     "outDir": "./build"
   },
-  "include": ["./src/**/*.ts", "global.d.ts"],
-  "exclude": ["./node_modules", "./src/node_modules"]
+  "include": ["./src/**/*.ts", "global.d.ts", "./declarations.d.ts"],
+  "exclude": ["./node_modules"]
 }

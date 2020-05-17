@@ -1,7 +1,17 @@
 import axios from "axios";
 import * as dotenv from "dotenv";
 
+import { Song } from "../types";
+
 dotenv.config();
+
+type NapsterSongInfo = {
+  artist: string;
+  title: string;
+  length: number;
+  thumbnail: string;
+  albumId: string;
+};
 
 /**
  * All Functions follow the same basic pattern:
@@ -63,6 +73,15 @@ const getAlbumInfo = async (albumId: string) => {
   }
 };
 
+type SongInfo =
+  | {
+      status: 1;
+      song: NapsterSongInfo;
+    }
+  | {
+      status: 0;
+      error: any;
+    };
 /**
  * getSongInfo()
  *
@@ -75,7 +94,7 @@ const getAlbumInfo = async (albumId: string) => {
  *   song: Song
  * }
  */
-const getSongInfo = async (query: string) => {
+const getSongInfo = async (query: string): Promise<SongInfo> => {
   try {
     const response = await axios.get("https://api.napster.com/v2.2/search", {
       params: {
@@ -127,9 +146,9 @@ const search = async (query: string) => {
 
     if (response.status !== 200) throw response.headers.status;
 
-    let songs = [];
+    const songs = [];
 
-    for (let track of response.data.search.data.tracks) {
+    for (const track of response.data.search.data.tracks) {
       songs.push(formatTrackData(track));
     }
 
@@ -152,7 +171,7 @@ export { getAlbumInfo, getSongInfo, search };
  *
  * Returns the id and name for the album object
  */
-const formatAlbumData = ({ id, name }) => ({
+const formatAlbumData = ({ id, name }: { id: string; name: string }) => ({
   id,
   name,
 });
@@ -164,7 +183,7 @@ const formatAlbumData = ({ id, name }) => ({
  *
  * Returns a `Song` Object
  */
-const formatTrackData = (track) => ({
+const formatTrackData = (track: any) => ({
   artist: track.artistName,
   title: track.name,
   length: track.playbackSeconds,

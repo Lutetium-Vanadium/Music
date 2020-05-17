@@ -1,4 +1,8 @@
-export interface song {
+declare global {
+  type SettingsKeys = keyof Settings;
+}
+
+export interface Song {
   filePath: string;
   title: string;
   thumbnail: string;
@@ -9,7 +13,7 @@ export interface song {
   liked: boolean;
 }
 
-export interface album {
+export interface Album {
   id: string;
   imagePath: string;
   name: string;
@@ -17,7 +21,17 @@ export interface album {
   artist: string;
 }
 
-export interface artist {
+export interface Artist {
   name: string;
   images: string[];
+}
+
+export interface Settings {
+  folderStored: string;
+  jumpAhead: number;
+  seekAhead: number;
+  seekBack: number;
+  jumpBack: number;
+  controlWindow: boolean;
+  animations: boolean;
 }

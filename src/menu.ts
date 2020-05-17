@@ -1,10 +1,11 @@
 import { app, Menu, MenuItemConstructorOptions, BrowserWindow } from "electron";
 import Store from "./functions/store";
+import { Settings } from "./types";
 
-const createMenu = (win: BrowserWindow, store: Store, dev: boolean, toggleHelp: () => void) => {
+const createMenu = (win: BrowserWindow, store: Store<Settings, SettingsKeys>, dev: boolean, toggleHelp: () => void) => {
   const isMac = process.platform === "darwin";
 
-  let viewSubmenu: MenuItemConstructorOptions[] = [
+  const viewSubmenu: MenuItemConstructorOptions[] = [
     { role: "resetZoom" },
     { role: "zoomIn" },
     { role: "zoomOut" },
@@ -16,7 +17,7 @@ const createMenu = (win: BrowserWindow, store: Store, dev: boolean, toggleHelp: 
     viewSubmenu.unshift({ role: "reload" }, { role: "forceReload" }, { role: "toggleDevTools" }, { type: "separator" });
   }
 
-  let template: MenuItemConstructorOptions[] = [
+  const template: MenuItemConstructorOptions[] = [
     {
       label: "Window",
       submenu: [{ role: "minimize" }, { role: "close" }, { role: "quit" }],
