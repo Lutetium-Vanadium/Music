@@ -24,7 +24,6 @@ function Player({ songs, queue, cur, nextSong: _nextSong, prevSong: _prevSong, s
   const [paused, setPaused] = useState(true);
   const [loop, setLoop] = useState(false);
   const [loaded, setLoaded] = useState(false);
-  const [songData, setSongData] = useState();
   const [shuffle, setShuffle] = useState(true);
   const [exit, setExit] = useState(false);
 
@@ -67,16 +66,6 @@ function Player({ songs, queue, cur, nextSong: _nextSong, prevSong: _prevSong, s
   const updateTimeStamp = (e) => {
     const newTime = Math.round(e.target.currentTime);
     setTimeStamp(newTime);
-  };
-
-  const getSong = async (filePath: string) => {
-    try {
-      const newSongData = await ipcRenderer.invoke("get:song-audio", filePath);
-      setSongData(newSongData);
-      setLoaded(true);
-    } catch (error) {
-      console.error(error);
-    }
   };
 
   const shuffleSongs = (e: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
@@ -125,8 +114,6 @@ function Player({ songs, queue, cur, nextSong: _nextSong, prevSong: _prevSong, s
   };
 
   useEffect(() => {
-    setPaused(false);
-    getSong(song.filePath);
     ipcRenderer.send("main-song-update", song);
   }, [song.title]);
 
@@ -203,16 +190,9 @@ function Player({ songs, queue, cur, nextSong: _nextSong, prevSong: _prevSong, s
           />
           <VolumeControl className="control" audio={ref.current} />
         </div>
-        <audio
-          onLoad={() => setLoaded(true)}
-          onEnded={handleEnded}
-          loop={loop}
-          ref={ref}
-          onTimeUpdate={updateTimeStamp}
-          onError={console.error}
-          src={songData}
-          autoPlay={!paused}
-        ></audio>
+        <audio onEnded={handleEnded} loop={loop} ref={ref} onTimeUpdate={updateTimeStamp} onError={console.error} autoPlay={!paused}>
+          <source src={`file://${song.filePath}`} type="audio/mpeg" onLoad={() => setLoaded(true)} />
+        </audio>
       </div>
       <input type="range" name="timeline" className="timeline" value={timeStamp} min={0} max={song.length} onChange={handleChange} />
     </div>

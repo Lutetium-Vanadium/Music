@@ -179,6 +179,7 @@ ipcMain.on("toggle-remote", (evt, song: song) => {
 });
 
 ipcMain.on("main-song-update", (evt, song: song) => {
+  db.incrementNumListens(song.filePath);
   remote?.webContents.send("song-update", song);
 });
 
