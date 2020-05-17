@@ -49,8 +49,8 @@
     }
 
     .links {
-      width: 85%;
       list-style-type: none;
+      width: 85%;
     }
 
     .links li {
@@ -69,6 +69,11 @@
     .content > div {
       margin-bottom: 1.5rem;
     }
+
+    .content > div > p {
+      line-height: 2rem;
+    }
+
     .content::-webkit-scrollbar {
       width: 0.7rem;
       position: fixed;
@@ -114,11 +119,6 @@
       margin: 0.7rem;
     }
 
-    .shortcut {
-      margin-right: 2rem;
-      width: 150px;
-    }
-
     h4 {
       margin-top: 0.8rem;
     }
@@ -129,6 +129,10 @@
       transform: translateX(calc(-50% - 20px));
       max-width: 100%;
     }
+
+    ol {
+      margin-left: 2.5rem;
+    }
   </style>
   <head>
     <meta charset="UTF-8" />
@@ -138,113 +142,27 @@
     <div class="side-bar">
       <h1>Contents</h1>
       <ul class="links">
-        <!-- <li><a href="#About">About</a></li> -->
-        <li><a href="#Updates">Updates</a></li>
-        <li><a href="#Player">Player</a></li>
-        <li><a href="#Shortcuts">Shortcuts</a></li>
+        <li><a href="#v1.2.2">Version 1.2.2</a></li>
       </ul>
     </div>
     <div class="content">
-      <!-- <div id="About">
-        <h1>About</h1>
-        <p>This is a Music player</p>
-      </div> -->
-      <div id="Updates">
-        <h1>Updates</h1>
+      <div id="v1.2.2">
+        <h1>Version 1.2.2</h1>
         <p>
-          When a new update is released to <a href="https://github.com/Lutetium-Vanadium/Music">GitHub</a>, you will be notified on next
-          time you open the app to update. To update, go to the directory where you cloned the files and run the
-          <span class="inline-code">update.sh</span> file.<br />
+          Mostly minor internal changes and bug fixes. <br />
+          Changes:
+          <ol>
+            <li>Frame was removed from remote window.</li>
+            <li>Added help window</li>
+          </ol> 
+          <br>
+          Bugs fixed:
+          <ol>
+            <li>Even if there weren't any 'Top Song' or 'Top Albums', the header was shown.</li>
+            <li>Remote window pointed to app icon in the frontend rather than local app icon.</li>
+            <li>Everytime an individual artist/album is shown, the placeholder image caused an error(it wasnt a proper image). Now a default image is shown as placeholder.</li>
+          </ol> 
         </p>
-        <p class="note">This will keep all the changes you've made.</p>
-      </div>
-      <div id="Player">
-        <h1>Player Controls</h1>
-        <img src="controls.png" alt="controls" />
-        <p class="note">Toggling the like button updates the database, but currently doesn't change in the controls immediately</p>
-      </div>
-      <div id="Shortcuts">
-        <h1 style="margin: 0;">Shortcuts</h1>
-        <h4>While the app is focused:</h4>
-        <div class="flex">
-          <div class="shortcut">
-            <code>Space</code>
-          </div>
-          <p>Play / Pause</p>
-        </div>
-        <div class="flex">
-          <div class="shortcut">
-            <code>Cmd/Ctrl+Left</code>
-          </div>
-          <p>Previous Track</p>
-        </div>
-        <div class="flex">
-          <div class="shortcut">
-            <code>Cmd/Ctrl+Right</code>
-          </div>
-          <p>Next track</p>
-        </div>
-        <div class="flex">
-          <div class="shortcut">
-            <code>Up</code>
-          </div>
-          <p>Increase Volume</p>
-        </div>
-        <div class="flex">
-          <div class="shortcut">
-            <code>Down</code>
-          </div>
-          <p>Decrease Volume</p>
-        </div>
-        <div class="flex">
-          <div class="shortcut">
-            <code>PageDown</code>
-          </div>
-          <p>Jump Back</p>
-        </div>
-        <div class="flex">
-          <div class="shortcut">
-            <code>Left</code>
-          </div>
-          <p>Seek Back</p>
-        </div>
-        <div class="flex">
-          <div class="shortcut">
-            <code>Right</code>
-          </div>
-          <p>Seek Forward</p>
-        </div>
-        <div class="flex">
-          <div class="shortcut">
-            <code>PageUp</code>
-          </div>
-          <p>Jump Forward</p>
-        </div>
-        <h4>Even if app is running in the background:</h4>
-        <div class="flex">
-          <div class="shortcut">
-            <code>Media Play/Pause</code>
-          </div>
-          <p>Play / Pause</p>
-        </div>
-        <div class="flex">
-          <div class="shortcut">
-            <code>Media PrevTrack</code>
-          </div>
-          <p>Previous Track</p>
-        </div>
-        <div class="flex">
-          <div class="shortcut">
-            <code>Media NextTrack</code>
-          </div>
-          <p>Next track</p>
-        </div>
-        <div class="flex">
-          <div class="shortcut">
-            <code>Media Stop</code>
-          </div>
-          <p>Closes remote player if it is open</p>
-        </div>
       </div>
     </div>
   </body>
