@@ -143,7 +143,7 @@ const setUpRemote = (song: song) => {
     },
     resizable: false,
     alwaysOnTop: true,
-    icon: path.join(app.getAppPath(), "app", "src", "logos", "logo.png"),
+    icon: path.join(app.getAppPath(), "src", "logo.png"),
     frame: false,
   });
 

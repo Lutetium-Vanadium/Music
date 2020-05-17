@@ -4,22 +4,23 @@ import { useState, useEffect } from "react";
 import SongView from "#shared/SongView";
 import { song, album } from "#root/types";
 import liked from "#root/App/liked.png";
+import music_symbol from "#root/App/music_symbol.png";
 
 const { ipcRenderer } = window.require("electron");
 
 const emptySongs: song[] = [];
 const emptyAlbum: album = {
   id: "id",
-  imagePath: "file:///path/to/image",
+  imagePath: music_symbol,
   name: "album",
   numSongs: 0,
-  artist: "artist"
+  artist: "artist",
 };
 
 function Album({
   match: {
-    params: { id }
-  }
+    params: { id },
+  },
 }) {
   const [songs, setSongs] = useState(emptySongs);
   const [album, setAlbum] = useState(emptyAlbum);
@@ -33,13 +34,15 @@ function Album({
           imagePath: liked,
           name: "Liked",
           numSongs: songs.length,
-          artist: "You"
+          artist: "You",
         });
       });
     } else {
       ipcRenderer.invoke("get:album", id).then((res: album) => setAlbum(res));
 
-      ipcRenderer.invoke("get:album-songs", id).then((res: song[]) => setSongs(res));
+      ipcRenderer
+        .invoke("get:album-songs", id)
+        .then((res: song[]) => setSongs(res));
     }
   }, []);
 
@@ -49,7 +52,12 @@ function Album({
         <img className="album-img" src={album.imagePath} alt="album-picture" />
         <h1 className="header">{album.name}</h1>
       </div>
-      <SongView setSongs={setSongs} setAllSongs={setSongs} songs={songs} allSongs={songs} />
+      <SongView
+        setSongs={setSongs}
+        setAllSongs={setSongs}
+        songs={songs}
+        allSongs={songs}
+      />
     </div>
   );
 }

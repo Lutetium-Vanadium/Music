@@ -3,19 +3,20 @@ import { useState, useEffect } from "react";
 
 import SongView from "#shared/SongView";
 import { song, artist } from "#root/types";
+import music_symbol from "#root/App/music_symbol.png";
 
 const { ipcRenderer } = window.require("electron");
 
 const emptySongs: song[] = [];
 const emptyArtist: artist = {
-  images: ["file:///path/to/image"],
-  name: "album"
+  images: [music_symbol],
+  name: "album",
 };
 
 function Artist({
   match: {
-    params: { name }
-  }
+    params: { name },
+  },
 }) {
   const [songs, setSongs] = useState(emptySongs);
   const [artist, setArtist] = useState(emptyArtist);
