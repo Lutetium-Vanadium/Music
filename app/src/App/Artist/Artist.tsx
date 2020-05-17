@@ -1,14 +1,13 @@
-import React from "react";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import { RouteComponentProps } from "react-router-dom";
 
 import SongView from "#shared/SongView";
-import { song, artist } from "#root/types";
+import { Song, Artist } from "#root/types";
 import music_symbol from "#root/App/music_symbol.png";
 
 const { ipcRenderer } = window.require("electron");
 
-const emptySongs: song[] = [];
-const emptyArtist: artist = {
+const defaultArtist: Artist = {
   images: [music_symbol],
   name: "album",
 };
@@ -17,14 +16,14 @@ function Artist({
   match: {
     params: { name },
   },
-}) {
-  const [songs, setSongs] = useState(emptySongs);
-  const [artist, setArtist] = useState(emptyArtist);
+}: RouteComponentProps<{ name: string }>) {
+  const [songs, setSongs] = useState<Song[]>([]);
+  const [artist, setArtist] = useState(defaultArtist);
 
   useEffect(() => {
-    ipcRenderer.invoke("get:artist", name).then((res: artist) => setArtist(res));
+    ipcRenderer.invoke("get:artist", name).then((res: Artist) => setArtist(res));
 
-    ipcRenderer.invoke("get:artist-songs", name).then((res: song[]) => setSongs(res));
+    ipcRenderer.invoke("get:artist-songs", name).then((res: Song[]) => setSongs(res));
   }, []);
 
   return (

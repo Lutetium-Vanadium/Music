@@ -10,10 +10,8 @@ interface ContextMenuProps {
   del: () => void;
 }
 
-let empty: NodeJS.Timeout;
-
 function ContextMenu({ pos, reset, play, del, liked, toggleLiked }: ContextMenuProps) {
-  const [_timeout, _setTimeout] = useState(empty);
+  const [_timeout, _setTimeout] = useState<NodeJS.Timeout>();
 
   const handleMouseEnter = () => {
     if (_timeout) {

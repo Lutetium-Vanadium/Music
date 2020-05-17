@@ -1,15 +1,14 @@
-import React from "react";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import { RouteComponentProps } from "react-router-dom";
 
 import SongView from "#shared/SongView";
-import { song, album } from "#root/types";
+import { Song, Album } from "#root/types";
 import liked from "#root/App/liked.png";
 import music_symbol from "#root/App/music_symbol.png";
 
 const { ipcRenderer } = window.require("electron");
 
-const emptySongs: song[] = [];
-const emptyAlbum: album = {
+const defaultAlbum: Album = {
   id: "id",
   imagePath: music_symbol,
   name: "album",
@@ -21,13 +20,13 @@ function Album({
   match: {
     params: { id },
   },
-}) {
-  const [songs, setSongs] = useState(emptySongs);
-  const [album, setAlbum] = useState(emptyAlbum);
+}: RouteComponentProps<{ id: string }>) {
+  const [songs, setSongs] = useState<Song[]>([]);
+  const [album, setAlbum] = useState(defaultAlbum);
 
   useEffect(() => {
     if (id === "liked") {
-      ipcRenderer.invoke("get:liked").then((res: song[]) => {
+      ipcRenderer.invoke("get:liked").then((res: Song[]) => {
         setSongs(res);
         setAlbum({
           id: "liked",
@@ -38,9 +37,9 @@ function Album({
         });
       });
     } else {
-      ipcRenderer.invoke("get:album", id).then((res: album) => setAlbum(res));
+      ipcRenderer.invoke("get:album", id).then((res: Album) => setAlbum(res));
 
-      ipcRenderer.invoke("get:album-songs", id).then((res: song[]) => setSongs(res));
+      ipcRenderer.invoke("get:album-songs", id).then((res: Song[]) => setSongs(res));
     }
   }, []);
 

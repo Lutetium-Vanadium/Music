@@ -2,17 +2,15 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
-import { artist } from "#root/types";
+import { Artist } from "#root/types";
 
 const { ipcRenderer } = window.require("electron");
 
-const empty: artist[] = [];
-
 function Artists() {
-  const [artists, setArtists] = useState(empty);
+  const [artists, setArtists] = useState<Artist[]>([]);
 
   useEffect(() => {
-    ipcRenderer.invoke("get:artists").then((res: artist[]) => {
+    ipcRenderer.invoke("get:artists").then((res: Artist[]) => {
       console.log({ res });
       setArtists(res);
     });

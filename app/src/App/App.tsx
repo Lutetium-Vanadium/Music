@@ -17,7 +17,7 @@ import Queue from "./Queue";
 import Player from "#shared/Player";
 import Transition from "#shared/Transition";
 import { ReduxState } from "#root/reduxHandler";
-import { song, searchResult } from "#root/types";
+import { Song, SearchResult } from "#root/types";
 
 import logo from "#logos/logo.png";
 
@@ -29,10 +29,8 @@ interface Place {
   right: string;
 }
 
-const empty: song[] = [];
-
 function App() {
-  const [searchResults, setSearchResults] = useState(empty);
+  const [searchResults, setSearchResults] = useState<Song[]>([]);
   const [searchSuccess, setSearchSuccess] = useState(true);
   const [downloadError, setDownloadError] = useState(false);
   const [animations, setAnimations] = useState(true);
@@ -45,7 +43,7 @@ function App() {
   const history = useHistory();
 
   const search = async (query: string) => {
-    const result: searchResult = await ipcRenderer.invoke("search:global", query);
+    const result: SearchResult = await ipcRenderer.invoke("search:global", query);
     if (result.status) {
       setSearchResults(result.songs);
     }
@@ -54,7 +52,7 @@ function App() {
     setLoading(false);
   };
 
-  const download = async (song: song) => {
+  const download = async (song: Song) => {
     const id = await ipcRenderer.invoke("download-song", song);
     setDownloadError(false);
     dispatch({
@@ -165,19 +163,19 @@ function App() {
 export default App;
 
 const formatFilePath = (filePath: string) => {
-  let fileArray = filePath.split("/");
+  const fileArray = filePath.split("/");
   fileArray.pop();
   return fileArray.join("/");
 };
 
-interface action {
+interface Action {
   type: string;
   id: string;
   payload?: any;
 }
 
-const reducer = (state: object, action: action) => {
-  let newState = { ...state };
+const reducer = (state: object, action: Action) => {
+  const newState = { ...state };
 
   switch (action.type) {
     case "start:download":
@@ -192,7 +190,7 @@ const reducer = (state: object, action: action) => {
     case "finish:download":
       // While this may not be the best place to put a notification, it is required since updated
       // `state` is not available in the useEffect
-      const song: song = newState[action.id].song;
+      const song: Song = newState[action.id].song;
       new Notification(song.title, {
         body: `Finished Downloading ${song.title} by ${song.artist}.\n It is stored in ${formatFilePath(action.payload)}`,
         badge: logo,

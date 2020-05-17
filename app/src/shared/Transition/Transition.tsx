@@ -11,11 +11,11 @@ interface TransitionProps {
 }
 
 interface Location {
-  location: any; // This is the location object from react-router {i.e. the object you get from useLocation()} but i couldnt find the type annotation for it
+  // This is the location object from react-router {i.e. the object you get from useLocation()}
+  // but i couldnt find the type annotation for it
+  location: any;
   className: string;
 }
-
-const empty: Location[] = [];
 
 /**
  * Tranistion is a very basic animation wrapper that has a very specific use case.
@@ -45,7 +45,7 @@ const empty: Location[] = [];
  *  `done` The previous component has been unmounted and backward means behind in the url tree
  */
 function Transition({ children, grid, timeout, classExtension, animate = true }: TransitionProps) {
-  const [locations, setLocations] = useState(empty);
+  const [locations, setLocations] = useState<Location[]>([]);
 
   const history = useHistory();
 

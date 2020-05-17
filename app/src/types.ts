@@ -1,4 +1,4 @@
-export interface song {
+export interface Song {
   filePath: string;
   title: string;
   thumbnail: string;
@@ -9,13 +9,13 @@ export interface song {
   liked: boolean;
 }
 
-export interface searchResult {
+export interface SearchResult {
   status: boolean;
-  songs?: song[];
+  songs?: Song[];
   error?: string;
 }
 
-export interface album {
+export interface Album {
   id: string;
   imagePath: string;
   name: string;
@@ -23,7 +23,7 @@ export interface album {
   artist: string;
 }
 
-export interface artist {
+export interface Artist {
   name: string;
   images: string[];
 }

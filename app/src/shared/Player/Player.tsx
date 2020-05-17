@@ -6,7 +6,7 @@ import { useHistory } from "react-router-dom";
 
 import useAction from "#root/useAction";
 import { ReduxState, create } from "#root/reduxHandler";
-import { song } from "#root/types";
+import { Song } from "#root/types";
 import formatLength from "#shared/formatLength";
 
 import { DoubleArrow, Loop, PlayPause, Shuffle, randOrder, VolumeControl } from "./helpers";
@@ -15,9 +15,6 @@ import songLiked from "./song-liked.png";
 import songNotLiked from "./song-not-liked.png";
 
 const { ipcRenderer } = window.require("electron");
-
-let emptyAudio: HTMLAudioElement;
-let emptyAnimate: AnimationElement;
 
 function Player() {
   const { songs, queue, cur } = useSelector((state: ReduxState) => state);
@@ -30,7 +27,7 @@ function Player() {
     likeSong: create.likeSong(dispatch),
   }));
 
-  const song: song = queue[cur];
+  const song: Song = queue[cur];
 
   const [timeStamp, setTimeStamp] = useState(0);
   const [paused, setPaused] = useState(false);
@@ -38,11 +35,11 @@ function Player() {
   const [shuffle, setShuffle] = useState(true);
   const [exit, setExit] = useState(false);
 
-  const ref = useRef(emptyAudio);
-  const box1Play = useRef(emptyAnimate);
-  const box1Pause = useRef(emptyAnimate);
-  const box2Play = useRef(emptyAnimate);
-  const box2Pause = useRef(emptyAnimate);
+  const ref = useRef<HTMLAudioElement>();
+  const box1Play = useRef<AnimationElement>();
+  const box1Pause = useRef<AnimationElement>();
+  const box2Play = useRef<AnimationElement>();
+  const box2Pause = useRef<AnimationElement>();
 
   const history = useHistory();
 

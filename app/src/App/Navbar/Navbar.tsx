@@ -17,7 +17,7 @@ function Navbar({ downloading, errored, search, showBack }: NavbarParams) {
   const history = useHistory();
 
   const handleChange = (value: string) => {
-    if ((value.length + 1) % 2 == 0) {
+    if ((value.length + 1) % 2 === 0) {
       if (history.location.pathname !== "/search") history.push("/search");
       search(value);
     }

@@ -1,12 +1,12 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import { song } from "#root/types";
+import { Song } from "#root/types";
 import formatLength from "#shared/formatLength";
 
 import backup from "./backup.png";
 
 interface SongProps {
-  song: song;
+  song: Song;
   className?: string;
   onClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
   After?: (props: any) => JSX.Element;

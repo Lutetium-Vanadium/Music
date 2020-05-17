@@ -5,8 +5,6 @@ import search_icon from "./search_icon.jpg";
 
 const { ipcRenderer } = window.require("electron");
 
-let empty: HTMLInputElement;
-
 interface SearchProps {
   placeholder?: string;
   handleChange?: (value: string) => void;

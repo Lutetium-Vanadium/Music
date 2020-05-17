@@ -1,4 +1,4 @@
-import { song } from "#root/types";
+import { Song } from "#root/types";
 import { setArr, setNum } from "#root/localStorage";
 
 /**
@@ -9,8 +9,8 @@ import { setArr, setNum } from "#root/localStorage";
  * cur: the index of the song playing in the queue;
  */
 export interface ReduxState {
-  queue: song[];
-  songs: song[];
+  queue: Song[];
+  songs: Song[];
   cur: number;
 }
 
@@ -26,7 +26,7 @@ const initialState: ReduxState = {
 };
 
 const reducer = (oldState = initialState, action: ReduxAction) => {
-  let state = { ...oldState };
+  const state = { ...oldState };
 
   switch (action.type) {
     case "toggle:liked":

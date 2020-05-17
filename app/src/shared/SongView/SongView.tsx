@@ -4,8 +4,8 @@ import { Dispatch } from "redux";
 
 import useAction from "#root/useAction";
 import { create } from "#root/reduxHandler";
-import { song } from "#root/types";
-import Song from "#shared/Song";
+import { Song } from "#root/types";
+import RenderSong from "#shared/Song";
 
 import ContextMenu from "./ContextMenu";
 
@@ -14,10 +14,10 @@ import logo from "#logos/logo.png";
 const { ipcRenderer } = window.require("electron");
 
 interface SongViewProps {
-  songs: song[];
-  allSongs: song[];
-  setSongs: React.Dispatch<React.SetStateAction<song[]>>;
-  setAllSongs: React.Dispatch<React.SetStateAction<song[]>>;
+  songs: Song[];
+  allSongs: Song[];
+  setSongs: React.Dispatch<React.SetStateAction<Song[]>>;
+  setAllSongs: React.Dispatch<React.SetStateAction<Song[]>>;
   showButtons?: boolean;
 }
 
@@ -43,7 +43,7 @@ function SongView({ setSongs, setAllSongs, allSongs, songs, showButtons = true }
     setPos([-200, -200]);
   };
 
-  const playSong = (song: song) => {
+  const playSong = (song: Song) => {
     const index = allSongs.findIndex((_song) => _song.title === song.title);
     _play(index);
   };
@@ -71,7 +71,7 @@ function SongView({ setSongs, setAllSongs, allSongs, songs, showButtons = true }
     setAllSongs([...allSongs.slice(0, allSongsIndex), ...allSongs.slice(allSongsIndex + 1, allSongs.length)]);
     setIndex(index - 1);
     const success = await ipcRenderer.invoke("delete:song", song);
-    let body = success ? `Succesfully deleted ${song.title} by ${song.artist}` : `Couldn't delete ${song.title} by ${song.artist}`;
+    const body = success ? `Succesfully deleted ${song.title} by ${song.artist}` : `Couldn't delete ${song.title} by ${song.artist}`;
 
     new Notification(`${song.title}`, {
       body,
@@ -103,7 +103,7 @@ function SongView({ setSongs, setAllSongs, allSongs, songs, showButtons = true }
       <ul className="music-names">
         {songs.length ? (
           songs.map((song, i) => (
-            <Song
+            <RenderSong
               key={`song-${i}`}
               song={song}
               onClick={() => playSong(song)}
