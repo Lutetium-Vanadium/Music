@@ -1,8 +1,6 @@
 import axios from "axios";
 import * as dotenv from "dotenv";
 
-import { Song } from "../types";
-
 dotenv.config();
 
 type NapsterSongInfo = {
@@ -100,14 +98,11 @@ const getSongInfo = async (query: string): Promise<SongInfo> => {
       params: {
         apikey: process.env.NAPSTER_API_KEY,
         type: "track",
-        per_type_limit: 1,
+        per_type_limit: 1, // eslint-disable-line @typescript-eslint/camelcase
         query,
       },
     });
     if (response.status !== 200) throw response.headers.status;
-
-    // console.log("STATUS: ", response.status);
-    // console.log(response.data.search.data);
 
     const track = response.data.search.data.tracks[0];
 
@@ -139,7 +134,7 @@ const search = async (query: string) => {
       params: {
         apikey: process.env.NAPSTER_API_KEY,
         type: "track",
-        per_type_limit: 10,
+        per_type_limit: 10, // eslint-disable-line @typescript-eslint/camelcase
         query,
       },
     });

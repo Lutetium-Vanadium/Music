@@ -25,10 +25,10 @@ function Artists() {
             <Link to={`/artists/${artist.name}`}>
               {artist.images.length === 4 ? (
                 <div className="album-img mozaic">
-                  <img src={artist.images[0]} alt="image-0" />
-                  <img src={artist.images[1]} alt="image-1" />
-                  <img src={artist.images[2]} alt="image-2" />
-                  <img src={artist.images[3]} alt="image-3" />
+                  <img src={artist.images[0]} alt="album-0" />
+                  <img src={artist.images[1]} alt="album-1" />
+                  <img src={artist.images[2]} alt="album-2" />
+                  <img src={artist.images[3]} alt="album-3" />
                 </div>
               ) : (
                 <img className="album-img" src={artist.images[0]} alt="top-album" />

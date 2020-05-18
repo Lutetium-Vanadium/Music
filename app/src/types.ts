@@ -9,11 +9,15 @@ export interface Song {
   liked: boolean;
 }
 
-export interface SearchResult {
-  status: boolean;
-  songs?: Song[];
-  error?: string;
-}
+export type SearchResult =
+  | {
+      status: true;
+      songs: Song[];
+    }
+  | {
+      status: false;
+      error?: string;
+    };
 
 export interface Album {
   id: string;

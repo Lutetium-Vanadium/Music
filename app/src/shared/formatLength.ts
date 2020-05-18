@@ -1,7 +1,7 @@
 const formatLength = (length: number, total?: number) => {
   const onlyOne = total === undefined;
 
-  if (onlyOne) {
+  if (total === undefined) {
     total = length;
   }
 

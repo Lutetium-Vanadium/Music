@@ -1,7 +1,7 @@
 import React from "react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 
-import search_icon from "./search_icon.jpg";
+import searchIcon from "./search_icon.jpg";
 
 const { ipcRenderer } = window.require("electron");
 
@@ -34,9 +34,9 @@ function Search({ handleChange, handleSubmit, placeholder = "Search" }: SearchPr
     <div className="search">
       <img
         style={{ cursor: value.length ? "pointer" : "auto" }}
-        onClick={value.length ? () => handleSubmit(value) : null}
+        onClick={value.length && handleSubmit ? () => handleSubmit(value) : undefined}
         className="icon"
-        src={search_icon}
+        src={searchIcon}
         alt="search_icon"
       />
       <input onChange={onChange} onKeyDown={handleKeyDown} className="search-box" type="search" value={value} placeholder={placeholder} />

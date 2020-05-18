@@ -18,7 +18,7 @@ const lastQueue: Song[] = reposition(getArr("queue"), getNum("cur"));
 
 function Home() {
   const [topAlbums, setTopAlbums] = useState<Album[]>([]);
-  const [topSongs, setTopSongs] = useState<Song[]>([]]);
+  const [topSongs, setTopSongs] = useState<Song[]>([]);
 
   const { setCur, setQueue, setSongs } = useAction((dispatch: Dispatch) => ({
     setCur: create.setCur(dispatch),

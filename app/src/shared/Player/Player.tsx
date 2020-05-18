@@ -44,20 +44,20 @@ function Player() {
   const history = useHistory();
 
   const pausePlay = (isRemote = false) => {
-    if (ref.current.paused) {
-      ref.current.play();
+    if (ref.current?.paused) {
+      ref.current?.play();
       box1Play.current?.beginElement();
       box2Play.current?.beginElement();
     } else {
-      ref.current.pause();
+      ref.current?.pause();
       box1Pause.current?.beginElement();
       box2Pause.current?.beginElement();
     }
 
     if (!isRemote) {
-      ipcRenderer.send("main-play-pause", ref.current.paused);
+      ipcRenderer.send("main-play-pause", ref.current?.paused);
     }
-    setPaused(ref.current.paused);
+    setPaused(ref.current?.paused ?? false);
   };
 
   const prevSong = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -115,7 +115,7 @@ function Player() {
     setLoop(!loop);
   };
 
-  const openQueue = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+  const openQueue = () => {
     if (history.location.pathname === "/queue") return;
     history.push("/queue");
   };
@@ -125,15 +125,15 @@ function Player() {
   }, [song.title]);
 
   useEffect(() => {
-    ipcRenderer.on("jump-back", (evt, val: number) => (ref.current.currentTime -= val));
-    ipcRenderer.on("seek-back", (evt, val: number) => (ref.current.currentTime -= val));
-    ipcRenderer.on("seek-ahead", (evt, val: number) => (ref.current.currentTime += val));
-    ipcRenderer.on("jump-ahead", (evt, val: number) => (ref.current.currentTime += val));
+    ipcRenderer.on("jump-back", (evt: any, val: number) => (ref.current.currentTime -= val));
+    ipcRenderer.on("seek-back", (evt: any, val: number) => (ref.current.currentTime -= val));
+    ipcRenderer.on("seek-ahead", (evt: any, val: number) => (ref.current.currentTime += val));
+    ipcRenderer.on("jump-ahead", (evt: any, val: number) => (ref.current.currentTime += val));
     ipcRenderer.on("volume++", () => (ref.current.volume += 0.05));
     ipcRenderer.on("volume--", () => (ref.current.volume -= 0.05));
     ipcRenderer.on("prev-track", () => _prevSong());
     ipcRenderer.on("next-track", () => _nextSong());
-    ipcRenderer.on("pause-play", (evt, isRemote: boolean) => {
+    ipcRenderer.on("pause-play", (evt: any, isRemote: boolean) => {
       if (document.activeElement.tagName === "INPUT" && !isRemote) return;
       pausePlay(isRemote);
     });
@@ -161,7 +161,7 @@ function Player() {
       </button>
       <div className="player">
         <div className="details">
-          <img className="thumbnail" src={song.thumbnail} />
+          <img className="thumbnail" src={song.thumbnail} alt="thumbnail" />
           <div>
             <p className="title">{song.title}</p>
             <p className="artist">{song.artist}</p>

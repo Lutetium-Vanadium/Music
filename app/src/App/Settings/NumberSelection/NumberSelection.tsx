@@ -18,7 +18,12 @@ function NumberSelection({ num, prev, next }: NumberSelectionProps) {
 
 export default NumberSelection;
 
-function Arrow({ onClick, reversed = false }) {
+interface ArrowProps {
+  onClick: (event: React.MouseEvent<SVGSVGElement, MouseEvent>) => void;
+  reversed?: boolean;
+}
+
+function Arrow({ onClick, reversed = false }: ArrowProps) {
   return (
     <svg onClick={onClick} viewBox="0 0 86.6 100" className={reversed ? "rev" : ""}>
       <path

@@ -71,14 +71,14 @@ function App() {
     ipcRenderer.invoke("get:animations").then(setAnimations);
 
     // Handles progress updates sent by electron for when a song is being downloaded
-    ipcRenderer.on("update:download-query", (evt, { progress, id }) => {
+    ipcRenderer.on("update:download-query", (evt: any, { progress, id }: { progress: number; id: string }) => {
       dispatch({
         type: "update:download",
         id,
         payload: progress,
       });
     });
-    ipcRenderer.on("finished:download-query", (evt, { id, filePath }) => {
+    ipcRenderer.on("finished:download-query", (evt: any, { id, filePath }: { id: string; filePath: string }) => {
       dispatch({
         type: "finish:download",
         id,
@@ -89,8 +89,8 @@ function App() {
 
     // Miscellaneous handlers
     ipcRenderer.on("reset-global-search", () => setLoading(true));
-    ipcRenderer.on("goto-link", (evt, url) => history.push(url));
-    ipcRenderer.on("change:animations", (evt, animations) => setAnimations(animations));
+    ipcRenderer.on("goto-link", (evt: any, url: string) => history.push(url));
+    ipcRenderer.on("change:animations", (evt: any, animations: boolean) => setAnimations(animations));
 
     const handleKeydown = (evt: KeyboardEvent) => {
       const places: Place[] = [
@@ -137,7 +137,7 @@ function App() {
           classExtension="main"
           animate={animations}
         >
-          {(location) => (
+          {(location: typeof history.location) => (
             <Switch location={location}>
               <Route
                 path="/search"
@@ -174,7 +174,7 @@ interface Action {
   payload?: any;
 }
 
-const reducer = (state: object, action: Action) => {
+const reducer = (state: { [key: string]: any }, action: Action) => {
   const newState = { ...state };
 
   switch (action.type) {

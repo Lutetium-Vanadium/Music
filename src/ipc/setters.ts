@@ -7,7 +7,7 @@ import { Settings } from "../types";
 // Setters
 const initSetters = (store: Store<Settings, SettingsKeys>, win: BrowserWindow) => {
   // Opens a select directory dialog which allows user to customize where the songs are stored and taken from
-  ipcMain.handle("set:music-dir", async (evt, val) => {
+  ipcMain.handle("set:music-dir", async () => {
     const { canceled, filePaths } = await dialog.showOpenDialog(win, {
       properties: ["openDirectory"],
       title: "Choose Music Directory",

@@ -14,14 +14,15 @@
     "deploy-m": "yarn build-react && yarn build && electron-packager . --overwrite --platform=darwin --out=\"Music(MacOS)\"",
     "deploy-w": "yarn build-react && yarn build && electron-packager . --overwrite --platform=win32 --out=\"Music(Windows)\"",
     "fix-sqlite3": "./node_modules/.bin/electron-rebuild -w sqlite3 -p",
-    "lint:react": "tslint -c ./tslint.json './app/src/**/*.ts*'",
-    "lint:electron": "tslint -c ./tslint.json './src/**/*.ts'",
+    "lint:react": "eslint \"./app/src/**/*.{ts,tsx}\"",
+    "lint:electron": "eslint \"./src/**/*.ts\"",
     "lint": "yarn lint:react && yarn lint:electron"
   },
   "dependencies": {
     "axios": "^0.19.2",
     "dataurl": "^0.1.0",
     "dotenv": "^8.2.0",
+    "eslint-plugin-react": "7.x",
     "ffmpeg-cli": "^2.3.0",
     "request": "^2.88.0",
     "request-promise": "^4.2.5",
@@ -33,10 +34,17 @@
     "@types/node": "12",
     "@types/react-redux": "^7.1.7",
     "@types/sqlite3": "^3.1.6",
+    "@typescript-eslint/eslint-plugin": "^2.33.0",
+    "@typescript-eslint/parser": "^2.33.0",
+    "babel-eslint": "10.x",
     "electron": "^8.0.1",
     "electron-packager": "^14.1.1",
     "electron-rebuild": "^1.10.0",
-    "tslint": "^6.1.2",
+    "eslint-config-react-app": "^5.2.1",
+    "eslint-plugin-flowtype": "4.x",
+    "eslint-plugin-import": "2.x",
+    "eslint-plugin-jsx-a11y": "6.x",
+    "eslint-plugin-react-hooks": "2.x",
     "typescript": "^3.8.3"
   }
 }

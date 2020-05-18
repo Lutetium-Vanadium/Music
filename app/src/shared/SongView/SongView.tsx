@@ -51,7 +51,7 @@ function SongView({ setSongs, setAllSongs, allSongs, songs, showButtons = true }
   const handleDotClick = (e: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
     e.stopPropagation();
     setPos([e.pageX, e.pageY]);
-    setIndex(+e.currentTarget.dataset.index);
+    setIndex(+(e.currentTarget.dataset.index ?? 0));
   };
 
   const toggleLiked = async () => {
@@ -62,7 +62,7 @@ function SongView({ setSongs, setAllSongs, allSongs, songs, showButtons = true }
   const del = async () => {
     const song = songs[index];
 
-    const confirmed = confirm(`Are you sure you want to delete ${song.title} by ${song.artist}?`);
+    const confirmed = window.confirm(`Are you sure you want to delete ${song.title} by ${song.artist}?`);
     setPos([-200, -200]);
     if (!confirmed) return;
 

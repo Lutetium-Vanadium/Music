@@ -6,8 +6,8 @@ import { Settings } from "../types";
 
 const initGetters = (store: Store<Settings, SettingsKeys>) => {
   // gets the configured music directory
-  ipcMain.handle("get:info", (evt, val) => {
-    return new Promise((res, rej) => {
+  ipcMain.handle("get:info", () => {
+    return new Promise((res) => {
       const settings = store.getAll();
       res({
         ...settings,
@@ -16,10 +16,10 @@ const initGetters = (store: Store<Settings, SettingsKeys>) => {
     });
   });
 
-  ipcMain.handle("get:animations", (evt, val) => store.get("animations"));
+  ipcMain.handle("get:animations", () => store.get("animations"));
 
   // Gets all music files stored in the configured directory
-  ipcMain.handle("get:music-names", async (evt, val) => await db.all());
+  ipcMain.handle("get:music-names", async () => await db.all());
 
   // Home page methods to show popular stuff
   ipcMain.handle("get:top-songs", async (evt, limit: boolean) => await db.mostPopularSongs(limit));

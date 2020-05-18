@@ -2,15 +2,15 @@ import React, { useState, useEffect } from "react";
 import { RouteComponentProps } from "react-router-dom";
 
 import SongView from "#shared/SongView";
-import { Song, Album } from "#root/types";
+import { Song, Album as _Album } from "#root/types";
 import liked from "#root/App/liked.png";
-import music_symbol from "#root/App/music_symbol.png";
+import musicSymbol from "#root/App/music_symbol.png";
 
 const { ipcRenderer } = window.require("electron");
 
-const defaultAlbum: Album = {
+const defaultAlbum: _Album = {
   id: "id",
-  imagePath: music_symbol,
+  imagePath: musicSymbol,
   name: "album",
   numSongs: 0,
   artist: "artist",
@@ -37,7 +37,7 @@ function Album({
         });
       });
     } else {
-      ipcRenderer.invoke("get:album", id).then((res: Album) => setAlbum(res));
+      ipcRenderer.invoke("get:album", id).then((res: _Album) => setAlbum(res));
 
       ipcRenderer.invoke("get:album-songs", id).then((res: Song[]) => setSongs(res));
     }
@@ -46,7 +46,7 @@ function Album({
   return (
     <div className="music">
       <div className="album-header">
-        <img className="album-img" src={album.imagePath} alt="album-picture" />
+        <img className="album-img" src={album.imagePath} alt="album" />
         <h1 className="header">{album.name}</h1>
       </div>
       <SongView setSongs={setSongs} setAllSongs={setSongs} songs={songs} allSongs={songs} />

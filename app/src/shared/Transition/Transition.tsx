@@ -100,8 +100,8 @@ function Transition({ children, grid, timeout, classExtension, animate = true }:
 export default Transition;
 
 const getDir = (pathname: string, prevpath: string, grid: RegExp[][]) => {
-  let pathnameIndex: number[];
-  let prevpathIndex: number[];
+  let pathnameIndex: number[] = [];
+  let prevpathIndex: number[] = [];
 
   for (let i = 0; i < grid.length; i++) {
     for (let j = 0; j < grid[i].length; j++) {
@@ -114,7 +114,7 @@ const getDir = (pathname: string, prevpath: string, grid: RegExp[][]) => {
     }
   }
 
-  if (!pathnameIndex || !prevpathIndex || pathnameIndex === prevpathIndex) {
+  if (!pathnameIndex.length || !prevpathIndex.length || pathnameIndex === prevpathIndex) {
     return "nothing";
   }
 

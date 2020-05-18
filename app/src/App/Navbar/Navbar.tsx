@@ -7,7 +7,7 @@ import ProgressBar from "#shared/ProgressBar";
 import logo from "#logos/logo.png";
 
 interface NavbarParams {
-  downloading: object;
+  downloading: { [key: string]: any };
   errored: boolean;
   showBack: boolean;
   search: (query: string) => void;

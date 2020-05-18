@@ -5,9 +5,9 @@ export const init = () => {
   localStorage.setItem("cur", "-1");
 };
 
-export const getArr = (key: string): [] => {
+export const getArr = (key: string): any[] => {
   try {
-    const value = JSON.parse(localStorage.getItem(key));
+    const value = JSON.parse(localStorage.getItem(key) ?? "[]");
     return value ? value : [];
   } catch (error) {
     console.error(error);
@@ -15,7 +15,7 @@ export const getArr = (key: string): [] => {
   }
 };
 
-export const getNum = (key: string): number => +localStorage.getItem(key);
+export const getNum = (key: string): number => +(localStorage.getItem(key) ?? 0);
 
 export const setArr = (key: string, value: any[]): void => {
   localStorage.setItem(key, JSON.stringify(value));

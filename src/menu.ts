@@ -107,5 +107,3 @@ const createMenu = (win: BrowserWindow, store: Store<Settings, SettingsKeys>, de
 };
 
 export default createMenu;
-
-const a = [];
