@@ -1,6 +1,6 @@
 # Music
 
-A music player written in electron
+A music app written in electron.
 
 The `dev` variable in the `./src/main.ts` controls whether the app will be displayed directly from the html file or whether it shows the `localhost:1234` webpage.
 

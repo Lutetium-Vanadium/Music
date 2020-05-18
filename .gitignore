@@ -3,6 +3,7 @@ build/
 
 Music-*/
 Music(*/
+electron-builder.env
 
 # Logs
 logs

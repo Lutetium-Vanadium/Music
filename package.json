@@ -1,18 +1,21 @@
 {
   "name": "Music",
+  "description": "A music app written in electron.",
   "author": "Lutetium-Vanadium",
   "type": "module",
   "version": "1.2.1",
   "main": "./build/main.js",
   "license": "MIT",
+  "private": true,
   "scripts": {
     "start": "yarn build && electron .",
     "build": "yarn lint:electron && tsc",
     "build-react": "yarn lint:react && cd app && yarn build",
+    "pack": "yarn build-react && yarn build && electron-builder --dir",
     "deploy": "yarn build-react && yarn build && electron-packager . --overwrite",
-    "deploy-l": "yarn build-react && yarn build && electron-packager . --overwrite --platform=linux --out=\"Music(linux)\"",
-    "deploy-m": "yarn build-react && yarn build && electron-packager . --overwrite --platform=darwin --out=\"Music(MacOS)\"",
-    "deploy-w": "yarn build-react && yarn build && electron-packager . --overwrite --platform=win32 --out=\"Music(Windows)\"",
+    "deploy-l": "yarn build-react && yarn build && electron-packager . --overwrite --platform=linux",
+    "deploy-m": "yarn build-react && yarn build && electron-packager . --overwrite --platform=darwin",
+    "deploy-w": "yarn build-react && yarn build && electron-packager . --overwrite --platform=win32",
     "fix-sqlite3": "./node_modules/.bin/electron-rebuild -w sqlite3 -p",
     "lint:react": "eslint \"./app/src/**/*.{ts,tsx}\"",
     "lint:electron": "eslint \"./src/**/*.ts\"",
@@ -22,6 +25,7 @@
     "axios": "^0.19.2",
     "dataurl": "^0.1.0",
     "dotenv": "^8.2.0",
+    "eslint": "^7.0.0",
     "eslint-plugin-react": "7.x",
     "ffmpeg-cli": "^2.3.0",
     "request": "^2.88.0",
@@ -38,6 +42,7 @@
     "@typescript-eslint/parser": "^2.33.0",
     "babel-eslint": "10.x",
     "electron": "^8.0.1",
+    "electron-builder": "^22.6.0",
     "electron-packager": "^14.1.1",
     "electron-rebuild": "^1.10.0",
     "eslint-config-react-app": "^5.2.1",
@@ -46,5 +51,48 @@
     "eslint-plugin-jsx-a11y": "6.x",
     "eslint-plugin-react-hooks": "2.x",
     "typescript": "^3.8.3"
+  },
+  "build": {
+    "productName": "Music",
+    "appId": "com.electron.lutetium-vanadium-music-app",
+    "files": [
+      "build/",
+      "node_modules/",
+      "public/",
+      "package.json"
+    ],
+    "dmg": {
+      "contents": [
+        {
+          "x": 130,
+          "y": 220
+        },
+        {
+          "x": 410,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "win": {
+      "target": [
+        "nsis",
+        "msi"
+      ]
+    },
+    "linux": {
+      "target": [
+        "pacman",
+        "deb",
+        "rpm",
+        "AppImage"
+      ],
+      "category": "Utilities"
+    },
+    "directories": {
+      "buildResources": "resources",
+      "output": "release"
+    }
   }
 }

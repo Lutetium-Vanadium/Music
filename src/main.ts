@@ -79,7 +79,7 @@ app.on("ready", () => {
       nodeIntegration: true,
       webSecurity: !dev,
     },
-    icon: path.join(app.getAppPath(), "src", "logo.png"),
+    icon: path.join(app.getAppPath(), "resources", "logo.png"),
   });
 
   if (dev) {
@@ -122,12 +122,12 @@ const toggleHelp = () => {
     help = new BrowserWindow({
       width: 1000,
       height: 800,
-      icon: path.join(app.getAppPath(), "src", "logo.png"),
+      icon: path.join(app.getAppPath(), "resources", "logo.png"),
     });
 
     help.on("close", () => (help = null));
 
-    help.loadURL("file://" + path.join(app.getAppPath(), "src", "help.html"));
+    help.loadURL("file://" + path.join(app.getAppPath(), "resources", "help.html"));
   } else {
     help.close();
   }
@@ -143,13 +143,13 @@ const setUpRemote = (song: Song) => {
     },
     resizable: false,
     alwaysOnTop: true,
-    icon: path.join(app.getAppPath(), "src", "logo.png"),
+    icon: path.join(app.getAppPath(), "resources", "logo.png"),
     frame: false,
   });
 
   remote.on("close", () => (remote = null));
 
-  remote.loadURL("file://" + path.join(app.getAppPath(), "src", "remote.html"));
+  remote.loadURL("file://" + path.join(app.getAppPath(), "resources", "remote.html"));
 
   ipcMain.on("remote-ready", () => {
     remote?.webContents.send("song-update", song);
