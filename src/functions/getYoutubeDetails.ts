@@ -1,5 +1,6 @@
 import axios from "axios";
 import { Song } from "../types";
+import { GOOGLE_API_KEY } from "../apiKeys";
 
 const urlSearch = "https://www.googleapis.com/youtube/v3/search";
 const urlDetails = "https://www.googleapis.com/youtube/v3/videos";
@@ -25,7 +26,7 @@ const getYoutubeDetails = async (song: Song): Promise<YoutubeDetails | null> => 
 
     const result = await axios.get(urlSearch, {
       params: {
-        key: process.env.GOOGLE_API_KEY,
+        key: GOOGLE_API_KEY,
         q: query,
         part: "snippet",
       },
@@ -35,7 +36,7 @@ const getYoutubeDetails = async (song: Song): Promise<YoutubeDetails | null> => 
 
     const response = await axios.get(urlDetails, {
       params: {
-        key: process.env.GOOGLE_API_KEY,
+        key: GOOGLE_API_KEY,
         part: "contentDetails",
         id,
       },

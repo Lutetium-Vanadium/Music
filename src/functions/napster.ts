@@ -1,7 +1,5 @@
 import axios from "axios";
-import * as dotenv from "dotenv";
-
-dotenv.config();
+import { NAPSTER_API_KEY } from "../apiKeys";
 
 type NapsterSongInfo = {
   artist: string;
@@ -55,7 +53,7 @@ const getAlbumInfo = async (albumId: string) => {
   try {
     const response = await axios.get(`https://api.napster.com/v2.2/albums/${albumId}`, {
       params: {
-        apikey: process.env.NAPSTER_API_KEY,
+        apikey: NAPSTER_API_KEY,
       },
     });
 
@@ -96,7 +94,7 @@ const getSongInfo = async (query: string): Promise<SongInfo> => {
   try {
     const response = await axios.get("https://api.napster.com/v2.2/search", {
       params: {
-        apikey: process.env.NAPSTER_API_KEY,
+        apikey: NAPSTER_API_KEY,
         type: "track",
         per_type_limit: 1, // eslint-disable-line @typescript-eslint/camelcase
         query,
@@ -132,7 +130,7 @@ const search = async (query: string) => {
   try {
     const response = await axios.get("https://api.napster.com/v2.2/search", {
       params: {
-        apikey: process.env.NAPSTER_API_KEY,
+        apikey: NAPSTER_API_KEY,
         type: "track",
         per_type_limit: 10, // eslint-disable-line @typescript-eslint/camelcase
         query,
