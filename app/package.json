@@ -5,8 +5,8 @@
   "license": "MIT",
   "scripts": {
     "watch": "parcel ./src/index.html",
-    "prebuild": "rm -rf ../public && yarn lint",
-    "build": "parcel build --out-dir=../public --public-url=./ ./src/index.html",
+    "build": "yarn lint && yarn build:quiet",
+    "build:quiet": "rm -rf ../public && parcel build --out-dir=../public --public-url=./ ./src/index.html",
     "lint": "cd .. && yarn lint:react"
   },
   "dependencies": {

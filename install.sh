@@ -3,53 +3,67 @@
 
 DIR=`pwd`
 
-if [[ ! -f "$DIR/.env" ]]
+if [ ! -f "$DIR/src/apiKeys.ts" ]
 then
-  echo "Setting up env variables..."
+  echo "Setting up api keys..."
   read -p "Napsters Api key: " napster
   read -p "Google's Youtube Data Api key: " google
   echo
 
-  echo "NAPSTER_API_KEY = $napster
-GOOGLE_API_KEY = $google" > .env
+  echo "export const NAPSTER_API_KEY = \"$napster\"
+export const GOOGLE_API_KEY = \"$google\"" > ./src/apiKeys.ts
 fi
 
 installed_prompt=0
 
-if [[ -f "$DIR/app/node_modules" ]]
+if [ ! -d "$DIR/app/node_modules" ]
 then
   installed_prompt=1
   echo "Installing dependencies..."
+  echo
   cd app
   yarn
   cd ..
 fi
 
-if [[ -f "$DIR/node_modules"]]
+if [ ! -d "$DIR/node_modules" ]
 then
   if [ $installed_prompt = 0 ]
   then
     echo "Installing dependencies..."
+    echo
   fi
   yarn
-  yarn fix-sqlite3
 fi
 
+music_version=$(cat package.json | grep -ohE "\"version\": \"[0-9]\\.[0-9]\\.[0-9]\"" | grep -ohE "[0-9]+\\.[0-9]+\\.[0-9]+")
 
-echo
 echo "Building Music..."
 yarn deploy
 
-echo
+echo 
 echo "Installing Desktop Entry..."
 
-echo "[Desktop Entry]
-Name=Music
-Exec=$DIR/Music-linux-x64/Music
-Icon=$DIR/Music-linux-x64/resources/app/src/logo.png
-Terminal=false
-Type=Application
-Categories=Utilities
-StartupNotify=true
-Encoding=UTF-8;
-" > "$HOME/Desktop/Music.desktop"
+# Check if pacman is an installed package
+if hash pacman 2>/dev/null
+then
+  echo "Using pacman"
+  echo
+  sudo pacman -U "release/Music-$music_version.pacman"
+
+  temp=`cat /usr/share/applications/music.desktop`
+  echo "${temp/"Icon=music"/"Icon=$DIR/resources/icon.png"}" | sudo tee /usr/share/applications/music.desktop
+else  
+  echo "Pacman not found"
+  echo
+
+  echo "[Desktop Entry]
+  Name=Music
+  Exec=$DIR/release/Music-$music_version.AppImage
+  Icon=$DIR/resources/logo.png
+  Terminal=false
+  Type=Application
+  Categories=Utilities
+  StartupNotify=true
+  Encoding=UTF-8;" | sudo tee /usr/share/applications/Music.desktop
+fi

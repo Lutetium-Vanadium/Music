@@ -3,7 +3,8 @@ build/
 
 Music-*/
 Music(*/
-electron-builder.env
+src/apiKeys.ts
+release/
 
 # Logs
 logs

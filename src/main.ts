@@ -1,11 +1,6 @@
 import { app, BrowserWindow, globalShortcut, ipcMain } from "electron";
 import * as path from "path";
 import * as fs from "fs";
-
-// In the built application, proccess directory is taken as the one it is being run from.
-// app.getAppPath() gives the correct directory for everything to be loaded
-process.chdir(app.getAppPath());
-
 import { createDownloader } from "./functions/downloader";
 import db from "./functions/db_handler";
 import Store from "./functions/store";
