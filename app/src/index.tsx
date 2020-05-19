@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { render } from "react-dom";
 import { MemoryRouter } from "react-router-dom";
 import { Provider } from "react-redux";

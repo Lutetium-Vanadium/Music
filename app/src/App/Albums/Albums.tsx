@@ -1,20 +1,18 @@
-import * as React from "react";
+import React from "react";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
-import { album } from "#root/types";
+import { Album } from "#root/types";
 
 import likedImg from "#root/App/liked.png";
 
 const { ipcRenderer } = window.require("electron");
 
-const empty: album[] = [];
-
 function Albums() {
-  const [albums, setAlbums] = useState(empty);
+  const [albums, setAlbums] = useState<Album[]>([]);
 
   useEffect(() => {
-    ipcRenderer.invoke("get:top-albums", false).then((res: album[]) => setAlbums(res));
+    ipcRenderer.invoke("get:top-albums", false).then((res: Album[]) => setAlbums(res));
   }, []);
 
   return (
@@ -25,7 +23,7 @@ function Albums() {
           <img className="album-img" src={likedImg} alt="top-album" />
           <p className="album-title">Liked</p>
         </Link>
-        {albums.map(album => (
+        {albums.map((album) => (
           <div className="album" key={album.id}>
             <Link to={`/albums/${album.id}`}>
               <img className="album-img" src={album.imagePath} alt="top-album" />

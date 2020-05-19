@@ -1,25 +1,23 @@
 import React, { useState, useEffect } from "react";
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 import { Dispatch } from "redux";
 
-import { reduxState, create } from "#root/reduxHandler";
-import { song } from "#root/types";
+import useAction from "#root/useAction";
+import { ReduxState, create } from "#root/reduxHandler";
 
 import Song from "#shared/Song";
 import ContextMenu from "./ContextMenu";
 
-const { ipcRenderer } = window.require("electron");
-
-interface QueueProps {
-  queue: song[];
-  cur: number;
-  setCur: (num: number) => void;
-  setQueue: (songs: song[]) => void;
-}
-
-function Queue({ cur, queue, setCur, setQueue }: QueueProps) {
+function Queue() {
   const [pos, setPos] = useState([-200, -200]);
   const [index, setIndex] = useState(-1);
+
+  const { queue, cur } = useSelector((state: ReduxState) => ({ ...state }));
+  const { setCur, setQueue, likeSong } = useAction((dispatch: Dispatch) => ({
+    setQueue: create.setQueue(dispatch),
+    setCur: create.setCur(dispatch),
+    likeSong: create.likeSong(dispatch),
+  }));
 
   const _play = (index: number) => {
     setCur(index);
@@ -37,7 +35,7 @@ function Queue({ cur, queue, setCur, setQueue }: QueueProps) {
   };
 
   const toggleLiked = async () => {
-    await ipcRenderer.send("set:liked", queue[index].title);
+    likeSong(queue[index]);
     setPos([-200, -200]);
   };
 
@@ -71,7 +69,7 @@ function Queue({ cur, queue, setCur, setQueue }: QueueProps) {
             After={TripleDot}
             afterProps={{
               onClick: handleDotClick,
-              "data-index": i
+              "data-index": i,
             }}
             id={`queue-song-${i}`}
           />
@@ -81,16 +79,7 @@ function Queue({ cur, queue, setCur, setQueue }: QueueProps) {
   );
 }
 
-const mapStateToProps = (state: reduxState) => ({ ...state });
-
-const mapDispatchToProps = (dispatch: Dispatch) => ({
-  nextSong: create.nextSong(dispatch),
-  prevSong: create.prevSong(dispatch),
-  setQueue: create.setQueue(dispatch),
-  setCur: create.setCur(dispatch)
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(Queue);
+export default Queue;
 
 interface TripleDotProps {
   onClick?: (event: React.MouseEvent<SVGSVGElement, MouseEvent>) => void;

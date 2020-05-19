@@ -1,7 +1,13 @@
 import axios from "axios";
-import * as dotenv from "dotenv";
+import { NAPSTER_API_KEY } from "../apiKeys";
 
-dotenv.config();
+type NapsterSongInfo = {
+  artist: string;
+  title: string;
+  length: number;
+  thumbnail: string;
+  albumId: string;
+};
 
 /**
  * All Functions follow the same basic pattern:
@@ -47,7 +53,7 @@ const getAlbumInfo = async (albumId: string) => {
   try {
     const response = await axios.get(`https://api.napster.com/v2.2/albums/${albumId}`, {
       params: {
-        apikey: process.env.NAPSTER_API_KEY,
+        apikey: NAPSTER_API_KEY,
       },
     });
 
@@ -63,6 +69,15 @@ const getAlbumInfo = async (albumId: string) => {
   }
 };
 
+type SongInfo =
+  | {
+      status: 1;
+      song: NapsterSongInfo;
+    }
+  | {
+      status: 0;
+      error: any;
+    };
 /**
  * getSongInfo()
  *
@@ -75,20 +90,17 @@ const getAlbumInfo = async (albumId: string) => {
  *   song: Song
  * }
  */
-const getSongInfo = async (query: string) => {
+const getSongInfo = async (query: string): Promise<SongInfo> => {
   try {
     const response = await axios.get("https://api.napster.com/v2.2/search", {
       params: {
-        apikey: process.env.NAPSTER_API_KEY,
+        apikey: NAPSTER_API_KEY,
         type: "track",
-        per_type_limit: 1,
+        per_type_limit: 1, // eslint-disable-line @typescript-eslint/camelcase
         query,
       },
     });
     if (response.status !== 200) throw response.headers.status;
-
-    // console.log("STATUS: ", response.status);
-    // console.log(response.data.search.data);
 
     const track = response.data.search.data.tracks[0];
 
@@ -118,18 +130,18 @@ const search = async (query: string) => {
   try {
     const response = await axios.get("https://api.napster.com/v2.2/search", {
       params: {
-        apikey: process.env.NAPSTER_API_KEY,
+        apikey: NAPSTER_API_KEY,
         type: "track",
-        per_type_limit: 10,
+        per_type_limit: 10, // eslint-disable-line @typescript-eslint/camelcase
         query,
       },
     });
 
     if (response.status !== 200) throw response.headers.status;
 
-    let songs = [];
+    const songs = [];
 
-    for (let track of response.data.search.data.tracks) {
+    for (const track of response.data.search.data.tracks) {
       songs.push(formatTrackData(track));
     }
 
@@ -152,7 +164,7 @@ export { getAlbumInfo, getSongInfo, search };
  *
  * Returns the id and name for the album object
  */
-const formatAlbumData = ({ id, name }) => ({
+const formatAlbumData = ({ id, name }: { id: string; name: string }) => ({
   id,
   name,
 });
@@ -164,7 +176,7 @@ const formatAlbumData = ({ id, name }) => ({
  *
  * Returns a `Song` Object
  */
-const formatTrackData = (track) => ({
+const formatTrackData = (track: any) => ({
   artist: track.artistName,
   title: track.name,
   length: track.playbackSeconds,

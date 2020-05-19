@@ -1,20 +1,18 @@
-import * as React from "react";
-import { useState, useEffect, useRef } from "react";
+import React from "react";
+import { useState, useEffect } from "react";
 
-import { song } from "#root/types";
+import { Song } from "#root/types";
 import Search from "#shared/Search";
 import SongView from "#shared/SongView";
 
 const { ipcRenderer } = window.require("electron");
 
-const empty: song[] = [];
-
 function Music() {
-  const [allSongs, setAllSongs] = useState(empty);
-  const [songs, setSongs] = useState(empty);
+  const [allSongs, setAllSongs] = useState<Song[]>([]);
+  const [songs, setSongs] = useState<Song[]>([]);
 
   useEffect(() => {
-    ipcRenderer.invoke("get:music-names").then((songs: song[]) => {
+    ipcRenderer.invoke("get:music-names").then((songs: Song[]) => {
       setSongs(songs);
       setAllSongs(songs);
     });

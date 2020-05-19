@@ -13,6 +13,7 @@ const getRemoteVersion = async (): Promise<string | null> => {
     return response.data.version;
   } catch (error) {
     console.error(error);
+    return null;
   }
 };
 

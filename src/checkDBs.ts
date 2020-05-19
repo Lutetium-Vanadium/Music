@@ -6,26 +6,27 @@ import { getSongInfo } from "./functions/napster";
 import addAlbum from "./functions/addAlbum";
 import db from "./functions/db_handler";
 import debug from "./console";
-import { song } from "./types";
+import { Song } from "./types";
 
 // Given a range of song names, this adds them to the database
 // Note, it is not in the database as this function handles the data formatting and only directly database
 // related line is `await db.addSong(songData)`
 const addRangeSong = async (lst: string[], folderStored: string) => {
   lst.forEach(async (songName, i) => {
-    const { song, status } = await getSongInfo(songName);
+    const data = await getSongInfo(songName);
 
-    if (status === 0) {
+    if (data.status === 0) {
       console.error("Failed: " + songName);
       return;
     }
+    const { song } = data;
 
     const fileName = songName + ".mp3";
     const albumId = song.thumbnail.split("/")[6];
     addAlbum(albumId, song.artist);
     debug.log({ albumId });
 
-    const songData: song = {
+    const songData: Song = {
       thumbnail: "file://" + path.join(app.getPath("userData"), "album_images", `${albumId}.jpg`),
       filePath: path.join(folderStored, fileName),
       artist: song.artist,
@@ -41,9 +42,9 @@ const addRangeSong = async (lst: string[], folderStored: string) => {
   });
 };
 
-const addRangeAlbum = async (lst: any[]) => {
+const addRangeAlbum = async (lst: { albumId: string; artist: string; numSongs: number }[]) => {
   lst.forEach(async (item, i) => {
-    await addAlbum(item.albumId, item.artist);
+    await addAlbum(item.albumId, item.artist, item.numSongs);
     console.log(`${i}: ${item.albumId} by ${item.artist} added`);
   });
 };
@@ -62,13 +63,22 @@ const deleteRangeAlbums = async (lst: string[]) => {
   });
 };
 
+const updateNumSongsRange = async (lst: { albumId: string; numSongs: number }[]) => {
+  lst.forEach(async (item) => {
+    await db.updateNumSongs(item);
+    console.log(`Updated ${item.albumId} to ${item.numSongs}`);
+  });
+};
+
 // Updates the db for songs which were not downloaded through the app and albums which arent there in the albumdata db
 const checkDBs = async (folderStored: string) => {
+  await db.isReady();
+
   const allSongs = await db.all();
 
-  let formattedAllSongs: string[] = [];
+  const formattedAllSongs: string[] = [];
 
-  for (let song of allSongs) {
+  for (const song of allSongs) {
     const pathArray = song.filePath.split("/");
 
     formattedAllSongs.push(pathArray[pathArray.length - 1]);
@@ -78,16 +88,17 @@ const checkDBs = async (folderStored: string) => {
 
   try {
     dir = await ls(folderStored);
+    dir = dir.filter((file) => path.extname(file) === ".mp3");
   } catch (err) {
     console.error(err);
     return;
   }
 
-  let notAdded: string[] = [];
+  const notAdded: string[] = [];
 
-  for (let i = 0; i < dir.length; i++) {
-    if (!formattedAllSongs.includes(dir[i])) {
-      notAdded.push(dir[i].slice(0, -4));
+  for (const song of dir) {
+    if (!formattedAllSongs.includes(song)) {
+      notAdded.push(song.slice(0, -4));
     }
   }
 
@@ -100,11 +111,11 @@ const checkDBs = async (folderStored: string) => {
     changed = true;
   }
 
-  let deleted: string[] = [];
+  const deleted: string[] = [];
 
-  for (let i = 0; i < formattedAllSongs.length; i++) {
-    if (!dir.includes(formattedAllSongs[i])) {
-      deleted.push(formattedAllSongs[i].slice(0, -4));
+  for (const song of formattedAllSongs) {
+    if (!dir.includes(song)) {
+      deleted.push(song.slice(0, -4));
     }
   }
 
@@ -118,16 +129,20 @@ const checkDBs = async (folderStored: string) => {
   const albumsFromSongData = await db.albumsFromSongs();
   const albumsFromAlbumData = (await db.mostPopularAlbums(false)).sort((a, b) => (a.id > b.id ? 1 : -1));
 
-  let i = 0,
-    j = 0;
-  let albumsToDelete = [];
-  let albumsToAdd = [];
+  let i = 0;
+  let j = 0;
+  const albumsToDelete: string[] = [];
+  const albumsToAdd: typeof albumsFromSongData = [];
+  const albumsToUpdateNumSongs: { albumId: string; numSongs: number }[] = [];
 
   while (i < albumsFromSongData.length && j < albumsFromAlbumData.length) {
     const albumCur = albumsFromAlbumData[j].id;
     const songCur = albumsFromSongData[i].albumId;
 
     if (albumCur === songCur) {
+      if (albumsFromAlbumData[j].numSongs !== albumsFromSongData[i].numSongs) {
+        albumsToUpdateNumSongs.push({ albumId: albumCur, numSongs: albumsFromSongData[i].numSongs });
+      }
       i++;
       j++;
     } else if (albumCur > songCur) {
@@ -139,7 +154,7 @@ const checkDBs = async (folderStored: string) => {
     }
   }
 
-  console.log();
+  debug.log();
 
   for (i; i < albumsFromSongData.length; i++) albumsToAdd.push(albumsFromSongData[i]);
 
@@ -159,7 +174,14 @@ const checkDBs = async (folderStored: string) => {
     changed = true;
   }
 
-  if (changed) console.log("Completed database update");
+  console.log(albumsToUpdateNumSongs.length + " albums are out of sync");
+  if (albumsToUpdateNumSongs.length) {
+    console.log("Updating database...");
+    updateNumSongsRange(albumsToUpdateNumSongs);
+    changed = true;
+  }
+
+  if (changed) console.log("Completed Database Checks");
 };
 
 export default checkDBs;

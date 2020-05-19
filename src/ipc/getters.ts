@@ -1,44 +1,25 @@
 import { ipcMain } from "electron";
-import * as dataurl from "dataurl";
-import * as fs from "fs";
 import Store from "../functions/store";
 import db from "../functions/db_handler";
+import { Settings } from "../types";
 // Get methods
 
-const initGetters = (store: Store) => {
+const initGetters = (store: Store<Settings, SettingsKeys>) => {
   // gets the configured music directory
-  ipcMain.handle("get:info", (evt, val) => {
-    return new Promise((res, rej) => {
+  ipcMain.handle("get:info", () => {
+    return new Promise((res) => {
       const settings = store.getAll();
       res({
         ...settings,
-        dir: settings.folderStored
+        dir: settings.folderStored,
       });
     });
   });
 
-  ipcMain.handle("get:animations", (evt, val) => store.get("animations"));
+  ipcMain.handle("get:animations", () => store.get("animations"));
 
   // Gets all music files stored in the configured directory
-  ipcMain.handle("get:music-names", async (evt, val) => await db.all());
-
-  ipcMain.handle("get:song-audio", async (evt, filePath: string) => {
-    return new Promise((res, rej) => {
-      try {
-        fs.readFile(filePath, (err, data) => {
-          if (err) {
-            console.error(err);
-            rej(err);
-          }
-          res(dataurl.convert({ data, mimetype: "audio/mp3" }));
-          db.incrementNumListens(filePath);
-        });
-      } catch (error) {
-        console.error(error);
-        rej(error);
-      }
-    });
-  });
+  ipcMain.handle("get:music-names", async () => await db.all());
 
   // Home page methods to show popular stuff
   ipcMain.handle("get:top-songs", async (evt, limit: boolean) => await db.mostPopularSongs(limit));

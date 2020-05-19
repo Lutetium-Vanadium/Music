@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { useState, useEffect, useReducer } from "react";
 import { Switch, Route, useHistory } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -16,8 +16,8 @@ import Queue from "./Queue";
 
 import Player from "#shared/Player";
 import Transition from "#shared/Transition";
-import { reduxState } from "#root/reduxHandler";
-import { song, searchResult } from "#root/types";
+import { ReduxState } from "#root/reduxHandler";
+import { Song, SearchResult } from "#root/types";
 
 import logo from "#logos/logo.png";
 
@@ -29,10 +29,8 @@ interface Place {
   right: string;
 }
 
-const empty: song[] = [];
-
 function App() {
-  const [searchResults, setSearchResults] = useState(empty);
+  const [searchResults, setSearchResults] = useState<Song[]>([]);
   const [searchSuccess, setSearchSuccess] = useState(true);
   const [downloadError, setDownloadError] = useState(false);
   const [animations, setAnimations] = useState(true);
@@ -41,11 +39,11 @@ function App() {
   const [loading, setLoading] = useState(true);
 
   const [downloading, dispatch] = useReducer(reducer, {});
-  const queue = useSelector((state: reduxState) => state.queue);
+  const queue = useSelector((state: ReduxState) => state.queue);
   const history = useHistory();
 
   const search = async (query: string) => {
-    const result: searchResult = await ipcRenderer.invoke("search:global", query);
+    const result: SearchResult = await ipcRenderer.invoke("search:global", query);
     if (result.status) {
       setSearchResults(result.songs);
     }
@@ -54,18 +52,18 @@ function App() {
     setLoading(false);
   };
 
-  const download = async (song: song) => {
+  const download = async (song: Song) => {
     const id = await ipcRenderer.invoke("download-song", song);
     setDownloadError(false);
     dispatch({
       type: "start:download",
       id,
-      payload: song
+      payload: song,
     });
     new Notification(song.title, {
       body: `Downloading ${song.title} by ${song.artist}.`,
       badge: logo,
-      icon: song.thumbnail
+      icon: song.thumbnail,
     });
   };
 
@@ -73,26 +71,26 @@ function App() {
     ipcRenderer.invoke("get:animations").then(setAnimations);
 
     // Handles progress updates sent by electron for when a song is being downloaded
-    ipcRenderer.on("update:download-query", (evt, { progress, id }) => {
+    ipcRenderer.on("update:download-query", (evt: any, { progress, id }: { progress: number; id: string }) => {
       dispatch({
         type: "update:download",
         id,
-        payload: progress
+        payload: progress,
       });
     });
-    ipcRenderer.on("finished:download-query", (evt, { id, filePath }) => {
+    ipcRenderer.on("finished:download-query", (evt: any, { id, filePath }: { id: string; filePath: string }) => {
       dispatch({
         type: "finish:download",
         id,
-        payload: filePath
+        payload: filePath,
       });
     });
     ipcRenderer.on("error:download-query", () => setDownloadError(true));
 
     // Miscellaneous handlers
     ipcRenderer.on("reset-global-search", () => setLoading(true));
-    ipcRenderer.on("goto-link", (evt, url) => history.push(url));
-    ipcRenderer.on("change:animations", (evt, animations) => setAnimations(animations));
+    ipcRenderer.on("goto-link", (evt: any, url: string) => history.push(url));
+    ipcRenderer.on("change:animations", (evt: any, animations: boolean) => setAnimations(animations));
 
     const handleKeydown = (evt: KeyboardEvent) => {
       const places: Place[] = [
@@ -100,7 +98,7 @@ function App() {
         { regex: /\/settings$/, right: "/artists", left: "/" },
         { regex: /\/artists/, right: "/albums", left: "/settings" },
         { regex: /\/albums/, right: "/music", left: "/artists" },
-        { regex: /\/music$/, right: "/", left: "/albums" }
+        { regex: /\/music$/, right: "/", left: "/albums" },
       ];
 
       if (evt.altKey) {
@@ -139,7 +137,7 @@ function App() {
           classExtension="main"
           animate={animations}
         >
-          {location => (
+          {(location: typeof history.location) => (
             <Switch location={location}>
               <Route
                 path="/search"
@@ -165,25 +163,25 @@ function App() {
 export default App;
 
 const formatFilePath = (filePath: string) => {
-  let fileArray = filePath.split("/");
+  const fileArray = filePath.split("/");
   fileArray.pop();
   return fileArray.join("/");
 };
 
-interface action {
+interface Action {
   type: string;
   id: string;
   payload?: any;
 }
 
-const reducer = (state: object, action: action) => {
-  let newState = { ...state };
+const reducer = (state: { [key: string]: any }, action: Action) => {
+  const newState = { ...state };
 
   switch (action.type) {
     case "start:download":
       newState[action.id] = {
         progress: 0,
-        song: action.payload
+        song: action.payload,
       };
       break;
     case "update:download":
@@ -192,11 +190,11 @@ const reducer = (state: object, action: action) => {
     case "finish:download":
       // While this may not be the best place to put a notification, it is required since updated
       // `state` is not available in the useEffect
-      const song: song = newState[action.id].song;
+      const song: Song = newState[action.id].song;
       new Notification(song.title, {
         body: `Finished Downloading ${song.title} by ${song.artist}.\n It is stored in ${formatFilePath(action.payload)}`,
         badge: logo,
-        icon: song.thumbnail
+        icon: song.thumbnail,
       });
       delete newState[action.id];
       break;

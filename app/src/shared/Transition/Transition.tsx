@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { useHistory } from "react-router-dom";
 import { useState, useEffect } from "react";
 
@@ -11,11 +11,11 @@ interface TransitionProps {
 }
 
 interface Location {
-  location: any; // This is the location object from react-router {i.e. the object you get from useLocation()} but i couldnt find the type annotation for it
+  // This is the location object from react-router {i.e. the object you get from useLocation()}
+  // but i couldnt find the type annotation for it
+  location: any;
   className: string;
 }
-
-const empty: Location[] = [];
 
 /**
  * Tranistion is a very basic animation wrapper that has a very specific use case.
@@ -45,13 +45,13 @@ const empty: Location[] = [];
  *  `done` The previous component has been unmounted and backward means behind in the url tree
  */
 function Transition({ children, grid, timeout, classExtension, animate = true }: TransitionProps) {
-  const [locations, setLocations] = useState(empty);
+  const [locations, setLocations] = useState<Location[]>([]);
 
   const history = useHistory();
 
   useEffect(() => {
-    const unlisten = history.listen(location => {
-      setLocations(locations => {
+    const unlisten = history.listen((location) => {
+      setLocations((locations) => {
         const dir = getDir(location.pathname, locations[locations.length - 1].location.pathname, grid);
 
         // if (dir === "nothing") return locations;
@@ -61,7 +61,7 @@ function Transition({ children, grid, timeout, classExtension, animate = true }:
         locations[locations.length - 1].className = className + "-leave";
 
         setTimeout(() => {
-          setLocations(locations => {
+          setLocations((locations) => {
             locations[1].className = classExtension + "-done";
 
             return locations.slice(1);
@@ -75,8 +75,8 @@ function Transition({ children, grid, timeout, classExtension, animate = true }:
     setLocations([
       {
         location: history.location,
-        className: ""
-      }
+        className: "",
+      },
     ]);
 
     return unlisten;
@@ -100,8 +100,8 @@ function Transition({ children, grid, timeout, classExtension, animate = true }:
 export default Transition;
 
 const getDir = (pathname: string, prevpath: string, grid: RegExp[][]) => {
-  let pathnameIndex: number[];
-  let prevpathIndex: number[];
+  let pathnameIndex: number[] = [];
+  let prevpathIndex: number[] = [];
 
   for (let i = 0; i < grid.length; i++) {
     for (let j = 0; j < grid[i].length; j++) {
@@ -114,7 +114,7 @@ const getDir = (pathname: string, prevpath: string, grid: RegExp[][]) => {
     }
   }
 
-  if (!pathnameIndex || !prevpathIndex || pathnameIndex === prevpathIndex) {
+  if (!pathnameIndex.length || !prevpathIndex.length || pathnameIndex === prevpathIndex) {
     return "nothing";
   }
 

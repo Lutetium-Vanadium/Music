@@ -4,7 +4,7 @@ import { getAlbumInfo } from "./napster";
 
 import { downloadImage } from "./downloader";
 import db from "./db_handler";
-import { album } from "../types";
+import { Album } from "../types";
 
 /**
  * addAlbum()
@@ -13,7 +13,7 @@ import { album } from "../types";
  *
  * Adds an album and downloads the image for the album if they dont exist
  */
-const addAlbum = async (albumId: string, artist: string) => {
+const addAlbum = async (albumId: string, artist: string, numSongs = 1) => {
   const imagePath = "file://" + path.join(app.getPath("userData"), "album_images", `${albumId}.jpg`);
 
   downloadImage(albumId);
@@ -31,11 +31,11 @@ const addAlbum = async (albumId: string, artist: string) => {
 
   console.log(`Adding album ${name}.`);
 
-  const album: album = {
+  const album: Album = {
     id,
     name,
     imagePath,
-    numSongs: 0,
+    numSongs,
     artist,
   };
 

@@ -1,8 +1,8 @@
-import * as React from "react";
+import React from "react";
 import { useEffect } from "react";
 
-import { song } from "#root/types";
-import Song from "#shared/Song";
+import { Song } from "#root/types";
+import RenderSong from "#shared/Song";
 import Loader from "#shared/Loader";
 import Error from "#shared/Error";
 
@@ -11,10 +11,10 @@ import downloadImg from "./download.png";
 const { ipcRenderer } = window.require("electron");
 
 interface SearchPageParams {
-  results: song[];
+  results: Song[];
   loading: boolean;
   success: boolean;
-  download: (song: song) => Promise<void>;
+  download: (song: Song) => Promise<void>;
 }
 
 function SearchPage({ results, download, success, loading }: SearchPageParams) {
@@ -39,7 +39,7 @@ function SearchPage({ results, download, success, loading }: SearchPageParams) {
         <ul className="music-names">
           {results.map((song, i) => (
             <li className="result" key={`song-${i}`}>
-              <Song
+              <RenderSong
                 song={song}
                 onClick={() => handleDownload(i)}
                 After={() => <img className="download" src={downloadImg} alt="download button" />}

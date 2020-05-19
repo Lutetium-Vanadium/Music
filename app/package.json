@@ -1,12 +1,13 @@
 {
   "name": "Music-Frontend",
-  "version": "1.2.0",
+  "version": "1.2.2",
   "main": "./src/index.tsx",
   "license": "MIT",
   "scripts": {
     "watch": "parcel ./src/index.html",
-    "prebuild": "rm -rf ../public",
-    "build": "parcel build --out-dir=../public --public-url=./ ./src/index.html"
+    "build": "yarn lint && yarn build:quiet",
+    "build:quiet": "rm -rf ../public && parcel build --out-dir=../public --public-url=./ ./src/index.html",
+    "lint": "cd .. && yarn lint:react"
   },
   "dependencies": {
     "@babel/polyfill": "^7.8.3",

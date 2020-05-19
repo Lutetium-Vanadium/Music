@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { NavLink, Link, useHistory } from "react-router-dom";
 
 import Search from "#shared/Search";
@@ -7,7 +7,7 @@ import ProgressBar from "#shared/ProgressBar";
 import logo from "#logos/logo.png";
 
 interface NavbarParams {
-  downloading: object;
+  downloading: { [key: string]: any };
   errored: boolean;
   showBack: boolean;
   search: (query: string) => void;
@@ -17,7 +17,7 @@ function Navbar({ downloading, errored, search, showBack }: NavbarParams) {
   const history = useHistory();
 
   const handleChange = (value: string) => {
-    if ((value.length + 1) % 2 == 0) {
+    if ((value.length + 1) % 2 === 0) {
       if (history.location.pathname !== "/search") history.push("/search");
       search(value);
     }
@@ -39,7 +39,7 @@ function Navbar({ downloading, errored, search, showBack }: NavbarParams) {
           <img className="logo" src={logo} alt="logo" />
           <h2>Music</h2>
         </Link>
-        {Object.keys(downloading).map(key => (
+        {Object.keys(downloading).map((key) => (
           <ProgressBar key={key} progress={downloading[key].progress} song={downloading[key].song} errored={errored} />
         ))}
       </div>

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { useState } from "react";
 
 interface ContextMenuProps {
@@ -10,15 +10,13 @@ interface ContextMenuProps {
   del: () => void;
 }
 
-let empty: NodeJS.Timeout;
-
 function ContextMenu({ pos, reset, play, del, liked, toggleLiked }: ContextMenuProps) {
-  const [_timeout, _setTimeout] = useState(empty);
+  const [_timeout, _setTimeout] = useState<NodeJS.Timeout | null>(null);
 
   const handleMouseEnter = () => {
     if (_timeout) {
       clearTimeout(_timeout);
-      setTimeout(null);
+      _setTimeout(null);
     }
   };
 
@@ -37,7 +35,7 @@ function ContextMenu({ pos, reset, play, del, liked, toggleLiked }: ContextMenuP
       className="context-menu"
       style={{
         left: pos[0],
-        top: pos[1]
+        top: pos[1],
       }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}

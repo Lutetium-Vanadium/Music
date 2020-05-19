@@ -1,22 +1,25 @@
-import { ipcMain, dialog } from "electron";
+import { ipcMain, dialog, BrowserWindow } from "electron";
 
 import db from "../functions/db_handler";
 import Store from "../functions/store";
-import { song } from "../types";
-import { Windows } from ".";
+import { Settings } from "../types";
+import checkDBs from "../checkDBs";
 
 // Setters
-const initSetters = (store: Store, { win, remote }: Windows, setUpRemote: (song: song) => void) => {
+const initSetters = (store: Store<Settings, SettingsKeys>, win: BrowserWindow) => {
   // Opens a select directory dialog which allows user to customize where the songs are stored and taken from
-  ipcMain.handle("set:music-dir", async (evt, val) => {
+  ipcMain.handle("set:music-dir", async () => {
+    const prevPath = store.get("folderStored");
+
     const { canceled, filePaths } = await dialog.showOpenDialog(win, {
       properties: ["openDirectory"],
       title: "Choose Music Directory",
-      defaultPath: store.get("folderStored")
+      defaultPath: prevPath,
     });
 
-    if (!canceled) {
+    if (!canceled && prevPath !== filePaths[0]) {
       store.set("folderStored", filePaths[0]);
+      checkDBs(filePaths[0]);
     }
 
     return store.get("folderStored");
@@ -31,7 +34,7 @@ const initSetters = (store: Store, { win, remote }: Windows, setUpRemote: (song:
     store.setAll(info);
   });
 
-  ipcMain.on("set:liked", async (evt, title: string) => await db.changeLiked(title));
+  ipcMain.on("set:liked", (evt, title: string) => db.changeLiked(title));
 };
 
 export default initSetters;

@@ -3,6 +3,8 @@ build/
 
 Music-*/
 Music(*/
+src/apiKeys.ts
+release/
 
 # Logs
 logs

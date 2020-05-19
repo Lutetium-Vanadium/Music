@@ -4,8 +4,7 @@ import * as path from "path";
 import * as fs from "fs";
 import * as ffmpeg from "ffmpeg-cli";
 
-// Started bugging out when it was gotten using import for some reason
-const Downloader = require("youtube-mp3-downloader");
+import Downloader from "youtube-mp3-downloader";
 
 // This file has the specified configurations for the youtuber downloader
 // and a function to download images
@@ -30,12 +29,12 @@ const createDownloader = (path: string) => {
  */
 const downloadImage = async (id: string) => {
   try {
-    const download_path = path.join(app.getPath("userData"), "album_images", id + ".jpg");
+    const downloadPath = path.join(app.getPath("userData"), "album_images", id + ".jpg");
 
-    if (fs.existsSync(download_path)) return;
+    if (fs.existsSync(downloadPath)) return;
 
     const url = `https://api.napster.com/imageserver/v2/albums/${id}/images/500x500.jpg`;
-    const writer = fs.createWriteStream(download_path);
+    const writer = fs.createWriteStream(downloadPath);
 
     const response = await axios.get(url, { responseType: "stream" });
 

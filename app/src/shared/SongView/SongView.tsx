@@ -1,31 +1,36 @@
-import * as React from "react";
+import React from "react";
 import { useState } from "react";
-import { connect } from "react-redux";
 import { Dispatch } from "redux";
 
-import ContextMenu from "./ContextMenu";
-import { song } from "#root/types";
-import Song from "#shared/Song";
+import useAction from "#root/useAction";
 import { create } from "#root/reduxHandler";
+import { Song } from "#root/types";
+import RenderSong from "#shared/Song";
+
+import ContextMenu from "./ContextMenu";
 
 import logo from "#logos/logo.png";
 
 const { ipcRenderer } = window.require("electron");
 
 interface SongViewProps {
-  songs: song[];
-  allSongs: song[];
-  setSongs: React.Dispatch<React.SetStateAction<song[]>>;
-  setAllSongs: React.Dispatch<React.SetStateAction<song[]>>;
-  setQueue: (songs: song[]) => void;
-  reduxSetSongs: (songs: song[]) => void;
-  setCur: (num: number) => void;
+  songs: Song[];
+  allSongs: Song[];
+  setSongs: React.Dispatch<React.SetStateAction<Song[]>>;
+  setAllSongs: React.Dispatch<React.SetStateAction<Song[]>>;
   showButtons?: boolean;
 }
 
-function SongView({ reduxSetSongs, setQueue, setSongs, setAllSongs, setCur, allSongs, songs, showButtons = true }: SongViewProps) {
+function SongView({ setSongs, setAllSongs, allSongs, songs, showButtons = true }: SongViewProps) {
   const [pos, setPos] = useState([-200, -200]);
   const [index, setIndex] = useState(-1);
+
+  const { setCur, setQueue, reduxSetSongs, likeSong } = useAction((dispatch: Dispatch) => ({
+    setQueue: create.setQueue(dispatch),
+    reduxSetSongs: create.setSongs(dispatch),
+    setCur: create.setCur(dispatch),
+    likeSong: create.likeSong(dispatch),
+  }));
 
   const _play = (index: number) => {
     reduxSetSongs(allSongs);
@@ -38,40 +43,40 @@ function SongView({ reduxSetSongs, setQueue, setSongs, setAllSongs, setCur, allS
     setPos([-200, -200]);
   };
 
-  const playSong = (song: song) => {
-    const index = allSongs.findIndex(_song => _song.title === song.title);
+  const playSong = (song: Song) => {
+    const index = allSongs.findIndex((_song) => _song.title === song.title);
     _play(index);
   };
 
   const handleDotClick = (e: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
     e.stopPropagation();
     setPos([e.pageX, e.pageY]);
-    setIndex(+e.currentTarget.dataset.index);
+    setIndex(+(e.currentTarget.dataset.index ?? 0));
   };
 
   const toggleLiked = async () => {
-    await ipcRenderer.send("set:liked", songs[index].title);
+    likeSong(songs[index]);
     setPos([-200, -200]);
   };
 
   const del = async () => {
     const song = songs[index];
 
-    const confirmed = confirm(`Are you sure you want to delete ${song.title} by ${song.artist}?`);
+    const confirmed = window.confirm(`Are you sure you want to delete ${song.title} by ${song.artist}?`);
     setPos([-200, -200]);
     if (!confirmed) return;
 
     setSongs([...songs.slice(0, index), ...songs.slice(index + 1, songs.length)]);
-    const allSongsIndex = allSongs.findIndex(value => value.title === song.title);
+    const allSongsIndex = allSongs.findIndex((value) => value.title === song.title);
     setAllSongs([...allSongs.slice(0, allSongsIndex), ...allSongs.slice(allSongsIndex + 1, allSongs.length)]);
     setIndex(index - 1);
     const success = await ipcRenderer.invoke("delete:song", song);
-    let body = success ? `Succesfully deleted ${song.title} by ${song.artist}` : `Couldn't delete ${song.title} by ${song.artist}`;
+    const body = success ? `Succesfully deleted ${song.title} by ${song.artist}` : `Couldn't delete ${song.title} by ${song.artist}`;
 
     new Notification(`${song.title}`, {
       body,
       badge: logo,
-      icon: song.thumbnail
+      icon: song.thumbnail,
     });
   };
 
@@ -98,7 +103,7 @@ function SongView({ reduxSetSongs, setQueue, setSongs, setAllSongs, setCur, allS
       <ul className="music-names">
         {songs.length ? (
           songs.map((song, i) => (
-            <Song
+            <RenderSong
               key={`song-${i}`}
               song={song}
               onClick={() => playSong(song)}
@@ -106,7 +111,7 @@ function SongView({ reduxSetSongs, setQueue, setSongs, setAllSongs, setCur, allS
               After={TripleDot}
               afterProps={{
                 onClick: handleDotClick,
-                "data-index": i
+                "data-index": i,
               }}
             />
           ))
@@ -118,13 +123,7 @@ function SongView({ reduxSetSongs, setQueue, setSongs, setAllSongs, setCur, allS
   );
 }
 
-const mapDispatchToProps = (dispatch: Dispatch) => ({
-  setQueue: create.setQueue(dispatch),
-  reduxSetSongs: create.setSongs(dispatch),
-  setCur: create.setCur(dispatch)
-});
-
-export default connect(null, mapDispatchToProps)(SongView);
+export default SongView;
 
 interface TripleDotProps {
   onClick?: (event: React.MouseEvent<SVGSVGElement, MouseEvent>) => void;

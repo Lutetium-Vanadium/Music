@@ -1,4 +1,4 @@
-import { ipcMain, app } from "electron";
+import { ipcMain, app, BrowserWindow } from "electron";
 import * as path from "path";
 import * as fs from "fs";
 
@@ -6,13 +6,16 @@ import getYoutubeDetails from "../functions/getYoutubeDetails";
 import addAlbum from "../functions/addAlbum";
 import db from "../functions/db_handler";
 import Store from "../functions/store";
-import { song } from "../types";
-import { Windows } from ".";
+import { Song, Settings } from "../types";
 
-const initMiscellaneous = (store: Store, { win }: Windows, downloader) => {
+const initMiscellaneous = (store: Store<Settings, SettingsKeys>, win: BrowserWindow, downloader: YoutubeMp3Downloader) => {
   // The download song port- Given an id, downloads the song
-  ipcMain.handle("download-song", async (evt, songData: song) => {
-    const { id: youtubeId, length } = await getYoutubeDetails(songData);
+  ipcMain.handle("download-song", async (evt, songData: Song) => {
+    const data = await getYoutubeDetails(songData);
+
+    if (data === null) return;
+
+    const { id: youtubeId, length } = data;
 
     const fileName = songData.title + ".mp3";
     console.log("Downloading ", songData.title);
@@ -30,7 +33,7 @@ const initMiscellaneous = (store: Store, { win }: Windows, downloader) => {
     return youtubeId;
   });
 
-  ipcMain.handle("delete:song", async (evt, song: song) => {
+  ipcMain.handle("delete:song", async (evt, song: Song) => {
     try {
       console.log("Deleting", song.title);
       const dbSongPromise = db.deleteSong(song.title);
@@ -57,7 +60,7 @@ export default initMiscellaneous;
 // Helper function that provides a promised based fs.unlink
 const rm = (path: fs.PathLike): Promise<void> => {
   return new Promise((res, rej) => {
-    fs.unlink(path, err => {
+    fs.unlink(path, (err) => {
       if (err) rej(err);
       res();
     });
