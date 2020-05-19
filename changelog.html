@@ -149,7 +149,7 @@
       <div id="v1.2.2">
         <h1>Version 1.2.2</h1>
         <p>
-          Mostly minor internal changes and bug fixes. <br />
+          Mainly internal changes and bug fixes. <br />
           Changes:
           <ol>
             <li>Frame was removed from remote window.</li>
@@ -161,6 +161,9 @@
             <li>Even if there weren't any 'Top Song' or 'Top Albums', the header was shown.</li>
             <li>Remote window pointed to app icon in the frontend rather than local app icon.</li>
             <li>Everytime an individual artist/album is shown, the placeholder image caused an error(it wasnt a proper image). Now a default image is shown as placeholder.</li>
+            <li>Number of songs in an album would go out of sync due to bad handling. Handling has been improved and checks for number of songs has been added.</li>
+            <li>When directory was changed in settings, the db wouldnt be updated with songs in new directory</li>
+            <li>Any non mp3 files in the music directory would be also be included in everything. Now they are ignored unless they have the <span class="inline-code">.mp3</span> extension.</li>
           </ol> 
         </p>
       </div>

@@ -79,7 +79,13 @@ function Home() {
             ))}
           </div>
         </>
-      ) : null}
+      ) : (
+        <p className="no-results">
+          No Songs
+          <br />
+          Download songs by searching for them in the top right search box.
+        </p>
+      )}
       {showPrev ? (
         <>
           <h1 className="header">Pickup Where You Left Off</h1>

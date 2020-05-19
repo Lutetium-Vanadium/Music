@@ -177,11 +177,11 @@ const checkDBs = async (folderStored: string) => {
   console.log(albumsToUpdateNumSongs.length + " albums are out of sync");
   if (albumsToUpdateNumSongs.length) {
     console.log("Updating database...");
-    await updateNumSongsRange(albumsToUpdateNumSongs);
+    updateNumSongsRange(albumsToUpdateNumSongs);
     changed = true;
   }
 
-  if (changed) console.log("Completed database update");
+  if (changed) console.log("Completed Database Checks");
 };
 
 export default checkDBs;
