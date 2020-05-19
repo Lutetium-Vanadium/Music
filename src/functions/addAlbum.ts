@@ -13,7 +13,7 @@ import { Album } from "../types";
  *
  * Adds an album and downloads the image for the album if they dont exist
  */
-const addAlbum = async (albumId: string, artist: string) => {
+const addAlbum = async (albumId: string, artist: string, numSongs = 1) => {
   const imagePath = "file://" + path.join(app.getPath("userData"), "album_images", `${albumId}.jpg`);
 
   downloadImage(albumId);
@@ -35,7 +35,7 @@ const addAlbum = async (albumId: string, artist: string) => {
     id,
     name,
     imagePath,
-    numSongs: 0,
+    numSongs,
     artist,
   };
 

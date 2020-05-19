@@ -42,9 +42,9 @@ const addRangeSong = async (lst: string[], folderStored: string) => {
   });
 };
 
-const addRangeAlbum = async (lst: any[]) => {
+const addRangeAlbum = async (lst: { albumId: string; artist: string; numSongs: number }[]) => {
   lst.forEach(async (item, i) => {
-    await addAlbum(item.albumId, item.artist);
+    await addAlbum(item.albumId, item.artist, item.numSongs);
     console.log(`${i}: ${item.albumId} by ${item.artist} added`);
   });
 };
@@ -63,8 +63,17 @@ const deleteRangeAlbums = async (lst: string[]) => {
   });
 };
 
+const updateNumSongsRange = async (lst: { albumId: string; numSongs: number }[]) => {
+  lst.forEach(async (item) => {
+    await db.updateNumSongs(item);
+    console.log(`Updated ${item.albumId} to ${item.numSongs}`);
+  });
+};
+
 // Updates the db for songs which were not downloaded through the app and albums which arent there in the albumdata db
 const checkDBs = async (folderStored: string) => {
+  await db.isReady();
+
   const allSongs = await db.all();
 
   const formattedAllSongs: string[] = [];
@@ -79,6 +88,7 @@ const checkDBs = async (folderStored: string) => {
 
   try {
     dir = await ls(folderStored);
+    dir = dir.filter((file) => path.extname(file) === ".mp3");
   } catch (err) {
     console.error(err);
     return;
@@ -121,14 +131,18 @@ const checkDBs = async (folderStored: string) => {
 
   let i = 0;
   let j = 0;
-  const albumsToDelete = [];
-  const albumsToAdd = [];
+  const albumsToDelete: string[] = [];
+  const albumsToAdd: typeof albumsFromSongData = [];
+  const albumsToUpdateNumSongs: { albumId: string; numSongs: number }[] = [];
 
   while (i < albumsFromSongData.length && j < albumsFromAlbumData.length) {
     const albumCur = albumsFromAlbumData[j].id;
     const songCur = albumsFromSongData[i].albumId;
 
     if (albumCur === songCur) {
+      if (albumsFromAlbumData[j].numSongs !== albumsFromSongData[i].numSongs) {
+        albumsToUpdateNumSongs.push({ albumId: albumCur, numSongs: albumsFromSongData[i].numSongs });
+      }
       i++;
       j++;
     } else if (albumCur > songCur) {
@@ -140,7 +154,7 @@ const checkDBs = async (folderStored: string) => {
     }
   }
 
-  console.log();
+  debug.log();
 
   for (i; i < albumsFromSongData.length; i++) albumsToAdd.push(albumsFromSongData[i]);
 
@@ -157,6 +171,13 @@ const checkDBs = async (folderStored: string) => {
   if (albumsToAdd.length) {
     console.log("Updating database...");
     addRangeAlbum(albumsToAdd);
+    changed = true;
+  }
+
+  console.log(albumsToUpdateNumSongs.length + " albums are out of sync");
+  if (albumsToUpdateNumSongs.length) {
+    console.log("Updating database...");
+    await updateNumSongsRange(albumsToUpdateNumSongs);
     changed = true;
   }
 
