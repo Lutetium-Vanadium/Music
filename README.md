@@ -8,6 +8,8 @@ To install in linux, run the `install.sh`. If API key credentials are not alread
 <br>
 Then it will write a `[Desktop Entry]` to `/usr/share/applications/` so that its available in the GUI app selector of your desktop environment.
 
+> This app requires ffmpeg installed and available in the PATH to run
+
 ## Few Notes
 
 Since I use manjaro, building the project for linux only gives a pacman install file and AppImage. If using linux, you can change pacman to whatever package manager you have as per [these configuration options](https://www.electron.build/configuration/linux) in the build section of `package.json`.

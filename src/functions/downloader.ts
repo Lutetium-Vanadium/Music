@@ -2,7 +2,6 @@ import { app } from "electron";
 import axios from "axios";
 import * as path from "path";
 import * as fs from "fs";
-import * as ffmpeg from "ffmpeg-cli";
 
 import Downloader from "youtube-mp3-downloader";
 
@@ -11,7 +10,6 @@ import Downloader from "youtube-mp3-downloader";
 
 const createDownloader = (path: string) => {
   const options = {
-    ffmpegPath: ffmpeg.path,
     outputPath: path,
     youtubeVideoQuality: "highest",
     progressTimeout: 100,
@@ -29,7 +27,11 @@ const createDownloader = (path: string) => {
  */
 const downloadImage = async (id: string) => {
   try {
-    const downloadPath = path.join(app.getPath("userData"), "album_images", id + ".jpg");
+    const downloadPath = path.join(
+      app.getPath("userData"),
+      "album_images",
+      id + ".jpg"
+    );
 
     if (fs.existsSync(downloadPath)) return;
 

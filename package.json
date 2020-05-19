@@ -29,7 +29,6 @@
     "axios": "^0.19.2",
     "eslint": "^7.0.0",
     "eslint-plugin-react": "7.x",
-    "ffmpeg-cli": "^2.3.0",
     "request": "^2.88.0",
     "request-promise": "^4.2.5",
     "sqlite3": "^4.1.1",
@@ -88,7 +87,10 @@
         "pacman",
         "AppImage"
       ],
-      "category": "Utilities"
+      "category": "Utilities",
+      "depends": [
+        "ffmpeg"
+      ]
     },
     "directories": {
       "app": ".",

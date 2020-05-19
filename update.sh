@@ -4,9 +4,14 @@ DIR=`pwd`
 
 echo "Updating local repository..."
 
-git stash # Store user changes
-git pull
-git stash pop 
+ if [[ `git status` == *"nothing to commit"* ]]
+ then
+   git pull
+ else
+   git stash # Store user changes
+   git pull
+   git stash pop 
+ fi
 
 if [ ! -f "$DIR/src/apiKeys.ts" ]
 then
@@ -36,7 +41,7 @@ then
   echo "${temp/Icon=music/Icon=$DIR/resources/icon.png}" | sudo tee /usr/share/applications/music.desktop
 fi
 
-read -p "App Updated. Do you wish to view changelog? [y/n]  " showupdate
+read -p "App Updated. Do you wish to view changelog? [y/n] " showupdate
 
 if [ $showupdate = "y" ] || [ $showupdate = "Y" ]
 then
@@ -48,7 +53,7 @@ fi
 while [ $showupdate != "n" ] && [ $showupdate != "N" ]
 do
   echo "Please type only [y/n]"
-  read -p "App Updated. Do you wish to view changelog? [y/n]  " showupdate
+  read -p "App Updated. Do you wish to view changelog? [y/n] " showupdate
 
   if [ $showupdate = "y" ] || [ $showupdate = "Y" ]
   then
