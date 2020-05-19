@@ -52,7 +52,7 @@ then
   sudo pacman -U "release/Music-$music_version.pacman"
 
   temp=`cat /usr/share/applications/music.desktop`
-  echo "${temp/"Icon=music"/"Icon=$DIR/resources/icon.png"}" | sudo tee /usr/share/applications/music.desktop
+  echo "${temp/Icon=music/Icon=$DIR/resources/icon.png}" | sudo tee /usr/share/applications/music.desktop
 else  
   echo "Pacman not found"
   echo

@@ -33,7 +33,7 @@ then
   sudo pacman -U "release/Music-$music_version.pacman"
 
   temp=`cat /usr/share/applications/music.desktop`
-  echo "${temp/"Icon=music"/"Icon=$DIR/resources/icon.png"}" | sudo tee /usr/share/applications/music.desktop
+  echo "${temp/Icon=music/Icon=$DIR/resources/icon.png}" | sudo tee /usr/share/applications/music.desktop
 fi
 
 read -p "App Updated. Do you wish to view changelog? [y/n]  " showupdate
