@@ -23,10 +23,15 @@ const checkVersion = async () => {
   const remoteVersion = await getRemoteVersion();
 
   if (remoteVersion && remoteVersion !== currentVersion) {
+    const osSpecificText =
+      process.platform === "linux"
+        ? "To update the app, run update.sh at the root of the cloned project."
+        : "Go to the root of the project, pull the changes and then do the same steps you did to install the project.\nYou can open the changelog.html in the browser to view changes.";
+
     new Notification({
       title: "Version Update",
-      body: `There is a new version of Music available. You are currently using ${currentVersion}. The latest version is ${remoteVersion}`,
-      icon: path.resolve("src", "logo.png"),
+      body: `There is a new version of Music available. You are currently using ${currentVersion}. The latest version is ${remoteVersion}.\n${osSpecificText}`,
+      icon: path.resolve("resources", "logo.png"),
       timeoutType: "never",
       urgency: "critical",
     }).show();
