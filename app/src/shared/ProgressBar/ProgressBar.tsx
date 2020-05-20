@@ -1,5 +1,4 @@
 import React from "react";
-import { Song } from "#root/types";
 
 export interface ProgressBarProps {
   song: Song;

@@ -4,7 +4,6 @@ import { getAlbumInfo } from "./napster";
 
 import { downloadImage } from "./downloader";
 import db from "./db_handler";
-import { Album } from "../types";
 
 /**
  * addAlbum()

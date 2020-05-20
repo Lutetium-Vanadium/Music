@@ -17,7 +17,6 @@ import Queue from "./Queue";
 import Player from "#shared/Player";
 import Transition from "#shared/Transition";
 import { ReduxState } from "#root/reduxHandler";
-import { Song, SearchResult } from "#root/types";
 
 import logo from "#logos/logo.png";
 

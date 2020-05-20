@@ -16,3 +16,37 @@ declare module "*.svg" {
 declare type AnimationElement = SVGAnimationElement & {
   beginElement: () => void;
 };
+
+declare type Song = {
+  filePath: string;
+  title: string;
+  thumbnail: string;
+  artist: string;
+  length: number;
+  numListens: number;
+  albumId: string;
+  liked: boolean;
+};
+
+declare type SearchResult =
+  | {
+      status: true;
+      songs: Song[];
+    }
+  | {
+      status: false;
+      error?: string;
+    };
+
+declare type Album = {
+  id: string;
+  imagePath: string;
+  name: string;
+  numSongs: number;
+  artist: string;
+};
+
+declare type Artist = {
+  name: string;
+  images: string[];
+};

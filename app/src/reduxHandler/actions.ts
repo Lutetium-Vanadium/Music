@@ -1,4 +1,3 @@
-import { Song } from "#root/types";
 import { Dispatch } from "redux";
 
 const { ipcRenderer } = window.require("electron");

@@ -4,7 +4,6 @@ import { Dispatch } from "redux";
 
 import useAction from "#root/useAction";
 import { create } from "#root/reduxHandler";
-import { Song } from "#root/types";
 import RenderSong from "#shared/Song";
 
 import ContextMenu from "./ContextMenu";

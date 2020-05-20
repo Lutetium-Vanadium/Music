@@ -5,7 +5,6 @@ import initMiscellaneous from "./miscellaneous";
 import initSearch from "./search";
 import initSetters from "./setters";
 import Store from "../functions/store";
-import { Settings } from "../types";
 
 const initIpc = (store: Store<Settings, SettingsKeys>, win: BrowserWindow, downloader: YoutubeMp3Downloader) => {
   initGetters(store);

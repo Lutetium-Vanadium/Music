@@ -2,7 +2,6 @@ import { ipcMain, dialog, BrowserWindow } from "electron";
 
 import db from "../functions/db_handler";
 import Store from "../functions/store";
-import { Settings } from "../types";
 import checkDBs from "../checkDBs";
 
 // Setters

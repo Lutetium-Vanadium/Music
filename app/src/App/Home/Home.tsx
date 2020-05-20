@@ -5,7 +5,6 @@ import { Link } from "react-router-dom";
 
 import useAction from "#root/useAction";
 import { create } from "#root/reduxHandler";
-import { Song, Album } from "#root/types";
 import { getArr, getNum } from "#root/localStorage";
 
 const { ipcRenderer } = window.require("electron");

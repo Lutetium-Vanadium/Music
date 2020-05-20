@@ -1,7 +1,6 @@
 import { app } from "electron";
 import * as sqlite3 from "sqlite3";
 import * as path from "path";
-import { Song, Album, Artist } from "../types";
 
 // This file provides the Database class which is a wrapper around the `song_info.db` database
 // It provides all functions needed to interact with the database

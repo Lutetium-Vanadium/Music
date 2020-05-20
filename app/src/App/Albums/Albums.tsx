@@ -2,8 +2,6 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
-import { Album } from "#root/types";
-
 import likedImg from "#root/App/liked.png";
 
 const { ipcRenderer } = window.require("electron");

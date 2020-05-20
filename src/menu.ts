@@ -1,6 +1,5 @@
 import { app, Menu, MenuItemConstructorOptions, BrowserWindow } from "electron";
 import Store from "./functions/store";
-import { Settings } from "./types";
 
 const createMenu = (win: BrowserWindow, store: Store<Settings, SettingsKeys>, dev: boolean, toggleHelp: () => void) => {
   const isMac = process.platform === "darwin";

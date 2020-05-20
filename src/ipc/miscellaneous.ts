@@ -6,7 +6,6 @@ import getYoutubeDetails from "../functions/getYoutubeDetails";
 import addAlbum from "../functions/addAlbum";
 import db from "../functions/db_handler";
 import Store from "../functions/store";
-import { Song, Settings } from "../types";
 
 const initMiscellaneous = (store: Store<Settings, SettingsKeys>, win: BrowserWindow, downloader: YoutubeMp3Downloader) => {
   // The download song port- Given an id, downloads the song
@@ -22,8 +21,6 @@ const initMiscellaneous = (store: Store<Settings, SettingsKeys>, win: BrowserWin
     downloader.download(youtubeId, fileName);
     const albumId = songData.albumId;
     addAlbum(albumId, songData.artist);
-
-    console.log({ youtube: length, songData: songData.length });
 
     songData.length = length;
     songData.thumbnail = "file://" + path.join(app.getPath("userData"), "album_images", `${albumId}.jpg`);

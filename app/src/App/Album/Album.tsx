@@ -2,13 +2,12 @@ import React, { useState, useEffect } from "react";
 import { RouteComponentProps } from "react-router-dom";
 
 import SongView from "#shared/SongView";
-import { Song, Album as _Album } from "#root/types";
 import liked from "#root/App/liked.png";
 import musicSymbol from "#root/App/music_symbol.png";
 
 const { ipcRenderer } = window.require("electron");
 
-const defaultAlbum: _Album = {
+const defaultAlbum: Album = {
   id: "id",
   imagePath: musicSymbol,
   name: "album",
@@ -37,7 +36,7 @@ function Album({
         });
       });
     } else {
-      ipcRenderer.invoke("get:album", id).then((res: _Album) => setAlbum(res));
+      ipcRenderer.invoke("get:album", id).then((res: Album) => setAlbum(res));
 
       ipcRenderer.invoke("get:album-songs", id).then((res: Song[]) => setSongs(res));
     }

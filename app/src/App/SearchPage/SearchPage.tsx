@@ -1,7 +1,6 @@
 import React from "react";
 import { useEffect } from "react";
 
-import { Song } from "#root/types";
 import RenderSong from "#shared/Song";
 import Loader from "#shared/Loader";
 import Error from "#shared/Error";

@@ -6,7 +6,6 @@ import { useHistory } from "react-router-dom";
 
 import useAction from "#root/useAction";
 import { ReduxState, create } from "#root/reduxHandler";
-import { Song } from "#root/types";
 import formatLength from "#shared/formatLength";
 
 import { DoubleArrow, Loop, PlayPause, Shuffle, randOrder, VolumeControl } from "./helpers";

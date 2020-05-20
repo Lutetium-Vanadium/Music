@@ -1,7 +1,6 @@
 import React from "react";
 import { useState, useEffect } from "react";
 
-import { Song } from "#root/types";
 import Search from "#shared/Search";
 import SongView from "#shared/SongView";
 

@@ -2,8 +2,6 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
-import { Artist } from "#root/types";
-
 const { ipcRenderer } = window.require("electron");
 
 function Artists() {

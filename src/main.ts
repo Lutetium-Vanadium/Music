@@ -6,7 +6,7 @@ import db from "./functions/db_handler";
 import Store from "./functions/store";
 import checkDBs from "./checkDBs";
 import checkVersion from "./checkVersion";
-import { Song, Settings } from "./types";
+// import "./types";
 import debug from "./console";
 import createMenu from "./menu";
 import initIpc from "./ipc";

@@ -1,5 +1,4 @@
 import axios from "axios";
-import { Song } from "../types";
 import { GOOGLE_API_KEY } from "../apiKeys";
 
 const urlSearch = "https://www.googleapis.com/youtube/v3/search";

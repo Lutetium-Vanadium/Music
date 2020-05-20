@@ -6,7 +6,6 @@ import { getSongInfo } from "./functions/napster";
 import addAlbum from "./functions/addAlbum";
 import db from "./functions/db_handler";
 import debug from "./console";
-import { Song } from "./types";
 
 // Given a range of song names, this adds them to the database
 // Note, it is not in the database as this function handles the data formatting and only directly database

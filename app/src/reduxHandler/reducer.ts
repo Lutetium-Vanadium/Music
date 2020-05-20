@@ -1,4 +1,3 @@
-import { Song } from "#root/types";
 import { setArr, setNum } from "#root/localStorage";
 
 /**

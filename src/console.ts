@@ -22,13 +22,13 @@ if (app.isPackaged) {
   console.log = (message: any = "", ...optionalParams: any[]) => {
     const time = `[${new Date().toLocaleString()}]`;
 
-    log(time, message, ...optionalParams, "\n");
+    log(time, message, ...optionalParams);
   };
 
   console.error = (message: any = "", ...optionalParams: any[]) => {
     const time = `[${new Date().toLocaleString()} - ${getPos()}]`;
 
-    error(time, message, ...optionalParams, "\n");
+    error(time, message, ...optionalParams, "\n"); // Add line between each error
   };
 } else {
   console.error = (message: any = "", ...optionalParams: any[]) => {

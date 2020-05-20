@@ -1,12 +1,35 @@
-declare module "ffmpeg-cli" {
-  interface Ffmpeg {
-    path: string;
-    runSync: (command: string) => any;
-    run: (command: string) => Promise<any>;
-    forceDownload: () => boolean;
-  }
+declare type Song = {
+  filePath: string;
+  title: string;
+  thumbnail: string;
+  artist: string;
+  length: number;
+  numListens: number;
+  albumId: string;
+  liked: boolean;
+};
 
-  let ffmpeg: Ffmpeg;
+declare type Album = {
+  id: string;
+  imagePath: string;
+  name: string;
+  numSongs: number;
+  artist: string;
+};
 
-  export = ffmpeg;
-}
+declare type Artist = {
+  name: string;
+  images: string[];
+};
+
+declare type Settings = {
+  folderStored: string;
+  jumpAhead: number;
+  seekAhead: number;
+  seekBack: number;
+  jumpBack: number;
+  controlWindow: boolean;
+  animations: boolean;
+};
+
+declare type SettingsKeys = keyof Settings;

@@ -2,12 +2,11 @@ import React, { useState, useEffect } from "react";
 import { RouteComponentProps } from "react-router-dom";
 
 import SongView from "#shared/SongView";
-import { Song, Artist as _Artist } from "#root/types";
 import musicSymbol from "#root/App/music_symbol.png";
 
 const { ipcRenderer } = window.require("electron");
 
-const defaultArtist: _Artist = {
+const defaultArtist: Artist = {
   images: [musicSymbol],
   name: "album",
 };
@@ -21,7 +20,7 @@ function Artist({
   const [artist, setArtist] = useState(defaultArtist);
 
   useEffect(() => {
-    ipcRenderer.invoke("get:artist", name).then((res: _Artist) => setArtist(res));
+    ipcRenderer.invoke("get:artist", name).then((res: Artist) => setArtist(res));
 
     ipcRenderer.invoke("get:artist-songs", name).then((res: Song[]) => setSongs(res));
   }, []);
