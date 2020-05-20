@@ -87,10 +87,7 @@
         "pacman",
         "AppImage"
       ],
-      "category": "Utilities",
-      "depends": [
-        "ffmpeg"
-      ]
+      "category": "Utilities"
     },
     "directories": {
       "app": ".",
