@@ -197,9 +197,15 @@ function Player() {
           />
           <VolumeControl className="control" audio={ref.current} />
         </div>
-        <audio onEnded={handleEnded} loop={loop} ref={ref} onTimeUpdate={updateTimeStamp} onError={console.error} autoPlay={!paused}>
-          <source src={`file://${song.filePath}`} type="audio/mpeg" />
-        </audio>
+        <audio
+          onEnded={handleEnded}
+          loop={loop}
+          ref={ref}
+          onTimeUpdate={updateTimeStamp}
+          onError={console.error}
+          autoPlay={!paused}
+          src={`file://${song.filePath}`}
+        ></audio>
       </div>
       <input type="range" name="timeline" className="timeline" value={timeStamp} min={0} max={song.length} onChange={handleChange} />
     </div>

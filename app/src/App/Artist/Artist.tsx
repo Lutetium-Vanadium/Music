@@ -37,7 +37,7 @@ function Artist({
             <img src={artist.images[3]} alt="album-3" />
           </div>
         ) : (
-          <img className="album" src={artist.images[0]} alt="top-album" />
+          <img className="album-img" src={artist.images[0]} alt="top-album" />
         )}
         <h1 className="header">{artist.name}</h1>
       </div>
