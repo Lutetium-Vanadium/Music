@@ -6,9 +6,17 @@ import { useHistory } from "react-router-dom";
 
 import useAction from "#root/useAction";
 import { ReduxState, create } from "#root/reduxHandler";
+import { getNum, setNum } from "#root/localStorage";
 import formatLength from "#shared/formatLength";
 
-import { DoubleArrow, Loop, PlayPause, Shuffle, randOrder, VolumeControl } from "./helpers";
+import {
+  DoubleArrow,
+  Loop,
+  PlayPause,
+  Shuffle,
+  randOrder,
+  VolumeControl,
+} from "./helpers";
 
 import songLiked from "./song-liked.png";
 import songNotLiked from "./song-not-liked.png";
@@ -18,13 +26,15 @@ const { ipcRenderer } = window.require("electron");
 function Player() {
   const { songs, queue, cur } = useSelector((state: ReduxState) => state);
 
-  const { _nextSong, _prevSong, setQueue, setCur, likeSong } = useAction((dispatch: Dispatch) => ({
-    _nextSong: create.nextSong(dispatch),
-    _prevSong: create.prevSong(dispatch),
-    setQueue: create.setQueue(dispatch),
-    setCur: create.setCur(dispatch),
-    likeSong: create.likeSong(dispatch),
-  }));
+  const { _nextSong, _prevSong, setQueue, setCur, likeSong } = useAction(
+    (dispatch: Dispatch) => ({
+      _nextSong: create.nextSong(dispatch),
+      _prevSong: create.prevSong(dispatch),
+      setQueue: create.setQueue(dispatch),
+      setCur: create.setCur(dispatch),
+      likeSong: create.likeSong(dispatch),
+    })
+  );
 
   const song: Song = queue[cur];
 
@@ -107,7 +117,9 @@ function Player() {
     setTimeout(() => setQueue([]), 301);
   };
 
-  const toggleLiked = async (e: React.MouseEvent<HTMLImageElement, MouseEvent>) => {
+  const toggleLiked = async (
+    e: React.MouseEvent<HTMLImageElement, MouseEvent>
+  ) => {
     e.stopPropagation();
     likeSong(song);
   };
@@ -127,10 +139,22 @@ function Player() {
   }, [song.title]);
 
   useEffect(() => {
-    ipcRenderer.on("jump-back", (evt: any, val: number) => (ref.current.currentTime -= val));
-    ipcRenderer.on("seek-back", (evt: any, val: number) => (ref.current.currentTime -= val));
-    ipcRenderer.on("seek-ahead", (evt: any, val: number) => (ref.current.currentTime += val));
-    ipcRenderer.on("jump-ahead", (evt: any, val: number) => (ref.current.currentTime += val));
+    ipcRenderer.on(
+      "jump-back",
+      (evt: any, val: number) => (ref.current.currentTime -= val)
+    );
+    ipcRenderer.on(
+      "seek-back",
+      (evt: any, val: number) => (ref.current.currentTime -= val)
+    );
+    ipcRenderer.on(
+      "seek-ahead",
+      (evt: any, val: number) => (ref.current.currentTime += val)
+    );
+    ipcRenderer.on(
+      "jump-ahead",
+      (evt: any, val: number) => (ref.current.currentTime += val)
+    );
     ipcRenderer.on("volume++", () => (ref.current.volume += 0.05));
     ipcRenderer.on("volume--", () => (ref.current.volume -= 0.05));
     ipcRenderer.on("loop-song", () => setLoop((loop) => !loop));
@@ -156,16 +180,30 @@ function Player() {
       }
     };
 
+    const volume = getNum("volume");
+
+    if (volume !== 0) {
+      ref.current.volume = volume;
+    }
+
     return () => {
+      setNum("volume", ref.current.volume);
       ipcRenderer.send("toggle-remote", null);
       window.onkeydown = null;
     };
   }, []);
 
-  const [formattedTime, formattedTotalTime] = formatLength(timeStamp, song.length);
+  const [formattedTime, formattedTotalTime] = formatLength(
+    timeStamp,
+    song.length
+  );
 
   return (
-    <div className={`player-wrapper${exit ? " closed" : ""}`} id="player-wrapper" onClick={openQueue}>
+    <div
+      className={`player-wrapper${exit ? " closed" : ""}`}
+      id="player-wrapper"
+      onClick={openQueue}
+    >
       <button onClick={close} className="close">
         <span>&#215;</span>
       </button>
@@ -187,7 +225,10 @@ function Player() {
               pausePlay();
             }}
           >
-            <PlayPause paused={paused} refs={{ box1Play, box1Pause, box2Play, box2Pause }} />
+            <PlayPause
+              paused={paused}
+              refs={{ box1Play, box1Pause, box2Play, box2Pause }}
+            />
           </button>
           <button onClick={cur === songs.length - 1 ? null : nextSong}>
             <DoubleArrow disabled={cur === song.length - 1} />
@@ -198,7 +239,11 @@ function Player() {
             {formattedTime} / {formattedTotalTime}
           </p>
           <Loop className="control" enabled={loop} onClick={toggleLoop} />
-          <Shuffle className="control" enabled={shuffle} onClick={shuffleSongs} />
+          <Shuffle
+            className="control"
+            enabled={shuffle}
+            onClick={shuffleSongs}
+          />
           <img
             src={song.liked ? songLiked : songNotLiked}
             alt={song.liked ? "liked" : "not liked"}
@@ -217,7 +262,15 @@ function Player() {
           src={`file://${song.filePath}`}
         ></audio>
       </div>
-      <input type="range" name="timeline" className="timeline" value={timeStamp} min={0} max={song.length} onChange={handleChange} />
+      <input
+        type="range"
+        name="timeline"
+        className="timeline"
+        value={timeStamp}
+        min={0}
+        max={song.length}
+        onChange={handleChange}
+      />
     </div>
   );
 }
