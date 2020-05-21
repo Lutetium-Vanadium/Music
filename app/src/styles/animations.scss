@@ -6,9 +6,9 @@ $curve: cubic-bezier(0.215, 0.61, 0.355, 1);
 .transition-group {
   position: absolute;
   width: 100%;
-  max-height: calc(100vh - 4rem);
-  padding-top: 2rem;
-  overflow-y: auto;
+  max-height: calc(100vh - 5rem);
+  padding-top: 1rem;
+  overflow-y: scroll;
 }
 
 .main {
@@ -58,23 +58,24 @@ $curve: cubic-bezier(0.215, 0.61, 0.355, 1);
   &-same-forward {
     &-enter {
       animation: zoom1 $dur/2 $curve forwards;
+      overflow: hidden;
+      z-index: 100000;
     }
 
     &-leave {
       animation: zoom2 $dur/2 $curve forwards;
-      overflow-y: hidden !important;
     }
   }
 
   &-same-backward {
     &-enter {
+      overflow: hidden;
       animation: zoom2 $dur/2 $curve reverse forwards;
     }
 
     &-leave {
       animation: zoom1 $dur/2 $curve reverse forwards;
-      overflow-y: hidden !important;
-      z-index: 2;
+      z-index: 100000;
     }
   }
 }

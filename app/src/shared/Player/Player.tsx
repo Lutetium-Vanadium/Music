@@ -31,7 +31,7 @@ function Player() {
   const [timeStamp, setTimeStamp] = useState(0);
   const [paused, setPaused] = useState(false);
   const [loop, setLoop] = useState(false);
-  const [shuffle, setShuffle] = useState(true);
+  const [shuffle, setShuffle] = useState(songs === queue);
   const [exit, setExit] = useState(false);
 
   const ref = useRef<HTMLAudioElement>();
@@ -74,9 +74,7 @@ function Player() {
     setTimeStamp(newTime);
   };
 
-  const shuffleSongs = (e: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
-    e.stopPropagation();
-
+  const _shuffleSongs = (shuffle: boolean) => {
     if (shuffle) {
       const index = songs.findIndex((_song) => _song === song);
       setQueue(songs);
@@ -85,6 +83,12 @@ function Player() {
       setQueue(randOrder([...queue], cur));
       setCur(0);
     }
+  };
+
+  const shuffleSongs = (e: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
+    e.stopPropagation();
+
+    _shuffleSongs(shuffle);
     setShuffle(!shuffle);
   };
 
@@ -105,7 +109,6 @@ function Player() {
 
   const toggleLiked = async (e: React.MouseEvent<HTMLImageElement, MouseEvent>) => {
     e.stopPropagation();
-    // await ipcRenderer.send("set:liked", song.title);
     likeSong(song);
   };
 
@@ -130,6 +133,13 @@ function Player() {
     ipcRenderer.on("jump-ahead", (evt: any, val: number) => (ref.current.currentTime += val));
     ipcRenderer.on("volume++", () => (ref.current.volume += 0.05));
     ipcRenderer.on("volume--", () => (ref.current.volume -= 0.05));
+    ipcRenderer.on("loop-song", () => setLoop((loop) => !loop));
+    ipcRenderer.on("shuffle-songs", () =>
+      setShuffle((shuffle) => {
+        _shuffleSongs(shuffle);
+        return !shuffle;
+      })
+    );
     ipcRenderer.on("prev-track", () => _prevSong());
     ipcRenderer.on("next-track", () => _nextSong());
     ipcRenderer.on("pause-play", (evt: any, isRemote: boolean) => {
@@ -148,6 +158,7 @@ function Player() {
 
     return () => {
       ipcRenderer.send("toggle-remote", null);
+      window.onkeydown = null;
     };
   }, []);
 

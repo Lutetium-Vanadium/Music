@@ -22,8 +22,8 @@
     "deploy-w": "yarn build:quiet && yarn dist -w",
     "fix-sqlite3": "electron-rebuild -w sqlite3 -p",
     "lint:react": "eslint \"./app/src/**/*.{ts,tsx}\"",
-    "lint:electron": "eslint \"./src/**/*.ts\" && tsc --noEmit",
-    "lint": "yarn lint:react && yarn lint:electron"
+    "lint:electron": "eslint \"./src/**/*.ts\"",
+    "lint": "yarn lint:react && yarn lint:electron  && tsc --noEmit"
   },
   "dependencies": {
     "axios": "^0.19.2",

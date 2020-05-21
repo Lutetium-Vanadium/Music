@@ -52,6 +52,17 @@ const createMenu = (win: BrowserWindow, store: Store<Settings, SettingsKeys>, de
         },
         { type: "separator" },
         {
+          label: "Shuffle Songs",
+          click: () => win.webContents.send("shuffle-songs"),
+          accelerator: "s",
+        },
+        {
+          label: "Loop Current Song",
+          click: () => win.webContents.send("loop-song"),
+          accelerator: "l",
+        },
+        { type: "separator" },
+        {
           label: "Jump Backward",
           click: () => win.webContents.send("jump-back", store.get("jumpBack")),
           accelerator: "PageDown",

@@ -1,5 +1,5 @@
 import React from "react";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 
 interface TransitionProps {
@@ -13,7 +13,7 @@ interface TransitionProps {
 interface Location {
   // This is the location object from react-router {i.e. the object you get from useLocation()}
   // but i couldnt find the type annotation for it
-  location: any;
+  location: ReturnType<typeof useLocation>;
   className: string;
 }
 
@@ -53,8 +53,6 @@ function Transition({ children, grid, timeout, classExtension, animate = true }:
     const unlisten = history.listen((location) => {
       setLocations((locations) => {
         const dir = getDir(location.pathname, locations[locations.length - 1].location.pathname, grid);
-
-        // if (dir === "nothing") return locations;
 
         const className = `${classExtension}-${dir}`;
 
