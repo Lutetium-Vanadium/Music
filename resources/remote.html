@@ -12,6 +12,11 @@
         color: white;
         font-family: Raleway;
       }
+     
+      html {
+        height: 100vh;
+        width: 100vw;
+      }
 
       body {
         width: 100%;
@@ -21,6 +26,7 @@
         justify-content: space-around;
         align-items: center;
         padding: 0.5rem 1rem;
+        overflow: hidden;
         -webkit-app-region: drag;
       }
 
@@ -51,6 +57,16 @@
         border-radius: 0.4rem;
         width: 5rem;
         max-width: 5rem;
+      }
+
+      .background-img {
+        position: absolute;
+        width: 100vw;
+        max-width: 100vw;
+        height: 100vw;
+        z-index: -1;
+        filter: blur(13px) brightness(75%);
+        opacity: 0.6;
       }
     </style>
   </head>
@@ -84,12 +100,14 @@
       </svg>
     </div>
     <img class="thumbnail" id="thumbnail" src="http://placekitten.com/200/200" alt="image" />
+    <img class="background-img" id="bg-img" src="http://placekitten.com/200/200" alt="image" />
 
     <script>
       const { ipcRenderer } = window.require("electron");
 
       const p = document.getElementById("title");
-      const img = document.getElementById("thumbnail");
+      const thumbnail = document.getElementById("thumbnail");
+      const bgImg = document.getElementById("bg-img");
       let paused = false;
 
       document.getElementById("prev").addEventListener("click", () => {
@@ -114,7 +132,8 @@
       });
 
       ipcRenderer.on("song-update", (evt, song) => {
-        img.src = song.thumbnail;
+        thumbnail.src = song.thumbnail;
+        bgImg.src = song.thumbnail;
         p.innerText = song.title;
       });
 
