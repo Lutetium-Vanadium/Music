@@ -38,13 +38,13 @@ class Database {
   private _n = 5;
   private ready = false;
   private promises: (() => void)[] = [];
+  numCustomAlbums: number;
 
   constructor() {
     this._init();
   }
 
   // SECTION Helpers
-
   /**
    * _init()
    *
@@ -66,8 +66,10 @@ class Database {
       )`
       ),
       this._db.run(`CREATE TABLE IF NOT EXISTS albumdata (id TEXT, imagePath TEXT, name TEXT, numSongs INT, artist TEXT)`),
-      // this._db.run(`CREATE TABLE IF NOT EXISTS customalbums (id TEXT, name TEXT, songs TEXT)`),
+      this._db.run(`CREATE TABLE IF NOT EXISTS customalbums (id TEXT, name TEXT, songs TEXT)`),
     ]);
+
+    this.numCustomAlbums = (await this._db.get<{ cnt: number }>(`SELECT COUNT(1) as cnt from customalbums`)).cnt;
 
     this.ready = true;
     this.promises.forEach((res) => res());
@@ -144,18 +146,24 @@ class Database {
     const databaseContents = await Promise.all([
       this._db.all<Song[]>(`SELECT * FROM songdata`),
       this._db.all<Album[]>(`SELECT * FROM albumdata`),
-      // this._db.all(`SELECT * FROM customalbums`)
+      this._db.all(`SELECT * FROM customalbums`),
     ]);
 
     console.log(`[SONG DATA]: ${databaseContents[0]}`);
     console.log(`[ALBUM DATA]: ${databaseContents[1]}`);
-    // console.log(`[CUSTOM ALBUMS]: ${databaseContents[2]}`)
+    console.log(`[CUSTOM ALBUMS]: ${databaseContents[2]}`);
   }
 
+  private _stringifyArr(arr: any[]) {
+    return JSON.stringify(arr).slice(1, -1);
+  }
+
+  private _parseArr(arr: string): any[] {
+    return JSON.parse(`[${arr}]`);
+  }
   // !SECTION
 
-  // SECTION songdata
-
+  // SECTION Songs
   /**
    * addSong()
    *
@@ -299,11 +307,9 @@ class Database {
 
     return Object.keys(uniqueAlbums).map((albumId) => ({ albumId, ...uniqueAlbums[albumId] }));
   }
-
   // !SECTION
 
   // SECTION Albums
-
   /**
    * addAlbum()
    *
@@ -420,11 +426,108 @@ class Database {
   async updateNumSongs({ albumId, numSongs }: { albumId: string; numSongs: number }) {
     await this._db.run(`UPDATE albumdata SET numSongs = ${numSongs} WHERE id like "${this._escape(albumId)}"`);
   }
+  // !SECTION
 
+  // SECTION Custom Albums
+  /**
+   * addCustomAlbum()
+   *
+   * @param {CustomAlbum} customAlbum Album to add
+   *
+   * Adds a custom album to the database
+   */
+  async addCustomAlbum({ name, songs }: CustomAlbum) {
+    await this._db.run(`INSERT INTO customalbums
+        (id, name, songs) VALUES
+        ("${this._escape(`cst.${this.numCustomAlbums}`)}",
+        "${this._escape(name)}",
+        "${this._stringifyArr(songs)}")`);
+    this.numCustomAlbums++;
+  }
+
+  /**
+   * deleteCustomAlbum()
+   *
+   * @param {string} id Id of album to delete
+   *
+   * Deletes album from database
+   */
+  async deleteCustomAlbum(id: string) {
+    await this._db.run(`DELETE FROM customalbums WHERE id LIKE "${this._escape(id)}"`);
+    this.numCustomAlbums--;
+  }
+
+  /**
+   * addSongToAlbum()
+   *
+   * @param {string} id Id of album to add to
+   * @param {string} songName Name of the song to add
+   *
+   * Adds the songName to the custom album
+   */
+  async addSongToAlbum(id: string, songName: string) {
+    const { songs } = await this.getCustomAlbumDetails(id);
+    songs.push(songName);
+    await this._db.run(`UPDATE customalbums SET songs = ${this._stringifyArr(songs)} WHERE id LIKE "${this._escape(id)}"`);
+  }
+
+  /**
+   * deleteSongFromAlbum()
+   *
+   * @param {string} id Id of album to delete from
+   * @param {string} songName Name of the song to delete
+   *
+   * Removes songName to the custom album
+   */
+  async deleteSongFromAlbum(id: string, songName: string) {
+    const { songs } = await this.getCustomAlbumDetails(id);
+
+    await this._db.run(
+      `UPDATE customalbums SET songs = ${this._stringifyArr(songs.filter((song) => song !== songName))} WHERE id LIKE "${this._escape(id)}"`
+    );
+  }
+
+  /**
+   * getAllCustomAlbums()
+   *
+   * Returns details of all the custom albums
+   */
+  async getAllCustomAlbums(): Promise<CustomAlbum[]> {
+    const albums = await this._db.all<DBCustomAlbum[]>(`SELECT * FROM customalbums BY LOWER(title), title`);
+
+    return albums.map((album) => ({ ...album, songs: this._parseArr(album.songs) }));
+  }
+
+  /**
+   * getCustomAlbumDetails()
+   *
+   * @param {string} id Id of the album to get
+   *
+   * Gets the details of a custom Album
+   */
+  async getCustomAlbumDetails(id: string): Promise<CustomAlbum> {
+    const album = await this._db.get<DBCustomAlbum>(`SELECT * FROM customalbums WHERE id LIKE "${this._escape(id)}"`);
+    return {
+      ...album,
+      songs: this._parseArr(album.songs),
+    };
+  }
+
+  /**
+   * getCustomAlbumSongs()
+   *
+   * @param {string} id The id of the album whose songs should be returned
+   *
+   * It returns songs in the album
+   */
+  async getCustomAlbumSongs(id: string) {
+    const { songs } = await this._db.get<{ songs: string }>(`SELECT songs FROM customalbums WHERE id LIKE "${this._escape(id)}"`);
+
+    return this._db.all<Song[]>(`SELECT * FROM songdata WHERE title IN (${songs})`);
+  }
   // !SECTION
 
   // SECTION Artists
-
   /**
    * getArtists()
    *

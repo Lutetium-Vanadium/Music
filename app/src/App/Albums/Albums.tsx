@@ -10,7 +10,7 @@ function Albums() {
   const [albums, setAlbums] = useState<Album[]>([]);
 
   useEffect(() => {
-    ipcRenderer.invoke("get:top-albums", false).then((res: Album[]) => setAlbums(res));
+    ipcRenderer.invoke("get:top-albums", false).then((res: Album[]) => setAlbums(res.sort((a, b) => (a.name > b.name ? 1 : -1))));
   }, []);
 
   return (
