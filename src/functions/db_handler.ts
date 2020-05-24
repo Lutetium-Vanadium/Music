@@ -43,6 +43,8 @@ class Database {
     this._init();
   }
 
+  // SECTION Helpers
+
   /**
    * _init()
    *
@@ -64,7 +66,7 @@ class Database {
       )`
       ),
       this._db.run(`CREATE TABLE IF NOT EXISTS albumdata (id TEXT, imagePath TEXT, name TEXT, numSongs INT, artist TEXT)`),
-      // this._db.run(`CREATE TABLE IF NOT EXISTS customalbums (i TEXT, name TEXT, songs TEXT)`),
+      // this._db.run(`CREATE TABLE IF NOT EXISTS customalbums (id TEXT, name TEXT, songs TEXT)`),
     ]);
 
     this.ready = true;
@@ -111,6 +113,50 @@ class Database {
   }
 
   /**
+   * clear()
+   *
+   * @param {string} table Table to delete
+   *
+   * clears all entries in the specified database
+   */
+  @catchError
+  async clear(table: string) {
+    await this._db.run(`DELETE FROM ${table}`);
+  }
+
+  /**
+   * close()
+   *
+   * Ends the connection to the database
+   */
+  @catchError
+  close() {
+    return this._db.close();
+  }
+
+  /**
+   * print()
+   *
+   * Prints the whole database
+   */
+  @catchError
+  async print() {
+    const databaseContents = await Promise.all([
+      this._db.all<Song[]>(`SELECT * FROM songdata`),
+      this._db.all<Album[]>(`SELECT * FROM albumdata`),
+      // this._db.all(`SELECT * FROM customalbums`)
+    ]);
+
+    console.log(`[SONG DATA]: ${databaseContents[0]}`);
+    console.log(`[ALBUM DATA]: ${databaseContents[1]}`);
+    // console.log(`[CUSTOM ALBUMS]: ${databaseContents[2]}`)
+  }
+
+  // !SECTION
+
+  // SECTION songdata
+
+  /**
    * addSong()
    *
    * @param {Song} song The song to be added
@@ -147,6 +193,16 @@ class Database {
   }
 
   /**
+   * all()
+   *
+   * Returns every song in the database
+   */
+  @catchError
+  all() {
+    return this._db.all<Song[]>(`SELECT * FROM songdata ORDER BY LOWER(title), title`);
+  }
+
+  /**
    *
    * @param {string} songTitle The title to look up
    *
@@ -160,6 +216,56 @@ class Database {
   }
 
   /**
+   * mostPopularSongs()
+   *
+   * @param {boolean} limit Controls if limited songs need to be returned
+   *
+   * If not limited all albums are sent
+   * If limited the top 'this._n' number of songs which were heard by the user using this app
+   * ~ note Any song not heard using this app will obviously not show up and
+   *   if a song is played multiple times within a minute if the user hit forward backward
+   *   continously will be picked up as seperate times
+   */
+  @catchError
+  mostPopularSongs(limit: boolean) {
+    return this._db.all<Song[]>(`SELECT * FROM songdata ORDER BY numListens DESC${limit ? ` LIMIT ${this._n}` : ""}`);
+  }
+
+  /**
+   * increaseNumListens()
+   *
+   * @param {string} filePath A way to id the song as no 2 files can have the same path
+   *
+   * Updates a particular songs times listened by one
+   */
+  @catchError
+  async incrementNumListens(filePath: string) {
+    await this._db.run(`UPDATE songdata SET numListens = numListens + 1 WHERE filePath LIKE "${this._escape(filePath)}"`);
+  }
+
+  /**
+   * liked()
+   *
+   * Returns all the liked songs
+   */
+  @catchError
+  liked() {
+    return this._db.all<Song[]>(`SELECT * FROM songdata WHERE liked ORDER BY LOWER(title), title`);
+  }
+
+  /**
+   * changeLiked()
+   *
+   * @param {string} title The title of the song to be liked/disliked
+   *
+   * Inverts the liked value of the song - works as both dislike and like
+   */
+  @catchError
+  async changeLiked(title: string) {
+    await this._db.run(`UPDATE songdata SET liked = NOT liked WHERE title LIKE "${this._escape(title)}"`);
+  }
+
+  /**
    * albumSongs()
    *
    * @param albumId The albumId for the album
@@ -170,17 +276,6 @@ class Database {
   albumSongs(albumId: string) {
     return this._db.all<Song[]>(`SELECT * FROM songdata WHERE albumId LIKE "${this._escape(albumId)}"`);
   }
-
-  /**
-   * all()
-   *
-   * Returns every song in the database
-   */
-  @catchError
-  all() {
-    return this._db.all<Song[]>(`SELECT * FROM songdata ORDER BY LOWER(title), title`);
-  }
-
   /**
    * albumsFromSongs()
    *
@@ -205,89 +300,9 @@ class Database {
     return Object.keys(uniqueAlbums).map((albumId) => ({ albumId, ...uniqueAlbums[albumId] }));
   }
 
-  /**
-   * mostPopularAlbums()
-   *
-   * @param {boolean} limit Controls if limited albums need to be returned
-   *
-   * If not limited all albums are sent
-   * If limited the top 'this._n' albums stored in the database are returned
-   * - the top albums are essentially based on the most number of database entries that
-   *   use a single album picture as its thumbnail
-   *   ~ note this may be wrong if multiple songs from the same album are there, but they use different
-   *     album id according to the napster result
-   */
-  @catchError
-  mostPopularAlbums(limit: boolean) {
-    return this._db.all<Album[]>(
-      `SELECT * FROM albumdata
-        ORDER BY numSongs DESC
-        ${limit ? `LIMIT ${this._n}` : ""}`
-    );
-  }
+  // !SECTION
 
-  /**
-   * mostPopularSongs()
-   *
-   * @param {boolean} limit Controls if limited songs need to be returned
-   *
-   * If not limited all albums are sent
-   * If limited the top 'this._n' number of songs which were heard by the user using this app
-   * ~ note Any song not heard using this app will obviously not show up and
-   *   if a song is played multiple times within a minute if the user hit forward backward
-   *   continously will be picked up as seperate times
-   */
-  @catchError
-  mostPopularSongs(limit: boolean) {
-    return this._db.all<Song[]>(`SELECT * FROM songdata ORDER BY numListens DESC${limit ? ` LIMIT ${this._n}` : ""}`);
-  }
-
-  /**
-   * liked()
-   *
-   * Returns all the liked songs
-   */
-  @catchError
-  liked() {
-    return this._db.all<Song[]>(`SELECT * FROM songdata WHERE liked ORDER BY LOWER(title), title`);
-  }
-
-  /**
-   * increaseNumListens()
-   *
-   * @param {string} filePath A way to id the song as no 2 files can have the same path
-   *
-   * Updates a particular songs times listened by one
-   */
-  @catchError
-  async incrementNumListens(filePath: string) {
-    await this._db.run(`UPDATE songdata SET numListens = numListens + 1 WHERE filePath LIKE "${this._escape(filePath)}"`);
-  }
-
-  /**
-   * changeLiked()
-   *
-   * @param {string} title The title of the song to be liked/disliked
-   *
-   * Inverts the liked value of the song - works as both dislike and like
-   */
-  @catchError
-  async changeLiked(title: string) {
-    await this._db.run(`UPDATE songdata SET liked = NOT liked WHERE title LIKE "${this._escape(title)}"`);
-  }
-
-  /**
-   * exists()
-   *
-   * @param {string} albumId The id of the album
-   *
-   * Checks if a certain album exists in the database
-   */
-  @catchError
-  async exists(albumId: string) {
-    const data = await this._db.all<Album[]>(`SELECT * FROM albumdata WHERE id like "${this._escape(albumId)}"`);
-    return data.length > 0;
-  }
+  // SECTION Albums
 
   /**
    * addAlbum()
@@ -309,6 +324,31 @@ class Database {
   }
 
   /**
+   * deleteAlbum()
+   *
+   * @param {string} albumId ID of album to delete
+   *
+   * Deletes the album with the id given
+   */
+  @catchError
+  async deleteAlbum(albumId: string) {
+    await this._db.run(`DELETE FROM albumdata WHERE id LIKE "${this._escape(albumId)}"`);
+  }
+
+  /**
+   * exists()
+   *
+   * @param {string} albumId The id of the album
+   *
+   * Checks if a certain album exists in the database
+   */
+  @catchError
+  async exists(albumId: string) {
+    const data = await this._db.all<Album[]>(`SELECT * FROM albumdata WHERE id like "${this._escape(albumId)}"`);
+    return data.length > 0;
+  }
+
+  /**
    * albumDetails()
    *
    * @param {string} id The id of the album
@@ -318,6 +358,27 @@ class Database {
   @catchError
   albumDetails(id: string) {
     return this._db.get<Album>(`SELECT * FROM albumdata where id LIKE "${this._escape(id)}"`);
+  }
+
+  /**
+   * mostPopularAlbums()
+   *
+   * @param {boolean} limit Controls if limited albums need to be returned
+   *
+   * If not limited all albums are sent
+   * If limited the top 'this._n' albums stored in the database are returned
+   * - the top albums are essentially based on the most number of database entries that
+   *   use a single album picture as its thumbnail
+   *   ~ note this may be wrong if multiple songs from the same album are there, but they use different
+   *     album id according to the napster result
+   */
+  @catchError
+  mostPopularAlbums(limit: boolean) {
+    return this._db.all<Album[]>(
+      `SELECT * FROM albumdata
+        ORDER BY numSongs DESC
+        ${limit ? `LIMIT ${this._n}` : ""}`
+    );
   }
 
   /**
@@ -360,33 +421,9 @@ class Database {
     await this._db.run(`UPDATE albumdata SET numSongs = ${numSongs} WHERE id like "${this._escape(albumId)}"`);
   }
 
-  /**
-   * deleteAlbum()
-   *
-   * @param {string} albumId ID of album to delete
-   *
-   * Deletes the album with the id given
-   */
-  @catchError
-  async deleteAlbum(albumId: string) {
-    await this._db.run(`DELETE FROM albumdata WHERE id LIKE "${this._escape(albumId)}"`);
-  }
+  // !SECTION
 
-  /**
-   * artistDetails()
-   *
-   * @param {string} name Name of the artist
-   *
-   * Returns the details of the artist
-   */
-  @catchError
-  async artistDetails(name: string) {
-    const albums = await this._db.all<{ imagePath: string }[]>(
-      `SELECT imagePath FROM albumdata WHERE artist LIKE "${this._escape(name)}" ORDER BY numSongs DESC LIMIT 4`
-    );
-
-    return { name, images: albums.map((album) => album.imagePath) };
-  }
+  // SECTION Artists
 
   /**
    * getArtists()
@@ -415,44 +452,21 @@ class Database {
   }
 
   /**
-   * clear()
+   * artistDetails()
    *
-   * @param {string} table Table to delete
+   * @param {string} name Name of the artist
    *
-   * clears all entries in the specified database
+   * Returns the details of the artist
    */
   @catchError
-  async clear(table: string) {
-    await this._db.run(`DELETE FROM ${table}`);
-  }
+  async artistDetails(name: string): Promise<Artist> {
+    const albums = await this._db.all<{ imagePath: string }[]>(
+      `SELECT imagePath FROM albumdata WHERE artist LIKE "${this._escape(name)}" ORDER BY numSongs DESC LIMIT 4`
+    );
 
-  /**
-   * close()
-   *
-   * Ends the connection to the database
-   */
-  @catchError
-  close() {
-    return this._db.close();
+    return { name, images: albums.map((album) => album.imagePath) };
   }
-
-  /**
-   * print()
-   *
-   * Prints the whole database
-   */
-  @catchError
-  async print() {
-    const databaseContents = await Promise.all([
-      this._db.all<Song[]>(`SELECT * FROM songdata`),
-      this._db.all<Album[]>(`SELECT * FROM albumdata`),
-      // this._db.all(`SELECT * FROM customalbums`)
-    ]);
-
-    console.log(`[SONG DATA]: ${databaseContents[0]}`);
-    console.log(`[ALBUM DATA]: ${databaseContents[1]}`);
-    // console.log(`[CUSTOM ALBUMS]: ${databaseContents[2]}`)
-  }
+  // !SECTION
 }
 
 export default new Database();
