@@ -8,7 +8,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "start": "yarn build:electron && electron .",
+    "start": "yarn build:electron && concurrently --kill-others \"cd app && yarn watch\" \"electron .\"",
     "build": "yarn build:react && yarn build:electron",
     "build:electron": "yarn lint:electron && tsc",
     "build:react": "cd app && yarn build",
@@ -23,7 +23,8 @@
     "fix-sqlite3": "electron-rebuild -w sqlite3 -p",
     "lint:react": "eslint \"./app/src/**/*.{ts,tsx}\"",
     "lint:electron": "eslint \"./src/**/*.ts\"",
-    "lint": "yarn lint:react && yarn lint:electron  && tsc --noEmit"
+    "lint": "yarn lint:react && yarn lint:electron  && tsc --noEmit",
+    "postinstall": "yarn fix-sqlite3"
   },
   "dependencies": {
     "axios": "^0.19.2",
@@ -41,6 +42,7 @@
     "@typescript-eslint/eslint-plugin": "^2.33.0",
     "@typescript-eslint/parser": "^2.33.0",
     "babel-eslint": "10.x",
+    "concurrently": "^5.2.0",
     "electron": "^8.0.1",
     "electron-builder": "^22.6.0",
     "electron-rebuild": "^1.10.0",

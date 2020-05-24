@@ -27,8 +27,6 @@ To run the app run in developement mode:
 yarn start
 ```
 
-> This requires frontend to be run seperately
-
 <br>
 To compile electron ts files:
 
