@@ -16,16 +16,18 @@ function ContextMenu({ pos, reset, play, del, liked, toggleLiked }: ContextMenuP
   const handleMouseEnter = () => {
     if (_timeout) {
       clearTimeout(_timeout);
-      setTimeout(null);
+      _setTimeout(null);
     }
   };
 
   const handleMouseLeave = () => {
     const timeout = setTimeout(() => {
-      if (_timeout) {
-        reset();
-        _setTimeout(null);
-      }
+      _setTimeout((_timeout) => {
+        if (_timeout) {
+          reset();
+        }
+        return null;
+      });
     }, 300);
     _setTimeout(timeout);
   };

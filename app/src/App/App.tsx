@@ -122,7 +122,7 @@ function App() {
     window.addEventListener("keydown", handleKeydown);
   }, []);
 
-  const showBack = history.location.pathname.match(/\/(albums\/alb\.[0-9]*|liked|search|artists\/[a-zA-Z0-9]*)/) !== null;
+  const showBack = history.location.pathname.match(/\/(albums\/(alb|cst)\.[0-9]*|liked|search|artists\/[a-zA-Z0-9]*)/) !== null;
 
   return (
     <div>

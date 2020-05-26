@@ -229,6 +229,43 @@ $img-max: 150px;
   img {
     cursor: auto;
   }
+
+  .custom-options {
+    @include flex-box($justify: space-between, $direction: column);
+
+    margin-left: auto;
+    margin-right: 1rem;
+    height: 5.5rem;
+
+    .edit,
+    .delete {
+      padding: 0.5rem;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      width: 10ch;
+      border-radius: 0.3rem;
+
+      &:hover {
+        background-color: $highlight;
+      }
+    }
+
+    .edit {
+      background-color: $highlightd;
+
+      &:hover {
+        background-color: $highlight;
+      }
+    }
+
+    .delete {
+      background-color: #901217;
+
+      &:hover {
+        background-color: #bd0f14;
+      }
+    }
+  }
 }
 
 @keyframes bounce-in {

@@ -23,9 +23,10 @@ const initGetters = (store: Store<Settings, SettingsKeys>) => {
   // Home page methods to show popular stuff
   ipcMain.handle("get:top-songs", (evt, limit: boolean) => db.mostPopularSongs(limit));
   ipcMain.handle("get:top-albums", (evt, limit: boolean) => db.mostPopularAlbums(limit));
+  ipcMain.handle("get:custom-albums", () => db.getAllCustomAlbums());
   ipcMain.handle("get:artists", () => db.getArtists());
 
-  ipcMain.handle("get:custom-albums", () => db.getAllCustomAlbums());
+  ipcMain.handle("get:custom-album", (evt, id: string) => db.getCustomAlbumDetails(id));
   ipcMain.handle("get:album", (evt, id: string) => db.albumDetails(id));
   ipcMain.handle("get:artist", (evt, name: string) => db.artistDetails(name));
 

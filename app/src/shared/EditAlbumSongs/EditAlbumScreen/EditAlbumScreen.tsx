@@ -6,13 +6,16 @@ interface SelectSong extends Song {
   selected: boolean;
 }
 
-interface CreateAlbumProps {
+interface EditAlbumScreenProps {
+  songs?: Song[];
+  name?: string;
+  finish: (name: string, songTitles: string[]) => void;
   close: () => void;
 }
 
-function CreateAlbum({ close }: CreateAlbumProps) {
+function EditAlbumScreen({ songs: _songs = [], name: _name = "", finish, close }: EditAlbumScreenProps) {
+  const [name, setName] = useState(_name);
   const [songs, setSongs] = useState<SelectSong[]>([]);
-  const [name, setName] = useState("");
 
   const toggleSelectSong = (index: number) => {
     setSongs([...songs.slice(0, index), { ...songs[index], selected: !songs[index].selected }, ...songs.slice(index + 1)]);
@@ -21,25 +24,28 @@ function CreateAlbum({ close }: CreateAlbumProps) {
   const makeCustomAlbum = () => {
     const songTitles = songs.filter((song) => song.selected).map((song) => song.title);
 
-    ipcRenderer.send("set:custom-album", name, songTitles);
+    finish(name, songTitles);
 
     close();
   };
 
   useEffect(() => {
-    ipcRenderer.invoke("get:music-names").then((songs: Song[]) => setSongs(songs.map((song) => ({ ...song, selected: false }))));
+    ipcRenderer
+      .invoke("get:music-names")
+      .then((songs: Song[]) =>
+        setSongs(songs.map((song) => ({ ...song, selected: _songs.findIndex((_song) => _song.title === song.title) > -1 })))
+      );
   }, []);
 
   return (
     <div className="add-album-screen" onClick={(e) => e.stopPropagation()}>
       <header>
         <button onClick={close}>Cancel</button>
-        {/* <h3>Add an Album</h3> */}
         <span>
           <input type="text" value={name} placeholder="Album Name" onChange={(e) => setName(e.target.value)} />
         </span>
         <button onClick={makeCustomAlbum} disabled={name.trim().length === 0}>
-          Add
+          Finish
         </button>
       </header>
       <div className="all-songs">
@@ -61,4 +67,4 @@ function CreateAlbum({ close }: CreateAlbumProps) {
   );
 }
 
-export default CreateAlbum;
+export default EditAlbumScreen;

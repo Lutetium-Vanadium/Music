@@ -69,7 +69,8 @@ class Database {
       this._db.run(`CREATE TABLE IF NOT EXISTS customalbums (id TEXT, name TEXT, songs TEXT)`),
     ]);
 
-    this.numCustomAlbums = (await this._db.get<{ cnt: number }>(`SELECT COUNT(1) as cnt from customalbums`)).cnt;
+    this.numCustomAlbums =
+      parseInt((await this._db.get<{ id: string } | undefined>(`SELECT id  from customalbums ORDER BY id DESC`))?.id.slice(4)) || 0;
 
     this.ready = true;
     this.promises.forEach((res) => res());
@@ -459,37 +460,20 @@ class Database {
   }
 
   /**
-   * addSongToAlbum()
+   * updateSongToAlbum()
    *
    * @param {string} id Id of album to add to
-   * @param {string} songName Name of the song to add
+   * @param {string} name Name of the album (Need not be a different name)
+   * @param {string} songs New songs
    *
    * Adds the songName to the custom album
    */
-  async addSongsToAlbum(id: string, ...songNames: string[]) {
-    const { songs } = await this.getCustomAlbumDetails(id);
-    songs.push(...songNames);
-    await this._db.run(`UPDATE customalbums SET songs = '${this._stringifyArr(songs)}' WHERE id LIKE "${this._escape(id)}"`);
-  }
-
-  /**
-   * deleteSongFromAlbum()
-   *
-   * @param {string} id Id of album to delete from
-   * @param {string} songName Name of the song to delete
-   *
-   * Removes songName to the custom album
-   */
-  async deleteSongFromAlbum(id: string, songName: string) {
-    const { songs } = await this.getCustomAlbumDetails(id);
-
+  async updateCustomAlbum(id: string, name: string, songs: string[]) {
     await this._db.run(
-      `UPDATE customalbums SET songs = '${this._stringifyArr(songs.filter((song) => song !== songName))}' WHERE id LIKE "${this._escape(
-        id
-      )}"`
+      `UPDATE customalbums SET name = "${this._escape(name)}", songs = '${this._stringifyArr(songs)}' WHERE id LIKE "${this._escape(id)}"`
     );
+    return Promise.all([this.getCustomAlbumDetails(id), this.getCustomAlbumSongs(id)]);
   }
-
   /**
    * getAllCustomAlbums()
    *
@@ -526,7 +510,7 @@ class Database {
   async getCustomAlbumSongs(id: string) {
     const { songs } = await this._db.get<{ songs: string }>(`SELECT songs FROM customalbums WHERE id LIKE "${this._escape(id)}"`);
 
-    return this._db.all<Song[]>(`SELECT * FROM songdata WHERE title IN (${songs})`);
+    return this._db.all<Song[]>(`SELECT * FROM songdata WHERE title IN (${songs}) ORDER BY LOWER(title), title`);
   }
   // !SECTION
 

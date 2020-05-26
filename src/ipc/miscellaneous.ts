@@ -58,9 +58,9 @@ const initMiscellaneous = (store: Store<Settings, SettingsKeys>, win: BrowserWin
     }
   });
 
-  ipcMain.on("delete:custom-album-song", (evt, id: string, songName: string) => db.deleteSongFromAlbum(id, songName));
-
-  ipcMain.on("add:custom-album-songs", (evt, id: string, songs: string[]) => db.addSongsToAlbum(id, ...songs));
+  ipcMain.on("create:custom-album", async (evt, name: string, songs: string[]) => {
+    win.webContents.send("update:custom-albums", await db.addCustomAlbum({ name, songs }));
+  });
 
   // When the search page is clicked out of, this is used to reset the input field
   ipcMain.on("reset-global-search", () => {
