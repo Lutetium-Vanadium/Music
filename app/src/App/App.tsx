@@ -104,7 +104,6 @@ function App() {
         if (evt.key === "ArrowLeft") {
           for (const place of places) {
             if (place.regex.test(history.location.pathname)) {
-              // console.log(place.regex, history.location.pathname);
               history.push(place.left);
               break;
             }
@@ -114,7 +113,6 @@ function App() {
             if (place.regex.test(history.location.pathname)) {
               history.push(place.right);
               break;
-              // console.log(place.regex, history.location.pathname);
             }
           }
         }

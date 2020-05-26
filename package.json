@@ -8,7 +8,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "start": "yarn build:electron && concurrently --kill-others \"cd app && yarn watch\" \"electron .\"",
+    "start": "yarn build:electron && electron .",
     "build": "yarn build:react && yarn build:electron",
     "build:electron": "yarn lint:electron && tsc",
     "build:react": "cd app && yarn build",

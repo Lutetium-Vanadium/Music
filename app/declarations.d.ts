@@ -46,6 +46,12 @@ declare type Album = {
   artist: string;
 };
 
+declare type CustomAlbum = {
+  id: string;
+  name: string;
+  songs: string[];
+};
+
 declare type Artist = {
   name: string;
   images: string[];

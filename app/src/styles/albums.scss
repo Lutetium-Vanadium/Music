@@ -12,13 +12,176 @@ $img-max: 150px;
 .content {
   @include flex-box(flex-start, flex-start);
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax($img-size, 1fr));
-  gap: 8rem;
+  grid-template-columns: repeat(auto-fit, minmax($img-max, $img-size));
+  gap: 4rem;
   width: 100%;
 }
 
 .album {
   @include flex-box($direction: column);
+  max-width: $img-max * 1.5;
+}
+
+.add-album-btn {
+  width: $img-size;
+  height: $img-size;
+  max-width: $img-max;
+  max-height: $img-max;
+  background-color: $bglo;
+  border-radius: 0.6rem;
+}
+
+.add-album-screen-wrapper {
+  z-index: 1000;
+  background-color: #00000042;
+  filter: blur(50%);
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  right: 0;
+  bottom: 0;
+  backdrop-filter: blur(5px);
+  transition: 0.3s;
+
+  &.-disabled {
+    pointer-events: none;
+    backdrop-filter: blur(0);
+    background-color: #00000000;
+  }
+}
+
+.add-album-screen {
+  position: absolute;
+  height: 70vh;
+  width: 70vw;
+  min-width: 300px;
+  max-width: 800px;
+  background-color: $bg;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 0.75rem;
+  animation: bounce-in 0.4s cubic-bezier(0.5, 0.23, 0.45, 1.37);
+  transform-origin: center;
+  position: relative;
+
+  header {
+    @include flex-box($justify: space-around);
+
+    height: 5rem;
+    width: 100%;
+
+    span {
+      border-bottom: 3px solid $bgl;
+
+      input {
+        font-size: 1.5rem;
+        text-align: center;
+        display: inline-block;
+
+        &::placeholder {
+          color: #aaaaaa;
+        }
+
+        // box-shadow: 0 3px 0 0 $highlightl;
+      }
+
+      &::after {
+        content: "";
+        display: block;
+        position: relative;
+        left: 50%;
+        width: 0%;
+        transform: translate(-50%, 3px);
+        height: 3px;
+        background-color: $highlight;
+        transition: 0.3s;
+      }
+
+      &:focus-within::after,
+      input:placeholder-shown::after,
+      &:hover::after {
+        width: 100%;
+      }
+    }
+
+    button {
+      padding: 0.5rem;
+      background-color: $highlightd;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      width: 10ch;
+      border-radius: 0.3rem;
+
+      &:hover {
+        background-color: $highlight;
+      }
+
+      &:disabled {
+        background-color: #383838;
+        cursor: auto;
+      }
+    }
+  }
+
+  .all-songs {
+    max-height: calc(70vh - 5.8rem);
+    overflow-y: scroll;
+    overflow-x: hidden;
+
+    > div {
+      @include flex-box;
+
+      width: calc(100% - 1.3rem);
+      height: 5rem;
+      padding: 0.25rem 1rem;
+      margin: 0.25rem 1rem;
+      cursor: pointer;
+      transition: 0.2s;
+      border-radius: 0.3rem;
+
+      .thumbnail {
+        height: 3.5rem;
+        width: 3.5rem;
+        max-width: 3.5rem;
+        border-radius: 0.3rem;
+      }
+
+      .svg {
+        display: block;
+        height: 1.5rem;
+        margin-right: 1.3rem;
+
+        .unchecked {
+          stroke: $highlightl;
+          fill: none;
+          stroke-width: 20;
+          stroke-dasharray: 200;
+          stroke-dashoffset: 200;
+          animation: uncheck 0.75s linear forwards;
+        }
+
+        .check {
+          stroke: $highlightl;
+          fill: none;
+          stroke-width: 20;
+          stroke-dasharray: 200;
+          stroke-dashoffset: 0;
+          animation: check 0.75s linear forwards;
+        }
+
+        .box {
+          stroke: #555555;
+          stroke-width: 7;
+          fill: none;
+        }
+      }
+
+      &:hover {
+        background-color: $bglo;
+      }
+    }
+  }
 }
 
 .album-img {
@@ -65,5 +228,33 @@ $img-max: 150px;
 
   img {
     cursor: auto;
+  }
+}
+
+@keyframes bounce-in {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+  }
+
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes check {
+  0% {
+    stroke-dashoffset: -200;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes uncheck {
+  0% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: 200;
   }
 }

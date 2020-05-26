@@ -68,7 +68,7 @@ app.allowRendererProcessReuse = true;
 // Main window creation
 app.on("ready", () => {
   win = new BrowserWindow({
-    width: 1130,
+    width: 1170,
     height: 840,
     webPreferences: {
       nodeIntegration: true,
@@ -80,7 +80,9 @@ app.on("ready", () => {
   if (dev) {
     win.loadURL("http://localhost:1234/");
   } else {
-    win.loadURL("file://" + path.join(app.getAppPath(), "public", "index.html"));
+    win.loadURL(
+      "file://" + path.join(app.getAppPath(), "public", "index.html")
+    );
   }
 
   // Initialize everything
@@ -92,9 +94,15 @@ app.on("ready", () => {
   checkVersion();
 
   // Register media controls
-  globalShortcut.register("MediaPlayPause", () => win?.webContents.send("pause-play", false));
-  globalShortcut.register("MediaNextTrack", () => win?.webContents.send("next-track"));
-  globalShortcut.register("MediaPreviousTrack", () => win?.webContents.send("prev-track"));
+  globalShortcut.register("MediaPlayPause", () =>
+    win?.webContents.send("pause-play", false)
+  );
+  globalShortcut.register("MediaNextTrack", () =>
+    win?.webContents.send("next-track")
+  );
+  globalShortcut.register("MediaPreviousTrack", () =>
+    win?.webContents.send("prev-track")
+  );
   globalShortcut.register("MediaStop", () => {
     remote?.close();
   });
@@ -122,7 +130,9 @@ const toggleHelp = () => {
 
     help.on("close", () => (help = null));
 
-    help.loadURL("file://" + path.join(app.getAppPath(), "resources", "help.html"));
+    help.loadURL(
+      "file://" + path.join(app.getAppPath(), "resources", "help.html")
+    );
   } else {
     help.close();
   }
@@ -144,7 +154,9 @@ const setUpRemote = (song: Song) => {
 
   remote.on("close", () => (remote = null));
 
-  remote.loadURL("file://" + path.join(app.getAppPath(), "resources", "remote.html"));
+  remote.loadURL(
+    "file://" + path.join(app.getAppPath(), "resources", "remote.html")
+  );
 
   ipcMain.on("remote-ready", () => {
     remote?.webContents.send("song-update", song);
@@ -154,14 +166,17 @@ const setUpRemote = (song: Song) => {
 // NOTE these aren't placed in a seperate file, like other ipc functions in `/ipc`,
 // as they require the updated `remote` variable to function
 
-ipcMain.on("set:control-window", (evt, value: boolean, playing: boolean, song: Song) => {
-  store.set("controlWindow", value);
-  if (!remote && value && playing) {
-    setUpRemote(song);
-  } else if (remote && !value) {
-    remote.close();
+ipcMain.on(
+  "set:control-window",
+  (evt, value: boolean, playing: boolean, song: Song) => {
+    store.set("controlWindow", value);
+    if (!remote && value && playing) {
+      setUpRemote(song);
+    } else if (remote && !value) {
+      remote.close();
+    }
   }
-});
+);
 
 // Methods to handle the remote controller
 ipcMain.on("toggle-remote", (evt, song: Song) => {

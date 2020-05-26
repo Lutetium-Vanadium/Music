@@ -155,7 +155,7 @@ class Database {
   }
 
   private _stringifyArr(arr: any[]) {
-    return JSON.stringify(arr).slice(1, -1);
+    return this._escape(JSON.stringify(arr).slice(1, -1), Quotes.Single);
   }
 
   private _parseArr(arr: string): any[] {
@@ -436,13 +436,14 @@ class Database {
    *
    * Adds a custom album to the database
    */
-  async addCustomAlbum({ name, songs }: CustomAlbum) {
+  async addCustomAlbum({ name, songs }: { name: string; songs: string[] }) {
     await this._db.run(`INSERT INTO customalbums
         (id, name, songs) VALUES
         ("${this._escape(`cst.${this.numCustomAlbums}`)}",
         "${this._escape(name)}",
-        "${this._stringifyArr(songs)}")`);
+        '${this._stringifyArr(songs)}')`);
     this.numCustomAlbums++;
+    return this.getAllCustomAlbums();
   }
 
   /**
@@ -465,10 +466,10 @@ class Database {
    *
    * Adds the songName to the custom album
    */
-  async addSongToAlbum(id: string, songName: string) {
+  async addSongsToAlbum(id: string, ...songNames: string[]) {
     const { songs } = await this.getCustomAlbumDetails(id);
-    songs.push(songName);
-    await this._db.run(`UPDATE customalbums SET songs = ${this._stringifyArr(songs)} WHERE id LIKE "${this._escape(id)}"`);
+    songs.push(...songNames);
+    await this._db.run(`UPDATE customalbums SET songs = '${this._stringifyArr(songs)}' WHERE id LIKE "${this._escape(id)}"`);
   }
 
   /**
@@ -483,7 +484,9 @@ class Database {
     const { songs } = await this.getCustomAlbumDetails(id);
 
     await this._db.run(
-      `UPDATE customalbums SET songs = ${this._stringifyArr(songs.filter((song) => song !== songName))} WHERE id LIKE "${this._escape(id)}"`
+      `UPDATE customalbums SET songs = '${this._stringifyArr(songs.filter((song) => song !== songName))}' WHERE id LIKE "${this._escape(
+        id
+      )}"`
     );
   }
 
@@ -493,7 +496,7 @@ class Database {
    * Returns details of all the custom albums
    */
   async getAllCustomAlbums(): Promise<CustomAlbum[]> {
-    const albums = await this._db.all<DBCustomAlbum[]>(`SELECT * FROM customalbums BY LOWER(title), title`);
+    const albums = await this._db.all<DBCustomAlbum[]>(`SELECT * FROM customalbums ORDER BY LOWER(name), name`);
 
     return albums.map((album) => ({ ...album, songs: this._parseArr(album.songs) }));
   }

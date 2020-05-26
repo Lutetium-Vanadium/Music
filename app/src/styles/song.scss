@@ -10,23 +10,6 @@
   transition: background-color linear 140ms;
   border-radius: 0.5rem;
 
-  .thumbnail {
-    flex: 1;
-    border-radius: 0.8rem;
-    max-height: 5rem;
-    max-width: 5rem;
-  }
-
-  .details {
-    flex: 9;
-    padding-left: 3rem;
-
-    p {
-      margin-left: 0.7rem;
-      margin-top: 0.3rem;
-    }
-  }
-
   &.-highlight {
     background-color: $bgm;
 
@@ -38,8 +21,24 @@
   &:hover {
     background-color: $bglo;
   }
+}
+.thumbnail {
+  flex: 1;
+  border-radius: 0.8rem;
+  max-height: 5rem;
+  max-width: 5rem;
+}
 
-  .length {
-    margin-right: 2rem;
+.details {
+  flex: 9;
+  padding-left: 3rem;
+
+  p {
+    margin-left: 0.7rem;
+    margin-top: 0.3rem;
   }
+}
+
+.length {
+  margin-right: 2rem;
 }

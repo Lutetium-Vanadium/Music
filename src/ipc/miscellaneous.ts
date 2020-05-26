@@ -46,6 +46,22 @@ const initMiscellaneous = (store: Store<Settings, SettingsKeys>, win: BrowserWin
     }
   });
 
+  ipcMain.handle("delete:custom-album", async (evt, album: CustomAlbum) => {
+    try {
+      console.log("Deleting", album.name);
+      await db.deleteCustomAlbum(album.id);
+      console.log("Finished deletion.");
+      return true;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  });
+
+  ipcMain.on("delete:custom-album-song", (evt, id: string, songName: string) => db.deleteSongFromAlbum(id, songName));
+
+  ipcMain.on("add:custom-album-songs", (evt, id: string, songs: string[]) => db.addSongsToAlbum(id, ...songs));
+
   // When the search page is clicked out of, this is used to reset the input field
   ipcMain.on("reset-global-search", () => {
     win.webContents.send("reset-search-box");

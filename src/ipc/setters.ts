@@ -34,6 +34,10 @@ const initSetters = (store: Store<Settings, SettingsKeys>, win: BrowserWindow) =
   });
 
   ipcMain.on("set:liked", (evt, title: string) => db.changeLiked(title));
+
+  ipcMain.on("set:custom-album", async (evt, name: string, songs: string[]) => {
+    win.webContents.send("update:custom-albums", await db.addCustomAlbum({ name, songs }));
+  });
 };
 
 export default initSetters;
