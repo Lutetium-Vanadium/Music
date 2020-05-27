@@ -22,20 +22,24 @@
     background-color: $bglo;
   }
 }
-.thumbnail {
-  flex: 1;
-  border-radius: 0.8rem;
-  max-height: 5rem;
-  max-width: 5rem;
-}
 
-.details {
-  flex: 9;
-  padding-left: 3rem;
+.song,
+.all-songs {
+  .thumbnail {
+    flex: 1;
+    border-radius: 0.8rem;
+    max-height: 5rem;
+    max-width: 5rem;
+  }
 
-  p {
-    margin-left: 0.7rem;
-    margin-top: 0.3rem;
+  .details {
+    flex: 9;
+    padding-left: 3rem;
+
+    p {
+      margin-left: 0.7rem;
+      margin-top: 0.3rem;
+    }
   }
 }
 
