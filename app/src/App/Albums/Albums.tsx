@@ -15,7 +15,9 @@ function Albums() {
 
   useEffect(() => {
     // Show in alphabetical order
-    ipcRenderer.invoke("get:top-albums", false).then((res: Album[]) => setAlbums(res.sort((a, b) => (a.name > b.name ? 1 : -1))));
+    ipcRenderer
+      .invoke("get:top-albums", false)
+      .then((res: Album[]) => setAlbums(res.sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1))));
     ipcRenderer.invoke("get:custom-albums").then(setCustomAlbums);
 
     ipcRenderer.on("update:custom-albums", (evt, albums: CustomAlbum[]) => setCustomAlbums(albums));
@@ -27,7 +29,7 @@ function Albums() {
 
   return (
     <div className="albums">
-      <EditAlbumSongs finish={createAlbum} show={showCreateAlbum} close={() => setShowCreateAlbum(false)} />
+      <EditAlbumSongs finish={createAlbum} finishButtonName={"Add"} show={showCreateAlbum} close={() => setShowCreateAlbum(false)} />
       <h1 className="header">Custom Albums</h1>
       <div className="content" style={{ marginBottom: "5rem" }}>
         <Link to="/albums/liked" className="album">

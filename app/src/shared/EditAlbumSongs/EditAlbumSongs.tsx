@@ -5,6 +5,7 @@ interface EditAlbumSongsProps {
   show: boolean;
   songs?: Song[];
   name?: string;
+  finishButtonName: string;
   finish: (name: string, songTitles: string[]) => void;
   close: () => void;
 }

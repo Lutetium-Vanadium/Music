@@ -82,7 +82,14 @@ function Album({
 
   return (
     <div className="music">
-      <EditAlbumSongs finish={editAlbum} close={() => setShowEditAlbum(false)} show={showEditAlbum} name={album.name} songs={songs} />
+      <EditAlbumSongs
+        finish={editAlbum}
+        finishButtonName={"Edit"}
+        close={() => setShowEditAlbum(false)}
+        show={showEditAlbum}
+        name={album.name}
+        songs={songs}
+      />
       <div className="album-header">
         <img className="album-img" src={album.imagePath} alt="album" />
         <h1 className="header">{album.name}</h1>

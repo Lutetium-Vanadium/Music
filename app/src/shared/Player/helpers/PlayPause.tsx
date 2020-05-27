@@ -20,14 +20,14 @@ interface PlayPauseProps {
 
 function PlayPause({ paused, refs }: PlayPauseProps) {
   return (
-    <svg id="svg" viewBox="0 0 80 100">
+    <svg viewBox="0 0 80 100">
       <polygon fill="white" points={paused ? pauseBox1 : playBox1}>
-        <animate begin="indefinite" attributeName="points" dur="100ms" fill="freeze" id="box1-pause" to={pauseBox1} ref={refs.box1Pause} />
-        <animate begin="indefinite" attributeName="points" dur="100ms" fill="freeze" id="box1-play" ref={refs.box1Play} to={playBox1} />
+        <animate begin="indefinite" attributeName="points" dur="100ms" fill="freeze" to={pauseBox1} ref={refs.box1Pause} />
+        <animate begin="indefinite" attributeName="points" dur="100ms" fill="freeze" ref={refs.box1Play} to={playBox1} />
       </polygon>
       <polygon fill="white" points={paused ? pauseBox2 : playBox2}>
-        <animate begin="indefinite" id="box2-pause" ref={refs.box2Pause} attributeName="points" dur="100ms" fill="freeze" to={pauseBox2} />
-        <animate begin="indefinite" id="box2-play" ref={refs.box2Play} attributeName="points" fill="freeze" dur="100ms" to={playBox2} />
+        <animate begin="indefinite" ref={refs.box2Pause} attributeName="points" dur="100ms" fill="freeze" to={pauseBox2} />
+        <animate begin="indefinite" ref={refs.box2Play} attributeName="points" fill="freeze" dur="100ms" to={playBox2} />
       </polygon>
     </svg>
   );

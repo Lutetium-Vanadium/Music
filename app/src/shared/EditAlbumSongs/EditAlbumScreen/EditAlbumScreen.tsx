@@ -9,11 +9,12 @@ interface SelectSong extends Song {
 interface EditAlbumScreenProps {
   songs?: Song[];
   name?: string;
+  finishButtonName: string;
   finish: (name: string, songTitles: string[]) => void;
   close: () => void;
 }
 
-function EditAlbumScreen({ songs: _songs = [], name: _name = "", finish, close }: EditAlbumScreenProps) {
+function EditAlbumScreen({ songs: _songs = [], name: _name = "", finishButtonName, finish, close }: EditAlbumScreenProps) {
   const [name, setName] = useState(_name);
   const [songs, setSongs] = useState<SelectSong[]>([]);
 
@@ -45,7 +46,7 @@ function EditAlbumScreen({ songs: _songs = [], name: _name = "", finish, close }
           <input type="text" value={name} placeholder="Album Name" onChange={(e) => setName(e.target.value)} />
         </span>
         <button onClick={makeCustomAlbum} disabled={name.trim().length === 0}>
-          Finish
+          {finishButtonName}
         </button>
       </header>
       <div className="all-songs">
