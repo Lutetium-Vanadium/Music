@@ -90,7 +90,14 @@
         "pacman",
         "AppImage"
       ],
-      "category": "Utilities"
+      "category": "AudioVideo"
+    },
+    "pacman": {
+      "depends": [
+        "ffmpeg"
+      ],
+      "icon": "./resources/icon.png",
+      "category": "AudioVideo"
     },
     "directories": {
       "app": ".",
