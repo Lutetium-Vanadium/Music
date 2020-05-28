@@ -14,7 +14,7 @@
     "build:react": "cd app && yarn build",
     "build:quiet": "tsc && cd app && yarn build:quiet",
     "pack": "yarn build && electron-builder --dir",
-    "predist": "rm -rf release",
+    "predist": "rimraf release",
     "dist": "electron-builder",
     "deploy": "yarn build:quiet && yarn dist",
     "deploy-l": "yarn build:quiet && yarn dist -l",
@@ -53,7 +53,9 @@
     "eslint-plugin-jsx-a11y": "6.x",
     "eslint-plugin-react": "^7.20.0",
     "eslint-plugin-react-hooks": "2.x",
-    "typescript": "^3.8.3"
+    "rimraf": "^3.0.2",
+    "typescript": "^3.8.3",
+    "yarn": "^1.22.4"
   },
   "build": {
     "productName": "Music",
