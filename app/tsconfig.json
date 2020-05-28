@@ -5,16 +5,17 @@
     "baseUrl": ".",
     "moduleResolution": "node",
     "esModuleInterop": true,
-    "rootDir": "./src",
+    "rootDir": "./renderer",
     "target": "ES5",
+    "experimentalDecorators": true,
     "paths": {
-      "~*": ["./src/*"],
-      "#root/*": ["./src/*"],
-      "#logos/*": ["./src/logos/*"],
-      "#shared/*": ["./src/shared/*"]
+      "#*": ["./renderer/*"],
+      "#root/*": ["./renderer/*"],
+      "#logos/*": ["./renderer/logos/*"],
+      "#shared/*": ["./renderer/shared/*"]
     },
     "strict": false
   },
-  "include": ["./**/*.ts", "./**/*.tsx", "global.d.ts", "./declarations.d.ts"],
+  "include": ["./**/*.ts", "./**/*.tsx", "global.d.ts", "../declarations.d.ts"],
   "exclude": ["node_modules"]
 }
