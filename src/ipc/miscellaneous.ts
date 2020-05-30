@@ -1,4 +1,4 @@
-import { ipcMain, app, BrowserWindow } from "electron";
+import { ipcMain, app, BrowserWindow, dialog, Notification } from "electron";
 import * as path from "path";
 import * as fs from "fs";
 
@@ -6,6 +6,7 @@ import getYoutubeDetails from "../functions/getYoutubeDetails";
 import addAlbum from "../functions/addAlbum";
 import db from "../functions/db_handler";
 import Store from "../functions/store";
+import { exportData, importData } from "../functions/exportImportData";
 
 const initMiscellaneous = (store: Store<Settings, SettingsKeys>, win: BrowserWindow, downloader: YoutubeMp3Downloader) => {
   // The download song port- Given an id, downloads the song
@@ -60,6 +61,69 @@ const initMiscellaneous = (store: Store<Settings, SettingsKeys>, win: BrowserWin
 
   ipcMain.on("create:custom-album", async (evt, name: string, songs: string[]) => {
     win.webContents.send("update:custom-albums", await db.addCustomAlbum({ name, songs }));
+  });
+
+  ipcMain.on("export-data", async () => {
+    const { canceled, filePath } = await dialog.showSaveDialog(win, {
+      properties: ["createDirectory"],
+      title: "Save exported data",
+      defaultPath: path.join(app.getPath("documents"), "music-data.zip"),
+      filters: [
+        { name: "Zip Files", extensions: ["zip"] },
+        { name: "All Files", extensions: ["*"] },
+      ],
+    });
+
+    if (!canceled) {
+      try {
+        const message = await exportData(filePath);
+        new Notification({
+          title: "Export Success",
+          body: `${message}\nYou can import it in the Settings section of your music app.`,
+        }).show();
+      } catch (error) {
+        console.error(error);
+
+        const message = error instanceof Error ? error.message + "\n" : typeof error === "string" ? error + "\n" : "";
+
+        new Notification({
+          title: "Export Error",
+          body: `${message}For more information, see the error logs at ${path.join(app.getPath("logs"), "error.log")}`,
+        }).show();
+      }
+    }
+  });
+
+  ipcMain.on("import-data", async () => {
+    const { canceled, filePaths } = await dialog.showOpenDialog(win, {
+      properties: ["openFile"],
+      title: "Select file to import",
+      defaultPath: app.getPath("documents"),
+      filters: [
+        { name: "Zip Files", extensions: ["zip"] },
+        { name: "All Files", extensions: ["*"] },
+      ],
+    });
+
+    if (!canceled && filePaths[0]) {
+      try {
+        await importData(filePaths[0]);
+        store.refresh();
+        new Notification({
+          title: "Import Success",
+          body: "Settings and song metadata have been imported.",
+        }).show();
+      } catch (error) {
+        console.error(error);
+
+        const message = error instanceof Error ? error.message + "\n" : typeof error === "string" ? error + "\n" : "";
+
+        new Notification({
+          title: "Import Success",
+          body: `${message}For more information, see the error logs at ${path.join(app.getPath("logs"), "error.log")}`,
+        }).show();
+      }
+    }
   });
 
   // When the search page is clicked out of, this is used to reset the input field

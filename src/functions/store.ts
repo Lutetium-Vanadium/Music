@@ -83,6 +83,10 @@ class Store<T, K extends keyof T> {
     this._write();
   };
 
+  refresh = () => {
+    this._data = JSON.parse(fs.readFileSync(this._path).toString());
+  };
+
   // The defination for the @Write decorator
   private _write = () => {
     fs.writeFileSync(this._path, JSON.stringify(this._data));

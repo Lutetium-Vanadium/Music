@@ -79,7 +79,7 @@ const downloadImageRange = async (lst: string[]) => {
 
 const deleteImageRange = async (lst: string[]) => {
   lst.forEach(async (albumId) => {
-    await rm(albumId);
+    await rm(path.join(app.getPath("userData"), "album_images", albumId + ".jpg"));
     console.log("Deleted image for album " + albumId);
   });
 };
@@ -221,6 +221,8 @@ const checkDBs = async (folderStored: string) => {
     updateNumSongsRange(albumsToUpdateNumSongs);
     changed = true;
   }
+
+  debug.log();
 
   console.log(imagesToDownload.length + " album images aren't downloaded");
   if (imagesToDownload.length) {
