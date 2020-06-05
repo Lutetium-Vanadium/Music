@@ -7,10 +7,21 @@
   "main": "./build/main.js",
   "license": "MIT",
   "private": true,
+  "scripts": {
+    "postinstall": "electron-rebuild w sqlite3 -p"
+  },
   "alias": {
     "#root": "./renderer/",
     "#logos": "./renderer/logos",
     "#shared": "./renderer/shared"
   },
-  "dependencies": {}
+  "dependencies": {
+    "axios": "^0.19.2",
+    "sqlite": "^4.0.10",
+    "sqlite3": "^4.2.0",
+    "youtube-mp3-downloader": "^0.6.7"
+  },
+  "devDependencies": {
+    "electron-rebuild": "^1.11.0"
+  }
 }

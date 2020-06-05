@@ -8,7 +8,7 @@
     "jsx": "react",
     "esModuleInterop": true,
     "resolveJsonModule": false,
-    "outDir": "./build",
+    "outDir": "./app/build",
     "target": "ES5",
     "strict": false,
     "paths": {
