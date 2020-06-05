@@ -28,6 +28,16 @@ yarn start
 ```
 
 <br>
+
+To run the frontend:
+
+```sh
+yarn watch
+```
+
+The app will run on localhost:1234
+
+<br>
 To compile electron ts files:
 
 ```sh
@@ -41,7 +51,7 @@ To build the frontend files:
 yarn build:react
 ```
 
-> This can also be done by going into the `app` folder and run `yarn build`
+> This lints the frontend files as well. To build without linting, run `yarn build:parcel`.
 
 To build all the files:
 
@@ -78,41 +88,25 @@ yarn lint
 You can also lint only frontend files with `yarn lint:react` and only backend files with `yarn lint:electron`.
 
 <br>
+
+To delete all build files:
+
+```sh
+yarn clean
+```
+
+> This won't delete the packaged app files in the `release` folder.
+
+<br>
 Rebuild sqlite3:
 
 ```sh
-yarn fix-sqlite3
+yarn electron-rebuild
 ```
 
 > Note this will be required only if you are starting the app manually rather than packing it.
 
 <br>
-
-### In the `/app` Directory
-
-To run the frontend:
-
-```sh
-yarn watch
-```
-
-The app will run on localhost:1234
-
-<br>
-To build the frontend
-
-```sh
-yarn build
-```
-
-> This will also lint the frontend code. To build without linting run `yarn build:quiet`
-
-<br>
-You can also lint the frontend code from here.
-
-```sh
-yarn lint
-```
 
 ## Errors
 

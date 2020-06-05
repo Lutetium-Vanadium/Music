@@ -54,21 +54,33 @@ function Settings() {
     setAnimations(!animations);
   };
 
+  const importData = () => {
+    ipcRenderer.send("import-data");
+  };
+
+  const exportData = () => {
+    ipcRenderer.send("export-data");
+  };
+
   useEffect(() => {
-    ipcRenderer.invoke("get:info").then((info) => {
-      setDir(info.dir);
+    const setAllState = (info: Settings) => {
+      setDir(info.folderStored);
       setJumpBack(info.jumpBack);
       setSeekBack(info.seekBack);
       setSeekAhead(info.seekAhead);
       setJumpAhead(info.jumpAhead);
       setControls(info.controlWindow);
       setAnimations(info.animations);
-    });
+    };
+
+    ipcRenderer.invoke("get:info").then(setAllState);
+    ipcRenderer.on("info:update", (e, info) => setAllState(info));
   }, []);
 
   return (
     <div className="settings">
       <h1 className="header">Settings</h1>
+      {/* This is put like this because the name has html and not plain text */}
       <div className="setting">
         <p className="name">
           Directory from which songs are taken:
@@ -100,6 +112,17 @@ function Settings() {
       </Setting>
       <Setting name="Animate between pages">
         <Toggle toggled={animations} toggle={toggleAnimations} />
+      </Setting>
+      <hr />
+      <Setting name="Backup and Restore Data">
+        <div>
+          <button className="change" onClick={importData} style={{ marginRight: "2rem" }}>
+            Import Data
+          </button>
+          <button className="change" onClick={exportData}>
+            Export Data
+          </button>
+        </div>
       </Setting>
     </div>
   );
