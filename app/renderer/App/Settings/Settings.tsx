@@ -63,15 +63,18 @@ function Settings() {
   };
 
   useEffect(() => {
-    ipcRenderer.invoke("get:info").then((info) => {
-      setDir(info.dir);
+    const setAllState = (info: Settings) => {
+      setDir(info.folderStored);
       setJumpBack(info.jumpBack);
       setSeekBack(info.seekBack);
       setSeekAhead(info.seekAhead);
       setJumpAhead(info.jumpAhead);
       setControls(info.controlWindow);
       setAnimations(info.animations);
-    });
+    };
+
+    ipcRenderer.invoke("get:info").then(setAllState);
+    ipcRenderer.on("info:update", (e, info) => setAllState(info));
   }, []);
 
   return (

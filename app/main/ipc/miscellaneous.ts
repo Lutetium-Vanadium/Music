@@ -109,6 +109,7 @@ const initMiscellaneous = (store: Store<Settings, SettingsKeys>, win: BrowserWin
       try {
         await importData(filePaths[0]);
         store.refresh();
+        win.webContents.send("update:info", store.getAll());
         new Notification({
           title: "Import Success",
           body: "Settings and song metadata have been imported.",

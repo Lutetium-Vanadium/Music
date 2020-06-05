@@ -7,11 +7,7 @@ const initGetters = (store: Store<Settings, SettingsKeys>) => {
   // gets the configured music directory
   ipcMain.handle("get:info", () => {
     return new Promise((res) => {
-      const settings = store.getAll();
-      res({
-        ...settings,
-        dir: settings.folderStored,
-      });
+      res(store.getAll());
     });
   });
 

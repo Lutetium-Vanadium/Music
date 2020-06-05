@@ -3,7 +3,7 @@
 
 DIR=`pwd`
 
-if [ ! -f "$DIR/src/apiKeys.ts" ]
+if [ ! -f "$DIR/app/main/apiKeys.ts" ]
 then
   echo "Setting up api keys..."
   read -p "Napsters Api key: " napster
@@ -11,28 +11,13 @@ then
   echo
 
   echo "export const NAPSTER_API_KEY = \"$napster\"
-export const GOOGLE_API_KEY = \"$google\"" > ./src/apiKeys.ts
-fi
-
-installed_prompt=0
-
-if [ ! -d "$DIR/app/node_modules" ]
-then
-  installed_prompt=1
-  echo "Installing dependencies..."
-  echo
-  cd app
-  yarn
-  cd ..
+export const GOOGLE_API_KEY = \"$google\"" > ./app/main/apiKeys.ts
 fi
 
 if [ ! -d "$DIR/node_modules" ]
 then
-  if [ $installed_prompt = 0 ]
-  then
-    echo "Installing dependencies..."
-    echo
-  fi
+  echo "Installing dependencies..."
+  echo
   yarn
 fi
 
