@@ -2,6 +2,9 @@
 
 echo "Updating local repository..."
 
+prevPackageJSON=`cat package.json`
+prevAppPackageJSON=`cat app/package.json`
+
 if [[ `git status` == *"nothing to commit"* ]]
 then
   git pull
@@ -10,6 +13,8 @@ else
   git pull
   git stash pop 
 fi
+
+node updatePackages.js "$prebPackageJSON" "$prevAppPackageJSON"
 
 ./install.sh
 

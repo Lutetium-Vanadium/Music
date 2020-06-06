@@ -9,7 +9,7 @@ import { ReduxState, create } from "#root/reduxHandler";
 import { getNum, setNum } from "#root/localStorage";
 import formatLength from "#shared/formatLength";
 
-import { DoubleArrow, Loop, PlayPause, Shuffle, randOrder, VolumeControl } from "./helpers";
+import { DoubleArrow, isEqual, Loop, PlayPause, Shuffle, randOrder, VolumeControl } from "./helpers";
 
 import songLiked from "./song-liked.png";
 import songNotLiked from "./song-not-liked.png";
@@ -32,7 +32,7 @@ function Player() {
   const [timeStamp, setTimeStamp] = useState(0);
   const [paused, setPaused] = useState(false);
   const [loop, setLoop] = useState(false);
-  const [shuffle, setShuffle] = useState(songs === queue);
+  const [shuffle, setShuffle] = useState(!isEqual(songs, queue));
   const [exit, setExit] = useState(false);
 
   const ref = useRef<HTMLAudioElement>();

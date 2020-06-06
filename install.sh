@@ -21,6 +21,13 @@ then
   yarn
 fi
 
+if [ ! -d "$DIR/app/node_modules" ]
+then
+  echo "Installing dependencies..."
+  echo
+  yarn
+fi
+
 music_version=$(cat package.json | grep -ohE "\"version\": \"[0-9]\\.[0-9]\\.[0-9]\"" | grep -ohE "[0-9]+\\.[0-9]+\\.[0-9]+")
 
 echo "Building Music..."
