@@ -1,6 +1,7 @@
 import { app } from "electron";
 import * as path from "path";
 import * as fs from "fs";
+import mm from "music-metadata";
 
 import { getSongInfo } from "./functions/napster";
 import addAlbum from "./functions/addAlbum";
@@ -11,34 +12,40 @@ import { downloadImage } from "./functions/downloader";
 // Given a range of song names, this adds them to the database
 // Note, it is not in the database as this function handles the data formatting and only directly database
 // related line is `await db.addSong(songData)`
-const addRangeSong = async (lst: string[], folderStored: string) => {
+const addRangeSong = (lst: string[], folderStored: string) => {
   lst.forEach(async (songName, i) => {
-    const data = await getSongInfo(songName);
+    try {
+      const data = await getSongInfo(songName);
 
-    if (data.status === 0) {
+      if (data.status === 0) {
+        throw new Error("Failed to get info from napster");
+      }
+      const { song } = data;
+
+      const albumId = song.thumbnail.split("/")[6];
+      const filePath = path.join(folderStored, songName + ".mp3");
+      const length = (await mm.parseFile(filePath)).format.duration ?? song.length;
+
+      addAlbum(albumId, song.artist);
+      debug.log({ albumId });
+
+      const songData: Song = {
+        thumbnail: "file://" + path.join(app.getPath("userData"), "album_images", `${albumId}.jpg`),
+        filePath,
+        artist: song.artist,
+        length,
+        title: songName,
+        numListens: 0,
+        albumId,
+        liked: false,
+      };
+      await db.addSong(songData);
+
+      console.log(`${i}: ${lst[i]} added`);
+    } catch (error) {
+      console.error(error);
       console.error("Failed: " + songName);
-      return;
     }
-    const { song } = data;
-
-    const fileName = songName + ".mp3";
-    const albumId = song.thumbnail.split("/")[6];
-    addAlbum(albumId, song.artist);
-    debug.log({ albumId });
-
-    const songData: Song = {
-      thumbnail: "file://" + path.join(app.getPath("userData"), "album_images", `${albumId}.jpg`),
-      filePath: path.join(folderStored, fileName),
-      artist: song.artist,
-      length: song.length,
-      title: songName,
-      numListens: 0,
-      albumId,
-      liked: false,
-    };
-    await db.addSong(songData);
-
-    console.log(`${i}: ${lst[i]} added`);
   });
 };
 
