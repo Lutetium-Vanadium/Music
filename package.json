@@ -2,7 +2,7 @@
   "name": "Music",
   "description": "A music app written in electron.",
   "author": "Lutetium-Vanadium <luv.s7000@gmail.com>",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "main": "app/build/main.js",
   "license": "MIT",
   "private": true,
