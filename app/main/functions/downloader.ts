@@ -27,11 +27,7 @@ const createDownloader = (path: string) => {
  */
 const downloadImage = async (id: string) => {
   try {
-    const downloadPath = path.join(
-      app.getPath("userData"),
-      "album_images",
-      id + ".jpg"
-    );
+    const downloadPath = path.join(app.getPath("userData"), "album_images", id + ".jpg");
 
     if (fs.existsSync(downloadPath)) return;
 

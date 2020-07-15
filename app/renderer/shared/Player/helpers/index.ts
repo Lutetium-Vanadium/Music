@@ -5,3 +5,4 @@ export { default as Shuffle } from "./Shuffle";
 export { default as VolumeControl } from "./VolumeControl";
 
 export { default as randOrder } from "./randOrder";
+export { default as isEqual } from "./isEqual";

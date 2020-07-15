@@ -33,6 +33,7 @@ function App() {
   const [searchSuccess, setSearchSuccess] = useState(true);
   const [downloadError, setDownloadError] = useState(false);
   const [animations, setAnimations] = useState(true);
+  const [showBack, setShowBack] = useState(false);
 
   // Used by SearchPage to show loader on initial search results
   const [loading, setLoading] = useState(true);
@@ -91,6 +92,10 @@ function App() {
     ipcRenderer.on("goto-link", (evt: any, url: string) => history.push(url));
     ipcRenderer.on("change:animations", (evt: any, animations: boolean) => setAnimations(animations));
 
+    const unlisten = history.listen((location) => {
+      setShowBack(location.pathname.match(/\/(albums\/(liked|(alb|cst)\.[0-9]+)|search|artists\/[a-zA-Z0-9]+)/) !== null);
+    });
+
     const handleKeydown = (evt: KeyboardEvent) => {
       const places: Place[] = [
         { regex: /\/$/, right: "/settings", left: "/music" },
@@ -120,9 +125,12 @@ function App() {
     };
 
     window.addEventListener("keydown", handleKeydown);
-  }, []);
 
-  const showBack = history.location.pathname.match(/\/(albums\/(alb|cst)\.[0-9]*|liked|search|artists\/[a-zA-Z0-9]*)/) !== null;
+    return () => {
+      window.removeEventListener("keydown", handleKeydown);
+      unlisten();
+    };
+  }, []);
 
   return (
     <div>

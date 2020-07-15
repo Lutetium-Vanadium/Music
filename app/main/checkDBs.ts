@@ -1,43 +1,51 @@
 import { app } from "electron";
 import * as path from "path";
 import * as fs from "fs";
+import mm from "music-metadata";
 
 import { getSongInfo } from "./functions/napster";
 import addAlbum from "./functions/addAlbum";
 import db from "./functions/db_handler";
 import debug from "./console";
+import { downloadImage } from "./functions/downloader";
 
 // Given a range of song names, this adds them to the database
 // Note, it is not in the database as this function handles the data formatting and only directly database
 // related line is `await db.addSong(songData)`
-const addRangeSong = async (lst: string[], folderStored: string) => {
+const addRangeSong = (lst: string[], folderStored: string) => {
   lst.forEach(async (songName, i) => {
-    const data = await getSongInfo(songName);
+    try {
+      const data = await getSongInfo(songName);
 
-    if (data.status === 0) {
+      if (data.status === 0) {
+        throw new Error("Failed to get info from napster");
+      }
+      const { song } = data;
+
+      const albumId = song.thumbnail.split("/")[6];
+      const filePath = path.join(folderStored, songName + ".mp3");
+      const length = (await mm.parseFile(filePath)).format.duration ?? song.length;
+
+      addAlbum(albumId, song.artist);
+      debug.log({ albumId });
+
+      const songData: Song = {
+        thumbnail: "file://" + path.join(app.getPath("userData"), "album_images", `${albumId}.jpg`),
+        filePath,
+        artist: song.artist,
+        length,
+        title: songName,
+        numListens: 0,
+        albumId,
+        liked: false,
+      };
+      await db.addSong(songData);
+
+      console.log(`${i}: ${lst[i]} added`);
+    } catch (error) {
+      console.error(error);
       console.error("Failed: " + songName);
-      return;
     }
-    const { song } = data;
-
-    const fileName = songName + ".mp3";
-    const albumId = song.thumbnail.split("/")[6];
-    addAlbum(albumId, song.artist);
-    debug.log({ albumId });
-
-    const songData: Song = {
-      thumbnail: "file://" + path.join(app.getPath("userData"), "album_images", `${albumId}.jpg`),
-      filePath: path.join(folderStored, fileName),
-      artist: song.artist,
-      length: song.length,
-      title: songName,
-      numListens: 0,
-      albumId,
-      liked: false,
-    };
-    await db.addSong(songData);
-
-    console.log(`${i}: ${lst[i]} added`);
   });
 };
 
@@ -69,10 +77,25 @@ const updateNumSongsRange = async (lst: { albumId: string; numSongs: number }[])
   });
 };
 
+const downloadImageRange = async (lst: string[]) => {
+  lst.forEach(async (albumId) => {
+    await downloadImage(albumId);
+    console.log("Downloaded image for album " + albumId);
+  });
+};
+
+const deleteImageRange = async (lst: string[]) => {
+  lst.forEach(async (albumId) => {
+    await rm(path.join(app.getPath("userData"), "album_images", albumId + ".jpg"));
+    console.log("Deleted image for album " + albumId);
+  });
+};
+
 // Updates the db for songs which were not downloaded through the app and albums which arent there in the albumdata db
 const checkDBs = async (folderStored: string) => {
   await db.isReady();
 
+  // Song Checks
   const allSongs = await db.all();
 
   const formattedAllSongs: string[] = [];
@@ -125,6 +148,7 @@ const checkDBs = async (folderStored: string) => {
     changed = true;
   }
 
+  // Album Checks
   const albumsFromSongData = await db.albumsFromSongs();
   const albumsFromAlbumData = (await db.mostPopularAlbums(false)).sort((a, b) => (a.id > b.id ? 1 : -1));
 
@@ -159,6 +183,31 @@ const checkDBs = async (folderStored: string) => {
 
   for (j; j < albumsFromAlbumData.length; j++) albumsToDelete.push(albumsFromAlbumData[j].id);
 
+  const downloadedAlbumImages = (await ls(path.join(app.getPath("userData"), "album_images")))
+    .sort((a, b) => (a > b ? 1 : -1))
+    .map((albumId) => path.basename(albumId, path.extname(albumId)));
+  const imagesToDownload: string[] = [];
+  const imagesToDelete: string[] = [];
+
+  i = 0;
+  j = 0;
+
+  while (i < albumsFromSongData.length && j < downloadedAlbumImages.length) {
+    const { albumId } = albumsFromSongData[i];
+    const imageAlbumId = downloadedAlbumImages[j];
+
+    if (albumId === imageAlbumId) {
+      i++;
+      j++;
+    } else if (imageAlbumId > albumId) {
+      imagesToDownload.push(albumId);
+      i++;
+    } else {
+      imagesToDelete.push(imageAlbumId);
+      j++;
+    }
+  }
+
   console.log(albumsToDelete.length + " extra albums detected.");
   if (albumsToDelete.length) {
     console.log("Updating database...");
@@ -180,6 +229,20 @@ const checkDBs = async (folderStored: string) => {
     changed = true;
   }
 
+  debug.log();
+
+  console.log(imagesToDownload.length + " album images aren't downloaded");
+  if (imagesToDownload.length) {
+    console.log("Downloading images...");
+    downloadImageRange(imagesToDownload);
+  }
+
+  console.log(imagesToDelete.length + " extra album images found");
+  if (imagesToDelete.length) {
+    console.log("Deleting images...");
+    deleteImageRange(imagesToDelete);
+  }
+
   if (changed) console.log("Completed Database Checks");
 };
 
@@ -191,6 +254,16 @@ const ls = (path: fs.PathLike): Promise<string[]> => {
     fs.readdir(path, (err, files) => {
       if (err) rej(err);
       res(files);
+    });
+  });
+};
+
+// Helper function that provides a promised based fs.unlink
+const rm = (path: fs.PathLike): Promise<void> => {
+  return new Promise((res, rej) => {
+    fs.unlink(path, (err) => {
+      if (err) rej(err);
+      res();
     });
   });
 };

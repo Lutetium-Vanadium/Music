@@ -1,19 +1,20 @@
 {
   "compilerOptions": {
     "moduleResolution": "node",
-    "baseUrl": ".",
-    "rootDir": "./src",
+    "baseUrl": "./node_modules",
+    "rootDir": "./app/main",
     "experimentalDecorators": true,
     "allowJs": true,
     "jsx": "react",
     "esModuleInterop": true,
     "resolveJsonModule": false,
-    "outDir": "./build",
+    "outDir": "./app/build",
     "target": "ES5",
+    "strict": false,
     "paths": {
-      "~*": ["./src/*", "./app/src/*"]
+      "~*": ["./app/main/*", "./app/renderer/*"]
     }
   },
-  "include": ["./src/**/*.ts", "global.d.ts", "./declarations.d.ts"],
-  "exclude": ["./node_modules"]
+  "include": ["./app/main/**/*.ts", "global.d.ts", "./declarations.d.ts"],
+  "exclude": ["./node_modules", "./**/*.example.ts"]
 }
